@@ -1,5 +1,5 @@
 _docker_run:
-	docker compose exec --rm api ${CMD}
+	docker compose run --rm api ${CMD}
 
 _docker_exec:
 	docker compose exec api ${CMD}
