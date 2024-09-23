@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/soicchi/book_order_system/infrastructure/postgres"
 )
 
 func main() {
-	fmt.Println("Hello, world!")
+	// Database initialization
+	postgres.Initialize()
+	fmt.Println("Database initialized")
 }
