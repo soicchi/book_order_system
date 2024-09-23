@@ -18,7 +18,7 @@ type config struct {
 }
 
 var (
-	cfg config
+	cfg  config
 	once sync.Once
 )
 
