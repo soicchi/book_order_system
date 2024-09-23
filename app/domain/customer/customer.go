@@ -6,12 +6,12 @@ import (
 )
 
 type Customer struct {
-	id  uuid.UUID
-	name string
-	email string
+	id         uuid.UUID
+	name       string
+	email      string
 	prefecture string
-	address string
-	password string
+	address    string
+	password   string
 }
 
 func NewCustomer(name, email, prefecture, address, password string) (*Customer, error) {
@@ -21,11 +21,11 @@ func NewCustomer(name, email, prefecture, address, password string) (*Customer, 
 	}
 
 	return &Customer{
-		id: uuid.New(),
-		name: name,
-		email: email,
+		id:         uuid.New(),
+		name:       name,
+		email:      email,
 		prefecture: prefecture,
-		address: address,
-		password: string(hashedPassword),
+		address:    address,
+		password:   string(hashedPassword),
 	}, nil
 }
