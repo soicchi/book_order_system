@@ -3,10 +3,10 @@ package postgres
 import (
 	"fmt"
 
+	"github.com/soicchi/book_order_system/config"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-
-	"github.com/soicchi/book_order_system/config"
 )
 
 var db *sqlx.DB
