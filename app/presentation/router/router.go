@@ -1,7 +1,7 @@
 package router
 
 import (
-	"net/http"
+	"github.com/soicchi/book_order_system/presentation/health_check"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,9 +11,5 @@ func NewRouter(r *gin.Engine) {
 	v1 := basePath.Group("/v1")
 
 	// /api/v1/health_check
-	v1.GET("/health_check", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "Health check OK",
-		})
-	})
+	v1.GET("/health_check", health_check.HealthCheck)
 }
