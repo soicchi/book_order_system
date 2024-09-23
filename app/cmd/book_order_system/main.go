@@ -1,9 +1,8 @@
 package main
 
 import (
-	"log"
-
 	"github.com/soicchi/book_order_system/config"
+	"github.com/soicchi/book_order_system/logger"
 	"github.com/soicchi/book_order_system/presentation/router"
 
 	"github.com/gin-gonic/gin"
@@ -13,11 +12,14 @@ import (
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
-	log.Println("Configuration loaded")
+
+	// Initialize logger
+	logger := logger.InitLogger(cfg)
+	logger.Info("Logger initialized")
 
 	// Database initialization
 	postgres.Initialize(cfg)
-	log.Println("Database initialized")
+	logger.Info("Database initialized")
 
 	r := gin.Default()
 	router.NewRouter(r, cfg)

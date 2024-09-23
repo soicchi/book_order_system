@@ -15,6 +15,9 @@ type Config struct {
 	DBName     string `env:"DB_NAME"`
 	DBPassword string `env:"DB_PASSWORD"`
 	DBSSLMode  string `env:"DB_SSLMODE"`
+
+	// Application
+	Env string `env:"ENV"`
 }
 
 var (
