@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"fmt"
-	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/soicchi/book_order_system/config"
 )
 
 var db *sqlx.DB
@@ -20,14 +21,10 @@ func GetDB() *sqlx.DB {
 }
 
 func getDBURI() string {
+	cfg := config.GetConfig()
+
 	return fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		// TODO: I'm changing how to get the environment variables
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_SSLMODE"),
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode,
 	)
 }
