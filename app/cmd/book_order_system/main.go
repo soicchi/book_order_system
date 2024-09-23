@@ -12,15 +12,15 @@ import (
 
 func main() {
 	// Load configuration
-	config.LoadConfig()
+	cfg := config.LoadConfig()
 	log.Println("Configuration loaded")
 
 	// Database initialization
-	postgres.Initialize()
+	postgres.Initialize(cfg)
 	log.Println("Database initialized")
 
 	r := gin.Default()
-	router.NewRouter(r)
+	router.NewRouter(r, cfg)
 
 	r.Run()
 }

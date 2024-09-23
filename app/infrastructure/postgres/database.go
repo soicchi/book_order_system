@@ -11,8 +11,10 @@ import (
 
 var db *sqlx.DB
 
-func Initialize() {
-	dbURI := getDBURI()
+func Initialize(cfg config.Config) {
+	dbURI := getDBURI(
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode,
+	)
 	db = sqlx.MustConnect("pgx", dbURI)
 }
 
@@ -20,11 +22,9 @@ func GetDB() *sqlx.DB {
 	return db
 }
 
-func getDBURI() string {
-	cfg := config.GetConfig()
-
+func getDBURI(dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode string) string {
 	return fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode,
+		dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode,
 	)
 }

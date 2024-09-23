@@ -7,7 +7,7 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-type config struct {
+type Config struct {
 	// Database
 	DBHost     string `env:"DB_HOST"`
 	DBPort     string `env:"DB_PORT"`
@@ -18,19 +18,17 @@ type config struct {
 }
 
 var (
-	cfg  config
 	once sync.Once
 )
 
-func LoadConfig() {
+func LoadConfig() Config {
+	cfg := Config{}
+
 	once.Do(func() {
-		cfg = config{}
 		if err := cleanenv.ReadEnv(&cfg); err != nil {
 			log.Fatalf("Configuration cannot be read: %v\n", err)
 		}
 	})
-}
 
-func GetConfig() config {
 	return cfg
 }
