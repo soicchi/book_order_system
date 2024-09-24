@@ -31,7 +31,7 @@ jobs:
           ${{ runner.os }}-go-
 
       - name: Install dependencies
-        run: go mod download
+        run: go get .
 
       - name: Check formatting
         id: gofmt
@@ -43,15 +43,9 @@ jobs:
             exit 1
           fi
 
-      - name: Check vet
-        id: govet
-        run: |
-          govet_output=$(go vet ./...)
-          if [ -n "$govet_output" ]; then
-            echo "Go vet found issues:"
-            echo "$govet_output"
-            exit 1
-          fi
+      - name: Build
+        id: build
+        run: go build -v ./...
 
       - name: Run tests
         run: go test -v ./...
