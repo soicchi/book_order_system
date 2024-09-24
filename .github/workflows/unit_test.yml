@@ -40,7 +40,7 @@ jobs:
         id: build
         run: |
           cd app
-          go build -v app/cmd/book_order_system
+          go build -v ./cmd/book_order_system
 
       - name: Run tests
         run: go test -v ./...
