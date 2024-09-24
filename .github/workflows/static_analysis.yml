@@ -26,4 +26,4 @@ jobs:
       - name: analysis
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          ./actionlint ./github/workflows/*.yml
+          actionlint
