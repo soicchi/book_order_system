@@ -38,7 +38,7 @@ jobs:
 
       - name: Build
         id: build
-        run: go build -v ./...
+        run: go build -v app/cmd/book_order_system/main.go
 
       - name: Run tests
         run: go test -v ./...
