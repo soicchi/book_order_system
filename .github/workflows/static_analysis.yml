@@ -16,9 +16,10 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: .github
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: analysis
-        run: docker run --rm -v ${pwd}:${pwd} -w ${pwd} rhysd/actionlint
+        run: docker run -v "${pwd}:${pwd}" -w "${pwd}" rhysd/actionlint
