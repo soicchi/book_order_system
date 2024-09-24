@@ -18,11 +18,12 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: .github/workflows
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: analysis
-        run: docker run --rm -v "${pwd}:${pwd}" -w "${pwd}" rhysd/actionlint:latest
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint ./github/workflows/*.yml ./github/workflows/*.yaml
