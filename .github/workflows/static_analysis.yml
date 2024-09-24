@@ -1,0 +1,24 @@
+name: Static analysis
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/*.yml"
+      - ".github/workflows/*.yaml"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: analysis
+        run: docker run --rm -v ${pwd}:${pwd} -w ${pwd} rhysd/actionlint
