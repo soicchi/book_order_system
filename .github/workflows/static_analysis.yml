@@ -11,15 +11,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  static_analysis:
+  lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     defaults:
       run:
         shell: bash
         working-directory: .github/workflows
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: analysis
-        run: docker run -v "${pwd}:${pwd}" -w "${pwd}" rhysd/actionlint
+        run: docker run --rm -v "${pwd}:${pwd}" -w "${pwd}" rhysd/actionlint:latest
