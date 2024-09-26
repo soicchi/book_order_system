@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - dependabot
+    target-branch: "dependabot/target"
+
+  - package-ecosystem: "gomod"
+    directory: "/app"
+    schedule:
+      interval: "weekly"
+    labels:
+      - dependabot
+    target-branch: "dependabot/target"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - dependabot
+    target-branch: "dependabot/target"
