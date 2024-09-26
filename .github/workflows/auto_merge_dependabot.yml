@@ -27,8 +27,8 @@ jobs:
 
       - name: Approve PR
         if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
-        run: gh pr review ${GITHUB_HEAD_REF} --approve
+        run: gh pr review "${GITHUB_HEAD_REF}" --approve
 
       - name: Merge PR
         if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
-        run: gh pr merge  ${GITHUB_HEAD_REF} --merge --auto
+        run: gh pr merge "${GITHUB_HEAD_REF}" --merge --auto
