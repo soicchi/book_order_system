@@ -1,0 +1,26 @@
+name: Create PR from dependabot/target to main
+
+on:
+  push:
+    branches:
+      - dependabot/target
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create PR
+        env:
+          HEAD_BRANCH: ${{ github.ref }}
+          BASE_BRANCH: main
+        run: |
+          gh pr create -d -B ${{ env.BASE_BRANCH }} -H ${{ env.HEAD_BRANCH }} -t "${{ env.BASE_BRANCH }} <- ${{ env.HEAD_BRANCH }}" -b "This PR was automatically created by GitHub Actions to merge the dependabot PR into main"
