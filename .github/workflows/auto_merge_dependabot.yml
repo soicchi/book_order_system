@@ -21,14 +21,18 @@ jobs:
 
       - name: Fetch metadata
         id: dependabot-metadata
-        uses: dependabot/fetch-medadata@2
+        uses: dependabot/fetch-medadata@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Approve PR
         if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
-        run: gh pr review "${GITHUB_HEAD_REF}" --approve
+        run: gh pr review "$PR_URL" --approve
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
 
       - name: Merge PR
         if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
-        run: gh pr merge "${GITHUB_HEAD_REF}" --merge --auto
+        run: gh pr merge "$PR_URL" --merge --auto
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
