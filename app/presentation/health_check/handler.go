@@ -1,7 +1,7 @@
 package health_check
 
 import (
-	"github.com/soicchi/book_order_system/presentation/response_helper"
+	"github.com/soicchi/book_order_system/presentation/responsehelper"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,5 +11,5 @@ func HealthCheck(ctx *gin.Context) {
 		Message: "Health check OK",
 	}
 
-	response_helper.ReturnStatusOK(ctx, res)
+	responsehelper.ReturnStatusOK(ctx, res)
 }

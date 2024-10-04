@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/soicchi/book_order_system/config"
 	"github.com/soicchi/book_order_system/logger"
-	"github.com/soicchi/book_order_system/presentation/router"
+	"github.com/soicchi/book_order_system/router"
 
 	"github.com/gin-gonic/gin"
 	"github.com/soicchi/book_order_system/infrastructure/postgres"
@@ -22,7 +22,7 @@ func main() {
 	logger.Info("Database initialized")
 
 	r := gin.Default()
-	router.NewRouter(r, cfg)
+	router.NewRouter(r, cfg, logger)
 
 	r.Run()
 }
