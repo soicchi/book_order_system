@@ -21,7 +21,7 @@ func NewCreateCustomerUseCase(repo customerDomain.CustomerRepository, logger *sl
 	}
 }
 
-type CreateUseCaseDTO struct {
+type CreateUseCaseInputDTO struct {
 	Name       string
 	Email      string
 	Prefecture string
@@ -29,7 +29,7 @@ type CreateUseCaseDTO struct {
 	Password   string
 }
 
-func (u *CreateCustomerUseCase) Execute(ctx *gin.Context, dto CreateUseCaseDTO) error {
+func (u *CreateCustomerUseCase) Execute(ctx *gin.Context, dto CreateUseCaseInputDTO) error {
 	customer, err := customerDomain.NewCustomer(dto.Name, dto.Email, dto.Prefecture, dto.Address, dto.Password)
 	if err != nil {
 		return fmt.Errorf("failed to create customer domain: %w", err)

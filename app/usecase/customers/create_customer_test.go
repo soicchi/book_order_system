@@ -17,13 +17,13 @@ func TestCreateCustomer(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		dto        CreateUseCaseDTO
+		dto        CreateUseCaseInputDTO
 		mockDefine func()
 		wantErr    bool
 	}{
 		{
 			name: "success to create customer",
-			dto: CreateUseCaseDTO{
+			dto: CreateUseCaseInputDTO{
 				Name:       "test",
 				Email:      "test@test.com",
 				Prefecture: "tokyo",
@@ -37,7 +37,7 @@ func TestCreateCustomer(t *testing.T) {
 		},
 		{
 			name: "failed to create customer",
-			dto: CreateUseCaseDTO{
+			dto: CreateUseCaseInputDTO{
 				Name:       "test",
 				Email:      "test@test.com",
 				Prefecture: "tokyo",
