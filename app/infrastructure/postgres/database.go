@@ -5,17 +5,19 @@ import (
 
 	"github.com/soicchi/book_order_system/config"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jmoiron/sqlx"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var db *sqlx.DB
+var db *gorm.DB
 
 func Initialize(cfg config.Config) {
 	dsn := getDSN(
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode,
 	)
-	db = sqlx.MustConnect("pgx", dsn)
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN: dsn,
+	}), &gorm.Config{}) 
 }
 
 func GetDB() *sqlx.DB {
