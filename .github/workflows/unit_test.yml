@@ -56,7 +56,7 @@ jobs:
 
       - name: Build
         id: build
-        run: go build -v ./cmd/book_order_system
+        run: go build -v ./cmd
 
       - name: Run tests
         run: go test -v ./...
