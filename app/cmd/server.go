@@ -1,15 +1,12 @@
 package cmd
 
 import (
-	"github.com/soicchi/book_order_system/config"
 	"github.com/soicchi/book_order_system/infrastructure/postgres/database"
-	"github.com/soicchi/book_order_system/logger"
 
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cobra"
 )
 
-// serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Start the API server",
@@ -23,13 +20,6 @@ requests to interact with the application's core functionalities.
 Use this command to initialize the server and make the application accessible to 
 clients, or to test the API endpoints directly.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Load configuration
-		cfg := config.LoadConfig()
-
-		// Initialize logger
-		logger := logger.InitLogger(cfg)
-		logger.Info("Logger initialized")
-
 		// Database initialization
 		dbConfig := database.NewDBConfig(cfg)
 		dbConfig.Connect()
