@@ -29,10 +29,10 @@ func NewCustomer(name, email, plainPassword string) (*Customer, error) {
 		return nil, fmt.Errorf("error hashing password: %w", err)
 	}
 
-	return newCustomer(customerUUID, name, email, hashedPassword, nil, nil)
+	return newCustomer(customerUUID, name, email, hashedPassword, nil, nil), nil
 }
 
-func newCustomer(id uuid.UUID, name, email string, password *values.Password, createdAt, updatedAt *time.Time) (*Customer, error) {
+func newCustomer(id uuid.UUID, name, email string, password *values.Password, createdAt, updatedAt *time.Time) *Customer {
 	return &Customer{
 		id:        id,
 		name:      name,
@@ -40,7 +40,7 @@ func newCustomer(id uuid.UUID, name, email string, password *values.Password, cr
 		password:  password,
 		createdAt: createdAt,
 		updatedAt: updatedAt,
-	}, nil
+	}
 }
 
 func (c *Customer) ID() uuid.UUID {

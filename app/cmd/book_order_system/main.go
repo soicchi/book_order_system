@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/soicchi/book_order_system/config"
-	"github.com/soicchi/book_order_system/logger"
 	"github.com/soicchi/book_order_system/infrastructure/postgres/database"
+	"github.com/soicchi/book_order_system/logger"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 	logger.Info("Logger initialized")
 
 	// Database initialization
-	dbConfig := database.NewDBConnector(cfg)
+	dbConfig := database.NewDBConfig(cfg)
 	dbConfig.Connect()
 	logger.Info("Database initialized")
 }
