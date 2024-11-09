@@ -2,31 +2,49 @@ package database
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/soicchi/book_order_system/config"
+	"github.com/soicchi/book_order_system/infrastructure/postgres/database/migrations"
 
+	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type DBConfig struct {
-	host     string
-	name     string
-	user     string
-	password string
-	port     string
-	sslMode  string
+	host         string
+	name         string
+	user         string
+	password     string
+	port         string
+	sslMode      string
+	maxConnPool  int
+	poolLifetime time.Duration
 }
 
 func NewDBConfig(cfg *config.Config) *DBConfig {
+	maxConnPool, err := strconv.Atoi(cfg.DBMAXConnPool)
+	if err != nil {
+		maxConnPool = 20
+	}
+
+	poolLifetime, err := strconv.Atoi(cfg.DBPoolLifetime)
+	if err != nil {
+		poolLifetime = 300
+	}
+
 	return &DBConfig{
-		host:     cfg.DBHost,
-		name:     cfg.DBName,
-		user:     cfg.DBUser,
-		password: cfg.DBPassword,
-		port:     cfg.DBPort,
-		sslMode:  cfg.DBSSLMode,
+		host:         cfg.DBHost,
+		name:         cfg.DBName,
+		user:         cfg.DBUser,
+		password:     cfg.DBPassword,
+		port:         cfg.DBPort,
+		sslMode:      cfg.DBSSLMode,
+		maxConnPool:  maxConnPool,
+		poolLifetime: time.Duration(poolLifetime) * time.Second,
 	}
 }
 
@@ -43,6 +61,10 @@ func (d *DBConfig) Connect() error {
 	})
 	if err != nil {
 		return fmt.Errorf("failed to connect database: %w", err)
+	}
+
+	if err := d.setupPool(); err != nil {
+		return fmt.Errorf("failed to set up the connection pool: %w", err)
 	}
 
 	return nil
@@ -65,4 +87,31 @@ func (dc *DBConnector) GetDB(ctx echo.Context) *gorm.DB {
 	// TODO: return tx if exists in context
 	// TODO: we plan to implement this when we implement the transaction management
 	return db
+}
+
+func Migrate() error {
+	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+		// Add migrations here
+		migrations.CreateCustomerTable,
+	})
+
+	if err := m.Migrate(); err != nil {
+		return fmt.Errorf("migration failed: %w", err)
+	}
+
+	return nil
+}
+
+func (d *DBConfig) setupPool() error {
+	sqlDB, err := db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get database/sql DB: %w", err)
+	}
+
+	// Set the maximum number of pool connections
+	sqlDB.SetMaxIdleConns(d.maxConnPool)
+	// Set the recycle time of the pool connections
+	sqlDB.SetConnMaxLifetime(d.poolLifetime * time.Second)
+
+	return nil
 }
