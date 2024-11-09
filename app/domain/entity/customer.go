@@ -10,10 +10,10 @@ import (
 )
 
 type Customer struct {
-	id uuid.UUID
-	name string
-	email string
-	password *values.Password
+	id        uuid.UUID
+	name      string
+	email     string
+	password  *values.Password
 	createdAt *time.Time
 	updatedAt *time.Time
 }
@@ -34,10 +34,10 @@ func NewCustomer(name, email, plainPassword string) (*Customer, error) {
 
 func newCustomer(id uuid.UUID, name, email string, password *values.Password, createdAt, updatedAt *time.Time) (*Customer, error) {
 	return &Customer{
-		id: id,
-		name: name,
-		email: email,
-		password: password,
+		id:        id,
+		name:      name,
+		email:     email,
+		password:  password,
 		createdAt: createdAt,
 		updatedAt: updatedAt,
 	}, nil
@@ -45,7 +45,7 @@ func newCustomer(id uuid.UUID, name, email string, password *values.Password, cr
 
 func (c *Customer) ID() uuid.UUID {
 	return c.id
-} 
+}
 
 func (c *Customer) Name() string {
 	return c.name
