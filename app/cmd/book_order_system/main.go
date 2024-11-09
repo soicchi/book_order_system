@@ -3,10 +3,7 @@ package main
 import (
 	"github.com/soicchi/book_order_system/config"
 	"github.com/soicchi/book_order_system/logger"
-	"github.com/soicchi/book_order_system/router"
-
-	"github.com/gin-gonic/gin"
-	"github.com/soicchi/book_order_system/infrastructure/postgres"
+	"github.com/soicchi/book_order_system/infrastructure/postgres/database"
 )
 
 func main() {
@@ -18,11 +15,7 @@ func main() {
 	logger.Info("Logger initialized")
 
 	// Database initialization
-	postgres.Initialize(cfg)
+	dbConfig := database.NewDBConnector(cfg)
+	dbConfig.Connect()
 	logger.Info("Database initialized")
-
-	r := gin.Default()
-	router.NewRouter(r, cfg, logger)
-
-	r.Run()
 }

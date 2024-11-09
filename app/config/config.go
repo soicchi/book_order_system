@@ -17,14 +17,14 @@ type Config struct {
 	DBSSLMode  string `env:"DB_SSLMODE"`
 
 	// Application
-	Env string `env:"ENV"`
+	Environment string `env:"ENV"`
 }
 
 var (
 	once sync.Once
 )
 
-func LoadConfig() Config {
+func LoadConfig() *Config {
 	cfg := Config{}
 
 	once.Do(func() {
@@ -33,5 +33,5 @@ func LoadConfig() Config {
 		}
 	})
 
-	return cfg
+	return &cfg
 }

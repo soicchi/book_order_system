@@ -22,8 +22,8 @@ type logger struct {
 
 type replaceAttr func(groups []string, a slog.Attr) slog.Attr
 
-func InitLogger(cfg config.Config) *logger {
-	logLevel := setLogLevel(cfg.Env)
+func InitLogger(cfg *config.Config) *logger {
+	logLevel := setLogLevel(cfg.Environment)
 	replace := replaceLoggerAttr()
 	logger := newLogger(replace, logLevel)
 
