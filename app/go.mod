@@ -3,6 +3,7 @@ module github.com/soicchi/book_order_system
 go 1.23.1
 
 require (
+	github.com/go-gormigrate/gormigrate/v2 v2.1.3
 	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/labstack/echo/v4 v4.12.0
