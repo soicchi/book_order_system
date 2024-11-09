@@ -9,24 +9,37 @@ import (
 	"github.com/soicchi/book_order_system/config"
 )
 
+type Logger interface {
+	Debug(msg string, attrs ...any)
+	Info(msg string, attrs ...any)
+	Warn(msg string, attrs ...any)
+	Error(msg string, attrs ...any)
+}
+
+type logger struct {
+	logger *slog.Logger
+}
+
 type replaceAttr func(groups []string, a slog.Attr) slog.Attr
 
-func InitLogger(cfg config.Config) *slog.Logger {
-	logLevel := setLogLevel(cfg.Env)
+func InitLogger(cfg *config.Config) *logger {
+	logLevel := setLogLevel(cfg.Environment)
 	replace := replaceLoggerAttr()
 	logger := newLogger(replace, logLevel)
 
 	return logger
 }
 
-func newLogger(replace replaceAttr, logLevel slog.Level) *slog.Logger {
+func newLogger(replace replaceAttr, logLevel slog.Level) *logger {
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		AddSource:   true,
 		ReplaceAttr: replace,
 		Level:       logLevel,
 	})
 
-	return slog.New(handler)
+	return &logger{
+		logger: slog.New(handler),
+	}
 }
 
 func replaceLoggerAttr() replaceAttr {
@@ -59,4 +72,20 @@ func setLogLevel(env string) slog.Level {
 	}
 
 	return slog.LevelInfo
+}
+
+func (l *logger) Debug(msg string, attrs ...any) {
+	l.logger.Debug(msg, attrs...)
+}
+
+func (l *logger) Info(msg string, attrs ...any) {
+	l.logger.Info(msg, attrs...)
+}
+
+func (l *logger) Warn(msg string, attrs ...any) {
+	l.logger.Warn(msg, attrs...)
+}
+
+func (l *logger) Error(msg string, attrs ...any) {
+	l.logger.Error(msg, attrs...)
 }
