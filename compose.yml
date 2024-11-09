@@ -4,6 +4,13 @@ services:
       context: .
       dockerfile: Dockerfile
       target: local
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /opt
+        - action: rebuild
+          path: ./app
     ports:
       - "8080:8080"
     volumes:

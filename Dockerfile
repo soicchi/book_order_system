@@ -6,14 +6,15 @@ WORKDIR /opt
 
 RUN --mount=type=bind,source=app/go.mod,target=/opt/go.mod \
     --mount=type=bind,source=app/go.sum,target=/opt/go.sum \
-    go mod download && \
-    go install github.com/spf13/cobra-cli@$COBRA_CLI_VERSION
+    --mount=type=bind,source=app,target=/opt \
+    go mod download
 
 FROM golang:$GO_VERSION AS local
-ARG AIR_VERSION=v1.60.0
+ARG AIR_VERSION=v1.61.1
 WORKDIR /opt
 
-COPY --from=base /go/pkg/mod /go/pkg/mod
 RUN go install github.com/air-verse/air@$AIR_VERSION
 
-CMD ["air", "-c", ".air.toml"]
+COPY --from=base /go/pkg/mod /go/pkg/mod
+
+CMD ["air", "c", ".air.toml"]

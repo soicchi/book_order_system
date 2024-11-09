@@ -9,13 +9,13 @@ tmp_dir = "tmp"
 # Array of commands to run before each build
 pre_cmd = []
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./tmp/main ./cmd/book_order_system/main.go"
+cmd = "go build -o ./tmp/main ."
 # Array of commands to run after ^C
 post_cmd = []
 # Binary file yields from `cmd`.
 bin = "tmp/main"
 # Customize binary, can setup environment variables when run your app.
-full_bin = "APP_ENV=local APP_USER=air ./tmp/main"
+full_bin = "APP_ENV=local APP_USER=air ./tmp/main server"
 # Add additional arguments when running binary (bin/full_bin). Will run './tmp/main hello world'.
 args_bin = ["hello", "world"]
 # Watch these filename extensions.
