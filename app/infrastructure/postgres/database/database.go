@@ -77,13 +77,7 @@ func (d *DBConfig) dsn() string {
 	)
 }
 
-type DBConnector struct{}
-
-func NewDBConnector() *DBConnector {
-	return &DBConnector{}
-}
-
-func (dc *DBConnector) GetDB(ctx echo.Context) *gorm.DB {
+func GetDB(ctx echo.Context) *gorm.DB {
 	// TODO: return tx if exists in context
 	// TODO: we plan to implement this when we implement the transaction management
 	return db
