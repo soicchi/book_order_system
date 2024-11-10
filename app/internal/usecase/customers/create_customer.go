@@ -13,12 +13,13 @@ import (
 
 type CustomerUseCase struct {
 	repository interfaces.CustomerRepository
-	logger     *logger.Logger
+	logger     logger.Logger
 }
 
-func NewCustomerUseCase(repository interfaces.CustomerRepository) *CustomerUseCase {
+func NewCustomerUseCase(repository interfaces.CustomerRepository, logger logger.Logger) *CustomerUseCase {
 	return &CustomerUseCase{
 		repository: repository,
+		logger:     logger,
 	}
 }
 

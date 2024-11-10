@@ -7,11 +7,15 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type CustomerRepositoryMock struct {
+type MockCustomerRepository struct {
 	mock.Mock
 }
 
-func (r *CustomerRepositoryMock) Create(ctx echo.Context, customer *entity.Customer) error {
+func NewMockCustomerRepository() *MockCustomerRepository {
+	return &MockCustomerRepository{}
+}
+
+func (r *MockCustomerRepository) Create(ctx echo.Context, customer *entity.Customer) error {
 	args := r.Called(customer)
 	return args.Error(0)
 }
