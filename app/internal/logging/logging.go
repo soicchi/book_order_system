@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -14,6 +15,7 @@ type Logger interface {
 	Info(msg string, attrs ...any)
 	Warn(msg string, attrs ...any)
 	Error(msg string, attrs ...any)
+	LogAttrs(ctx context.Context, level slog.Level, msg string, attrs ...slog.Attr)
 }
 
 type logger struct {
@@ -88,4 +90,8 @@ func (l *logger) Warn(msg string, attrs ...any) {
 
 func (l *logger) Error(msg string, attrs ...any) {
 	l.logger.Error(msg, attrs...)
+}
+
+func (l *logger) LogAttrs(ctx context.Context, level slog.Level, msg string, attrs ...slog.Attr) {
+	l.logger.LogAttrs(ctx, level, msg, attrs...)
 }
