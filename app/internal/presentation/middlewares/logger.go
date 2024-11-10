@@ -22,8 +22,8 @@ func CustomBodyDump(logger logging.Logger) middleware.BodyDumpHandler {
 		json.Unmarshal(resBody, &res)
 
 		// mask sensitive fields
-		maskedRequest := maskField(req)
-		maskedResponse := maskField(res)
+		maskedRequest := maskFields(req)
+		maskedResponse := maskFields(res)
 
 		// output logs
 		logger.LogAttrs(ctx.Request().Context(), slog.LevelInfo, "request dump", slog.Any("request", maskedRequest))
@@ -35,19 +35,19 @@ func shouldMaskField(field string) bool {
 	return slices.Contains(sensitiveFields, field)
 }
 
-func maskField(body map[string]interface{}) *map[string]interface{} {
+func maskFields(body map[string]interface{}) map[string]interface{} {
 	// body is empty
-	if body == nil {
-		return nil
+	if len(body) == 0 {
+		return map[string]interface{}{}
 	}
 
 	for key, value := range body {
 		if shouldMaskField(key) {
 			body[key] = "*****"
 		} else if nestedBody, ok := value.(map[string]interface{}); ok {
-			maskField(nestedBody)
+			maskFields(nestedBody)
 		}
 	}
 
-	return &body
+	return body
 }
