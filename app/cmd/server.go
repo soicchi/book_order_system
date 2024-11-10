@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/presentation/router"
+	"github.com/soicchi/book_order_system/internal/presentation/validator"
 
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cobra"
@@ -28,6 +29,9 @@ clients, or to test the API endpoints directly.`,
 
 		// Initialize Echo
 		e := echo.New()
+
+		// resister validator
+		e.Validator = validator.NewCustomValidator()
 
 		// set up routers
 		router.NewRouter(e, logger)

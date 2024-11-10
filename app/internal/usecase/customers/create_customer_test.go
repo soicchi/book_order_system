@@ -6,7 +6,7 @@ import (
 
 	"github.com/soicchi/book_order_system/internal/domain/interfaces"
 	"github.com/soicchi/book_order_system/internal/dto"
-	"github.com/soicchi/book_order_system/internal/logger"
+	"github.com/soicchi/book_order_system/internal/logging"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -28,7 +28,7 @@ func TestCreateCustomer(t *testing.T) {
 				Password: "password",
 			},
 			mockFunc: func(m *interfaces.MockCustomerRepository) {
-				m.On("Create", mock.Anything).Return(nil)
+				m.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
 		},
@@ -62,7 +62,7 @@ func TestCreateCustomer(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			logger := logger.NewMockLogger()
+			logger := logging.NewMockLogger()
 			repo := interfaces.NewMockCustomerRepository()
 			useCase := NewCustomerUseCase(repo, logger)
 			tt.mockFunc(repo)

@@ -6,17 +6,17 @@ import (
 	"github.com/soicchi/book_order_system/internal/domain/entity"
 	"github.com/soicchi/book_order_system/internal/domain/interfaces"
 	"github.com/soicchi/book_order_system/internal/dto"
-	"github.com/soicchi/book_order_system/internal/logger"
+	"github.com/soicchi/book_order_system/internal/logging"
 
 	"github.com/labstack/echo/v4"
 )
 
 type CustomerUseCase struct {
 	repository interfaces.CustomerRepository
-	logger     logger.Logger
+	logger     logging.Logger
 }
 
-func NewCustomerUseCase(repository interfaces.CustomerRepository, logger logger.Logger) *CustomerUseCase {
+func NewCustomerUseCase(repository interfaces.CustomerRepository, logger logging.Logger) *CustomerUseCase {
 	return &CustomerUseCase{
 		repository: repository,
 		logger:     logger,

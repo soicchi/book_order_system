@@ -4,6 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
       target: local
+    develop:
+      watch:
+        - action: rebuild
+          path: ./app/go.mod
     ports:
       - "8080:8080"
     volumes:
