@@ -4,9 +4,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/soicchi/book_order_system/config"
-	"github.com/soicchi/book_order_system/infrastructure/postgres/database"
-	loggerPkg "github.com/soicchi/book_order_system/logger" // To avoid conflict with logger variable name
+	"github.com/soicchi/book_order_system/internal/config"
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
+	loggerPkg "github.com/soicchi/book_order_system/internal/logger" // To avoid conflict with logger variable name
 
 	"github.com/spf13/cobra"
 )

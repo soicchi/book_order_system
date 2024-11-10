@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/soicchi/book_order_system/domain/values"
+	"github.com/soicchi/book_order_system/internal/domain/values"
 
 	"github.com/google/uuid"
 )

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/soicchi/book_order_system/config"
-	"github.com/soicchi/book_order_system/infrastructure/postgres/database/migrations"
+	"github.com/soicchi/book_order_system/internal/config"
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database/migrations"
 
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/labstack/echo/v4"

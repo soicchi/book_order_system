@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/soicchi/book_order_system/domain/entity"
-	"github.com/soicchi/book_order_system/infrastructure/postgres/database"
-	"github.com/soicchi/book_order_system/infrastructure/postgres/models"
+	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"

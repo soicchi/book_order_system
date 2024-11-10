@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/soicchi/book_order_system/domain/interfaces"
-	"github.com/soicchi/book_order_system/dto"
+	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/dto"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
