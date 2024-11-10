@@ -14,16 +14,16 @@ import (
 
 func TestCreateCustomer(t *testing.T) {
 	tests := []struct {
-		name string
-		dto dto.CreateCustomerInput
+		name     string
+		dto      dto.CreateCustomerInput
 		mockFunc func(*interfaces.CustomerRepositoryMock)
-		wantErr bool
+		wantErr  bool
 	}{
 		{
 			name: "create customer successfully",
 			dto: dto.CreateCustomerInput{
-				Name: "test",
-				Email: "test@test.co.jp",
+				Name:     "test",
+				Email:    "test@test.co.jp",
 				Password: "password",
 			},
 			mockFunc: func(m *interfaces.CustomerRepositoryMock) {
@@ -34,18 +34,18 @@ func TestCreateCustomer(t *testing.T) {
 		{
 			name: "failed to create customer entity with invalid password",
 			dto: dto.CreateCustomerInput{
-				Name: "test",
-				Email: "test@test.co.jp",
+				Name:     "test",
+				Email:    "test@test.co.jp",
 				Password: "pass",
 			},
 			mockFunc: func(m *interfaces.CustomerRepositoryMock) {},
-			wantErr: true,
+			wantErr:  true,
 		},
 		{
 			name: "failed to create customer",
 			dto: dto.CreateCustomerInput{
-				Name: "test",
-				Email: "test@test.co.jp",
+				Name:     "test",
+				Email:    "test@test.co.jp",
 				Password: "password",
 			},
 			mockFunc: func(m *interfaces.CustomerRepositoryMock) {
