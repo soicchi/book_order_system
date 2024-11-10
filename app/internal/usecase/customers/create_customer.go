@@ -3,10 +3,10 @@ package customers
 import (
 	"fmt"
 
-	"github.com/soicchi/book_order_system/domain/entity"
-	"github.com/soicchi/book_order_system/domain/interfaces"
-	"github.com/soicchi/book_order_system/dto"
-	"github.com/soicchi/book_order_system/logger"
+	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/dto"
+	"github.com/soicchi/book_order_system/internal/logger"
 
 	"github.com/labstack/echo/v4"
 )

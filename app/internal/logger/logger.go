@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/soicchi/book_order_system/config"
+	"github.com/soicchi/book_order_system/internal/config"
 )
 
 type Logger interface {

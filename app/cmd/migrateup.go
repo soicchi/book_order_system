@@ -3,7 +3,7 @@ package cmd
 import (
 	"log/slog"
 
-	"github.com/soicchi/book_order_system/infrastructure/postgres/database"
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 
 	"github.com/spf13/cobra"
 )
