@@ -17,7 +17,7 @@ func TestCreateCustomer(t *testing.T) {
 	tests := []struct {
 		name     string
 		dto      dto.CreateCustomerInput
-		mockFunc func(*interfaces.MockCustomerRepository)
+		mockFunc func(*testing.T, *interfaces.MockCustomerRepository)
 		wantErr  bool
 	}{
 		{
@@ -27,7 +27,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "password",
 			},
-			mockFunc: func(m *interfaces.MockCustomerRepository) {
+			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {
 				m.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
@@ -39,7 +39,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "pass",
 			},
-			mockFunc: func(m *interfaces.MockCustomerRepository) {},
+			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {},
 			wantErr:  true,
 		},
 		{
@@ -49,7 +49,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "password",
 			},
-			mockFunc: func(m *interfaces.MockCustomerRepository) {
+			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {
 				m.On("Create", mock.Anything).Return(errors.New("error"))
 			},
 			wantErr: true,
@@ -65,7 +65,7 @@ func TestCreateCustomer(t *testing.T) {
 			logger := logging.NewMockLogger()
 			repo := interfaces.NewMockCustomerRepository()
 			useCase := NewCustomerUseCase(repo, logger)
-			tt.mockFunc(repo)
+			tt.mockFunc(t, repo)
 
 			ctx := echo.New().NewContext(nil, nil)
 
