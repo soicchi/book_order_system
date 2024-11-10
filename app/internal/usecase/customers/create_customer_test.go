@@ -6,6 +6,7 @@ import (
 
 	"github.com/soicchi/book_order_system/internal/domain/interfaces"
 	"github.com/soicchi/book_order_system/internal/dto"
+	"github.com/soicchi/book_order_system/internal/logging"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,7 @@ func TestCreateCustomer(t *testing.T) {
 	tests := []struct {
 		name     string
 		dto      dto.CreateCustomerInput
-		mockFunc func(*interfaces.CustomerRepositoryMock)
+		mockFunc func(*interfaces.MockCustomerRepository)
 		wantErr  bool
 	}{
 		{
@@ -26,8 +27,8 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "password",
 			},
-			mockFunc: func(m *interfaces.CustomerRepositoryMock) {
-				m.On("Create", mock.Anything).Return(nil)
+			mockFunc: func(m *interfaces.MockCustomerRepository) {
+				m.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
 		},
@@ -38,7 +39,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "pass",
 			},
-			mockFunc: func(m *interfaces.CustomerRepositoryMock) {},
+			mockFunc: func(m *interfaces.MockCustomerRepository) {},
 			wantErr:  true,
 		},
 		{
@@ -48,7 +49,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "password",
 			},
-			mockFunc: func(m *interfaces.CustomerRepositoryMock) {
+			mockFunc: func(m *interfaces.MockCustomerRepository) {
 				m.On("Create", mock.Anything).Return(errors.New("error"))
 			},
 			wantErr: true,
@@ -61,8 +62,9 @@ func TestCreateCustomer(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := &interfaces.CustomerRepositoryMock{}
-			useCase := NewCustomerUseCase(repo)
+			logger := logging.NewMockLogger()
+			repo := interfaces.NewMockCustomerRepository()
+			useCase := NewCustomerUseCase(repo, logger)
 			tt.mockFunc(repo)
 
 			ctx := echo.New().NewContext(nil, nil)

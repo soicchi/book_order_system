@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
+	"github.com/soicchi/book_order_system/internal/presentation/router"
+	"github.com/soicchi/book_order_system/internal/presentation/validator"
 
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cobra"
@@ -27,9 +29,17 @@ clients, or to test the API endpoints directly.`,
 
 		// Initialize Echo
 		e := echo.New()
-		e.GET("/", func(c echo.Context) error {
-			return c.String(200, "Hello, World!")
-		})
+
+		// resister validator
+		e.Validator = validator.NewCustomValidator()
+
+		// set up routers
+		router.NewRouter(e, logger)
+
+		// Output all routes in local
+		if cfg.Environment == "local" {
+			router.OutputRoutes(e)
+		}
 
 		e.Logger.Fatal(e.Start(":8080"))
 	},

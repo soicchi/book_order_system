@@ -6,13 +6,13 @@ import (
 
 	"github.com/soicchi/book_order_system/internal/config"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
-	loggerPkg "github.com/soicchi/book_order_system/internal/logger" // To avoid conflict with logger variable name
+	"github.com/soicchi/book_order_system/internal/logging"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	logger loggerPkg.Logger
+	logger logging.Logger
 	cfg    *config.Config
 	once   sync.Once
 )
@@ -27,7 +27,7 @@ func Execute() {
 		cfg = config.LoadConfig()
 
 		// set up logger
-		logger = loggerPkg.InitLogger(cfg)
+		logger = logging.InitLogger(cfg)
 
 		// Connect to the database
 		dbConfig := database.NewDBConfig(cfg)

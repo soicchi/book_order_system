@@ -6,7 +6,6 @@ WORKDIR /opt
 
 RUN --mount=type=bind,source=app/go.mod,target=/opt/go.mod \
     --mount=type=bind,source=app/go.sum,target=/opt/go.sum \
-    --mount=type=bind,source=app,target=/opt \
     go mod download
 
 FROM golang:$GO_VERSION AS local
