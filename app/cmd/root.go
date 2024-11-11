@@ -26,12 +26,14 @@ func Execute() {
 		// set up config
 		cfg = config.LoadConfig()
 
-		// set up logger
+		// Initialize logger
 		logger = logging.InitLogger(cfg)
 
 		// Connect to the database
 		dbConfig := database.NewDBConfig(cfg)
-		dbConfig.Connect()
+		if err := dbConfig.Connect(); err != nil {
+			panic(err)
+		}
 	})
 
 	err := rootCmd.Execute()
