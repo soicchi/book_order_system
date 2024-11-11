@@ -126,7 +126,7 @@ Customer ||--o{ ShippingAddress : customer_id
 Customer ||--o{ CartItem : customer_id
 ShippingAddress ||--o{ Order : shipping_address_id
 Order ||--o{ OrderDetail : order_id
-Order ||--|{ OrderTransaction : order_id
+Order ||--o{ OrderTransaction : order_id
 TransactionStatus ||--o{ OrderTransaction : transaction_status_id
 OrderStatus ||--o{ Order : order_status_id
 Book ||--o{ CartItem : book_id
