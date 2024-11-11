@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/soicchi/book_order_system/internal/dto"
@@ -26,11 +27,13 @@ func (h *CustomerHandler) CreateCustomer(ctx echo.Context) error {
 	var req CreateCustomerRequest
 
 	if err := ctx.Bind(&req); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+		h.logger.Error("failed to bind request", slog.Any("error", err))
+		return ctx.JSON(http.StatusBadRequest, "failed to bind request")
 	}
 
 	if err := ctx.Validate(req); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+		h.logger.Error("validation error", slog.Any("error", err))
+		return ctx.JSON(http.StatusBadRequest, "validation error")
 	}
 
 	dto := dto.CreateCustomerInput{
@@ -40,7 +43,8 @@ func (h *CustomerHandler) CreateCustomer(ctx echo.Context) error {
 	}
 
 	if err := h.useCase.Execute(ctx, dto); err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error("failed to create customer", slog.Any("error", err))
+		return ctx.JSON(http.StatusInternalServerError, "failed to create customer")
 	}
 
 	return ctx.JSON(http.StatusCreated, "created customer successfully")
