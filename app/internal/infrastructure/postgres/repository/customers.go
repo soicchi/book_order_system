@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/soicchi/book_order_system/internal/domain/entity"
+	errorsPkg "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
@@ -28,10 +29,16 @@ func (r *CustomerRepository) Create(ctx echo.Context, customer *entity.Customer)
 		Password: customer.Password().Value(),
 	})
 	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
-		return fmt.Errorf("email %s is already registered", customer.Email())
+		return errorsPkg.NewCustomError(
+			fmt.Errorf("email already exists: %w", result.Error),
+			errorsPkg.AlreadyExist,
+		)
 	}
 	if result.Error != nil {
-		return fmt.Errorf("error creating customer: %w", result.Error)
+		return errorsPkg.NewCustomError(
+			fmt.Errorf("failed to create customer: %w", result.Error),
+			errorsPkg.InternalServerError,
+		)
 	}
 
 	return nil

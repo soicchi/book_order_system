@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/soicchi/book_order_system/internal/dto"
+	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/usecase/customers"
 
@@ -27,13 +28,13 @@ func (h *CustomerHandler) CreateCustomer(ctx echo.Context) error {
 	var req CreateCustomerRequest
 
 	if err := ctx.Bind(&req); err != nil {
-		h.logger.Error("failed to bind request", slog.Any("error", err))
-		return ctx.JSON(http.StatusBadRequest, "failed to bind request")
+		h.logger.Error("failed to bind request", slog.String("error", err.Error()))
+		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
 	if err := ctx.Validate(req); err != nil {
-		h.logger.Error("validation error", slog.Any("error", err))
-		return ctx.JSON(http.StatusBadRequest, "validation error")
+		h.logger.Error("validation error", slog.String("error", err.Error()))
+		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
 	dto := dto.CreateCustomerInput{
@@ -43,8 +44,8 @@ func (h *CustomerHandler) CreateCustomer(ctx echo.Context) error {
 	}
 
 	if err := h.useCase.Execute(ctx, dto); err != nil {
-		h.logger.Error("failed to create customer", slog.Any("error", err))
-		return ctx.JSON(http.StatusInternalServerError, "failed to create customer")
+		h.logger.Error("failed to create customer", slog.String("error", err.Error()))
+		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
 	return ctx.JSON(http.StatusCreated, "created customer successfully")

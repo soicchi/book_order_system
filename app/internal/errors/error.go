@@ -1,10 +1,8 @@
 package errors
 
 import (
-	"errors"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -53,73 +51,74 @@ func (e ErrorCode) Status() int {
 	}
 }
 
-type ResourceType int
-
-// define resource type here if other resources are added
-const (
-	Customer ResourceType = iota
-)
-
-func (r ResourceType) String() string {
-	switch r {
-	case Customer:
-		return "customer"
+func (e ErrorCode) Message() string {
+	switch e {
+	case InvalidRequest:
+		return "Invalid request parameters"
+	case AlreadyExist:
+		return "Resource already exists"
 	default:
-		return "unknown"
+		return "An internal server error occurred"
 	}
 }
+
+type Details map[string]interface{}
 
 type CustomError struct {
-	Err      error
-	Code     ErrorCode
-	Resource ResourceType
+	Err     error
+	Message string
+	Code    ErrorCode
+	Details Details
 }
 
-func NewCustomError(err error, code ErrorCode, resource ResourceType) *CustomError {
-	return &CustomError{
-		Err:      err,
-		Code:     code,
-		Resource: resource,
+type option func(*CustomError)
+
+func WithDetails(details Details) option {
+	return func(e *CustomError) {
+		e.Details = details
 	}
+}
+
+func NewCustomError(err error, code ErrorCode, options ...option) *CustomError {
+	customErr := &CustomError{
+		Err:     err,
+		Code:    code,
+		Message: code.Message(),
+		Details: nil,
+	}
+
+	for _, opt := range options {
+		opt(customErr)
+	}
+
+	return customErr
 }
 
 func (c *CustomError) Error() string {
 	return c.Err.Error()
 }
 
+// To return the wrapped error
+func (c *CustomError) Unwrap() error {
+	return c.Err
+}
+
 func (c *CustomError) ReturnJSON(ctx echo.Context) error {
-	var identifiers Identifiers
-	var message string
+	response := newErrorResponse(c.Code.String(), c.Message, c.Details)
 
-	switch c.Code {
-	case InvalidRequest:
-		// handle invalid request error
-		identifiers = c.handleInvalidRequest()
-		message = "Invalid request parameters"
-	// TODO: handler notfound error
-	default:
-		// handle other error
-		identifiers = nil
-		message = "An internal server error occurred"
-	}
-
-	if identifiers != nil {
-		response := newErrorResponse(c.Code.String(), message, c.Resource.String(), WithIdentifiers(identifiers))
-		return ctx.JSON(c.Code.Status(), response)
-	}
-
-	response := newErrorResponse(c.Code.String(), message, c.Resource.String())
 	return ctx.JSON(c.Code.Status(), response)
 }
 
-func (c *CustomError) handleInvalidRequest() Identifiers {
-	var identifiers Identifiers
+type ErrorResponse struct {
+	Code    string  `json:"code"`
+	Message string  `json:"message"`
+	Details Details `json:"details,omitempty"`
+}
 
-	if errors.As(c.Err, &validator.ValidationErrors{}) {
-		for _, fieldError := range c.Err.(validator.ValidationErrors) {
-			identifiers[fieldError.Field()] = fieldError.Tag()
-		}
+func newErrorResponse(code, message string, details Details) ErrorResponse {
+	return ErrorResponse{
+		Code:    code,
+		Message: message,
+		Details: details,
 	}
-
-	return identifiers
 }

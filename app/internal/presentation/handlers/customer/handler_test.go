@@ -47,8 +47,14 @@ func TestCreateCustomer(t *testing.T) {
 			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error"`,
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"name": "required"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 		{
 			name: "request to create customer with empty email",
@@ -60,8 +66,14 @@ func TestCreateCustomer(t *testing.T) {
 			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error"`,
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"email": "required"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 		{
 			name: "request to create customer with empty password",
@@ -73,8 +85,14 @@ func TestCreateCustomer(t *testing.T) {
 			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error"`,
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"password": "required"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 		{
 			name: "request to create customer with invalid email",
@@ -86,8 +104,14 @@ func TestCreateCustomer(t *testing.T) {
 			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error"`,
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"email": "email"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 	}
 
