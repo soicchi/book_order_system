@@ -4,8 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
-	"path/filepath"
-	"strings"
+	"runtime"
 
 	"github.com/soicchi/book_order_system/internal/config"
 )
@@ -52,20 +51,30 @@ func replaceLoggerAttr() replaceAttr {
 		}
 
 		if a.Key == slog.SourceKey {
-			source := a.Value.Any().(*slog.Source)
-
-			// Remove the directory from the source's filename.
-			source.File = filepath.Base(source.File)
-
-			// Display only the function name
-			splitFunctionName := strings.Split(source.Function, "/")
-			source.Function = splitFunctionName[len(splitFunctionName)-1]
+			return slog.Attr{}
 		}
 
 		return a
 	}
 
 	return replace
+}
+
+func (l *logger) log(level slog.Level, msg string, attrs ...any) {
+	_, file, line, _ := runtime.Caller(2)
+	group := slog.Group(
+		"source",
+		slog.Attr{
+			Key:   "filename",
+			Value: slog.AnyValue(file),
+		},
+		slog.Attr{
+			Key:   "line",
+			Value: slog.AnyValue(line),
+		},
+	)
+	attrs = append(attrs, group)
+	l.logger.Log(context.Background(), level, msg, attrs...)
 }
 
 func setLogLevel(env string) slog.Level {
@@ -77,19 +86,19 @@ func setLogLevel(env string) slog.Level {
 }
 
 func (l *logger) Debug(msg string, attrs ...any) {
-	l.logger.Debug(msg, attrs...)
+	l.log(slog.LevelDebug, msg, attrs...)
 }
 
 func (l *logger) Info(msg string, attrs ...any) {
-	l.logger.Info(msg, attrs...)
+	l.log(slog.LevelInfo, msg, attrs...)
 }
 
 func (l *logger) Warn(msg string, attrs ...any) {
-	l.logger.Warn(msg, attrs...)
+	l.log(slog.LevelWarn, msg, attrs...)
 }
 
 func (l *logger) Error(msg string, attrs ...any) {
-	l.logger.Error(msg, attrs...)
+	l.log(slog.LevelError, msg, attrs...)
 }
 
 func (l *logger) LogAttrs(ctx context.Context, level slog.Level, msg string, attrs ...slog.Attr) {
