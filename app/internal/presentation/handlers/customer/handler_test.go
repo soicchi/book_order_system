@@ -20,7 +20,7 @@ func TestCreateCustomer(t *testing.T) {
 	tests := []struct {
 		name             string
 		requestBody      string
-		mockFunc         func(m *interfaces.MockCustomerRepository)
+		mockFunc         func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger)
 		expectedStatus   int
 		expectedResponse string
 	}{
@@ -31,7 +31,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": "password"
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository) {
+			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
 				m.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus:   http.StatusCreated,
@@ -44,9 +44,17 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": "password"
 			}`,
-			mockFunc:         func(m *interfaces.MockCustomerRepository) {},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error: Key: 'CreateCustomerRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag"`,
+			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"name": "required"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 		{
 			name: "request to create customer with empty email",
@@ -55,9 +63,17 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "",
 				"password": "password"
 			}`,
-			mockFunc:         func(m *interfaces.MockCustomerRepository) {},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error: Key: 'CreateCustomerRequest.Email' Error:Field validation for 'Email' failed on the 'required' tag"`,
+			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"email": "required"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 		{
 			name: "request to create customer with empty password",
@@ -66,9 +82,17 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": ""
 			}`,
-			mockFunc:         func(m *interfaces.MockCustomerRepository) {},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error: Key: 'CreateCustomerRequest.Password' Error:Field validation for 'Password' failed on the 'required' tag"`,
+			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"password": "required"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 		{
 			name: "request to create customer with invalid email",
@@ -77,9 +101,17 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "invalid",
 				"password": "password"
 			}`,
-			mockFunc:         func(m *interfaces.MockCustomerRepository) {},
-			expectedStatus:   http.StatusBadRequest,
-			expectedResponse: `"validation error: Key: 'CreateCustomerRequest.Email' Error:Field validation for 'Email' failed on the 'email' tag"`,
+			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedResponse: `{
+				"code": "invalid_request",
+				"details": {
+					"email": "email"
+				},
+				"message": "Invalid request parameters"
+			}`,
 		},
 	}
 
@@ -89,9 +121,10 @@ func TestCreateCustomer(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			// make repository method mock
+			// make mock
+			logger := logging.NewMockLogger()
 			mockRepo := interfaces.NewMockCustomerRepository()
-			tt.mockFunc(mockRepo)
+			tt.mockFunc(mockRepo, logger)
 
 			useCase := customers.NewCustomerUseCase(mockRepo, logging.NewMockLogger())
 
@@ -101,7 +134,7 @@ func TestCreateCustomer(t *testing.T) {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			ctx := e.NewContext(req, rec)
-			handler := NewCustomerHandler(useCase, logging.NewMockLogger())
+			handler := NewCustomerHandler(useCase, logger)
 
 			if assert.NoError(t, handler.CreateCustomer(ctx)) {
 				assert.Equal(t, tt.expectedStatus, rec.Code)

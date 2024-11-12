@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/soicchi/book_order_system/internal/domain/values"
+	"github.com/soicchi/book_order_system/internal/errors"
 
 	"github.com/google/uuid"
 )
@@ -21,12 +22,18 @@ type Customer struct {
 func NewCustomer(name, email, plainPassword string) (*Customer, error) {
 	customerUUID, err := uuid.NewV7()
 	if err != nil {
-		return nil, fmt.Errorf("error generating UUID: %w", err)
+		return nil, errors.NewCustomError(
+			fmt.Errorf("failed to generate customer UUID: %w", err),
+			errors.InternalServerError,
+		)
 	}
 
 	hashedPassword, err := values.NewPassword(plainPassword)
 	if err != nil {
-		return nil, fmt.Errorf("error hashing password: %w", err)
+		return nil, errors.NewCustomError(
+			fmt.Errorf("failed to hash password: %w", err),
+			errors.InternalServerError,
+		)
 	}
 
 	return newCustomer(customerUUID, name, email, hashedPassword, nil, nil), nil
