@@ -61,7 +61,10 @@ func replaceLoggerAttr() replaceAttr {
 }
 
 func (l *logger) log(level slog.Level, msg string, attrs ...any) {
+	// get the caller file and line which is 2 level above the current function
 	_, file, line, _ := runtime.Caller(2)
+
+	// include the source file and line in the log
 	group := slog.Group(
 		"source",
 		slog.Attr{
