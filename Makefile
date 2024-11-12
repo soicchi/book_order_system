@@ -33,3 +33,6 @@ cobra_add:
 
 migrate_up:
 	@make _docker_exec CMD='go run main.go migrateup'
+
+make_migration:
+	@make _docker_exec CMD='go run main.go makemigration -n ${NAME}'
