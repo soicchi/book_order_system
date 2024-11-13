@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/soicchi/book_order_system/internal/domain/entity"
-	errorsPkg "github.com/soicchi/book_order_system/internal/errors"
+	er "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
@@ -26,20 +26,42 @@ func (r *CustomerRepository) Create(ctx echo.Context, customer *entity.Customer)
 		ID:       customer.ID(),
 		Name:     customer.Name(),
 		Email:    customer.Email(),
-		Password: customer.Password().Value(),
+		Password: customer.Password(),
 	})
 	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
-		return errorsPkg.NewCustomError(
+		return er.NewCustomError(
 			fmt.Errorf("email already exists: %w", result.Error),
-			errorsPkg.AlreadyExist,
+			er.AlreadyExist,
 		)
 	}
 	if result.Error != nil {
-		return errorsPkg.NewCustomError(
+		return er.NewCustomError(
 			fmt.Errorf("failed to create customer: %w", result.Error),
-			errorsPkg.InternalServerError,
+			er.InternalServerError,
 		)
 	}
 
 	return nil
+}
+
+func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Customer, error) {
+	db := database.GetDB(ctx)
+
+	var customer models.Customer
+	result := db.Where("id = ?", id).First(&customer)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, er.NewCustomError(
+			fmt.Errorf("customer not found: %w", result.Error),
+			er.NotFound,
+		)
+	}
+
+	return entity.ReconstructCustomer(
+		customer.ID,
+		customer.Name,
+		customer.Email,
+		customer.Password,
+		&customer.CreatedAt,
+		&customer.UpdatedAt,
+	), nil
 }

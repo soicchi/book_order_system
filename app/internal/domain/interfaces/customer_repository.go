@@ -8,4 +8,5 @@ import (
 
 type CustomerRepository interface {
 	Create(ctx echo.Context, customer *entity.Customer) error
+	FetchByID(ctx echo.Context, id string) (*entity.Customer, error)
 }

@@ -1,10 +1,11 @@
 package entity
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/values"
 	"github.com/soicchi/book_order_system/internal/errors"
 
 	"github.com/google/uuid"
@@ -14,7 +15,7 @@ type Customer struct {
 	id        uuid.UUID
 	name      string
 	email     string
-	password  *values.Password
+	password  string
 	createdAt *time.Time
 	updatedAt *time.Time
 }
@@ -28,18 +29,31 @@ func NewCustomer(name, email, plainPassword string) (*Customer, error) {
 		)
 	}
 
-	hashedPassword, err := values.NewPassword(plainPassword)
-	if err != nil {
+	if len(plainPassword) < 8 {
 		return nil, errors.NewCustomError(
-			fmt.Errorf("failed to hash password: %w", err),
-			errors.InternalServerError,
+			fmt.Errorf("password must be at least 8 characters"),
+			errors.InvalidRequest,
 		)
 	}
+
+	// convert plain password to sh256 hash
+	sha256Hash := sha256.Sum256([]byte(plainPassword))
+	hashedPassword := hex.EncodeToString(sha256Hash[:])
 
 	return newCustomer(customerUUID, name, email, hashedPassword, nil, nil), nil
 }
 
-func newCustomer(id uuid.UUID, name, email string, password *values.Password, createdAt, updatedAt *time.Time) *Customer {
+func ReconstructCustomer(
+	id uuid.UUID,
+	name, email string,
+	password string,
+	createdAt *time.Time,
+	updatedAt *time.Time,
+) *Customer {
+	return newCustomer(id, name, email, password, createdAt, updatedAt)
+}
+
+func newCustomer(id uuid.UUID, name, email, password string, createdAt, updatedAt *time.Time) *Customer {
 	return &Customer{
 		id:        id,
 		name:      name,
@@ -62,7 +76,7 @@ func (c *Customer) Email() string {
 	return c.email
 }
 
-func (c *Customer) Password() *values.Password {
+func (c *Customer) Password() string {
 	return c.password
 }
 

@@ -4,10 +4,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/soicchi/book_order_system/internal/dto"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/usecase/customers"
+	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
 	"github.com/labstack/echo/v4"
 )

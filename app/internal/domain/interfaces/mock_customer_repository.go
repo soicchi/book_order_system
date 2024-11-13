@@ -19,3 +19,8 @@ func (r *MockCustomerRepository) Create(ctx echo.Context, customer *entity.Custo
 	args := r.Called(customer)
 	return args.Error(0)
 }
+
+func (r *MockCustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Customer, error) {
+	args := r.Called(id)
+	return args.Get(0).(*entity.Customer), args.Error(1)
+}
