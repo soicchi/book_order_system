@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/soicchi/book_order_system/internal/domain/interfaces"
-	"github.com/soicchi/book_order_system/internal/usecase/dto"
 	"github.com/soicchi/book_order_system/internal/logging"
+	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"

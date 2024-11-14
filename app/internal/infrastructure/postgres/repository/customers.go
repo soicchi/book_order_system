@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/domain/values"
 	er "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
@@ -26,7 +27,7 @@ func (r *CustomerRepository) Create(ctx echo.Context, customer *entity.Customer)
 		ID:       customer.ID(),
 		Name:     customer.Name(),
 		Email:    customer.Email(),
-		Password: customer.Password(),
+		Password: customer.Password().String(),
 	})
 	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
 		return er.NewCustomError(
@@ -60,7 +61,7 @@ func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Cus
 		customer.ID,
 		customer.Name,
 		customer.Email,
-		customer.Password,
+		values.Password(customer.Password),
 		&customer.CreatedAt,
 		&customer.UpdatedAt,
 	), nil
