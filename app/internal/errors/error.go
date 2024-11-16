@@ -81,6 +81,12 @@ func WithDetails(details Details) option {
 	}
 }
 
+func WithNotFoundDetails(key string) option {
+	return func(e *CustomError) {
+		e.Details = Details{key: "not found"}
+	}
+}
+
 func NewCustomError(err error, code ErrorCode, options ...option) *CustomError {
 	customErr := &CustomError{
 		Err:     err,

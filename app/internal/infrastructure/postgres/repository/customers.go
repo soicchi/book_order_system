@@ -54,6 +54,7 @@ func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Cus
 		return nil, er.NewCustomError(
 			fmt.Errorf("customer not found: %w", result.Error),
 			er.NotFound,
+			er.WithNotFoundDetails("customer_id"),
 		)
 	}
 

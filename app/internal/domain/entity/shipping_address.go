@@ -19,7 +19,7 @@ type ShippingAddress struct {
 	customerID uuid.UUID
 }
 
-func NewShippingAddress(prefecture, city, state string, customerID uuid.UUID) (*ShippingAddress, error) {
+func NewShippingAddress(prefecture, city, state, customerID string) (*ShippingAddress, error) {
 	shippingAddressUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -28,7 +28,15 @@ func NewShippingAddress(prefecture, city, state string, customerID uuid.UUID) (*
 		)
 	}
 
-	return newShippingAddress(shippingAddressUUID, prefecture, city, state, nil, nil, customerID), nil
+	customerUUID, err := uuid.Parse(customerID)
+	if err != nil {
+		return nil, errors.NewCustomError(
+			fmt.Errorf("failed to parse customer UUID: %w", err),
+			errors.InternalServerError,
+		)
+	}
+
+	return newShippingAddress(shippingAddressUUID, prefecture, city, state, nil, nil, customerUUID), nil
 }
 
 func newShippingAddress(
