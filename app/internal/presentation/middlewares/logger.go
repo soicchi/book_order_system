@@ -3,7 +3,6 @@ package middlewares
 import (
 	"encoding/json"
 	"log/slog"
-	"slices"
 
 	"github.com/soicchi/book_order_system/internal/logging"
 
@@ -12,6 +11,24 @@ import (
 )
 
 var sensitiveFields = []string{"password", "email"}
+
+type SensitiveField int
+
+const (
+	Password SensitiveField = iota
+	Email
+)
+
+func (sf SensitiveField) String() string {
+	switch sf {
+	case Password:
+		return "password"
+	case Email:
+		return "email"
+	default:
+		return ""
+	}
+}
 
 func CustomBodyDump(logger logging.Logger) middleware.BodyDumpHandler {
 	return func(ctx echo.Context, reqBody, resBody []byte) {
@@ -32,7 +49,12 @@ func CustomBodyDump(logger logging.Logger) middleware.BodyDumpHandler {
 }
 
 func shouldMaskField(field string) bool {
-	return slices.Contains(sensitiveFields, field)
+	switch field {
+	case Password.String(), Email.String():
+		return true
+	}
+
+	return false
 }
 
 func maskFields(body map[string]interface{}) map[string]interface{} {

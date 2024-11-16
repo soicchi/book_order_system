@@ -69,7 +69,7 @@ func TestCreateCustomer(t *testing.T) {
 
 			ctx := echo.New().NewContext(nil, nil)
 
-			err := useCase.Execute(ctx, tt.dto)
+			err := useCase.CreateCustomer(ctx, tt.dto)
 			if tt.wantErr {
 				assert.NotNil(t, err)
 			} else {
