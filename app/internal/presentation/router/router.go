@@ -15,6 +15,7 @@ import (
 
 // /api
 func NewRouter(e *echo.Echo, logger logging.Logger) {
+	e.Pre(middleware.RemoveTrailingSlash())
 	base := e.Group("/api")
 
 	// set up common middlewares
