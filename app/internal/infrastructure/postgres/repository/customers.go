@@ -57,6 +57,13 @@ func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Cus
 		)
 	}
 
+	if result.Error != nil {
+		return nil, er.NewCustomError(
+			fmt.Errorf("failed to fetch customer: %w", result.Error),
+			er.InternalServerError,
+		)
+	}
+
 	return entity.ReconstructCustomer(
 		customer.ID,
 		customer.Name,

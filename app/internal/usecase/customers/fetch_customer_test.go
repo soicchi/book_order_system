@@ -66,8 +66,8 @@ func TestFetchCustomer(t *testing.T) {
 			// Setup context
 			ctx := echo.New().NewContext(nil, nil)
 
-			usecase := NewFetchCustomerUseCase(repo, logging.NewMockLogger())
-			dto, err := usecase.Execute(ctx, tt.id)
+			usecase := NewCustomerUseCase(repo, logging.NewMockLogger())
+			dto, err := usecase.FetchCustomer(ctx, tt.id)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -76,8 +76,8 @@ func TestFetchCustomer(t *testing.T) {
 				assert.Equal(t, dto.ID, customerID.String())
 				assert.Equal(t, dto.Name, customerEntity.Name())
 				assert.Equal(t, dto.Email, customerEntity.Email())
-				assert.Equal(t, dto.CreatedAt, now)
-				assert.Equal(t, dto.UpdatedAt, now)
+				assert.Equal(t, dto.CreatedAt, now.Format("2006-01-02 15:04:05"))
+				assert.Equal(t, dto.UpdatedAt, now.Format("2006-01-02 15:04:05"))
 			}
 		})
 	}

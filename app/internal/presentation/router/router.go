@@ -5,9 +5,9 @@ import (
 
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/repository"
 	"github.com/soicchi/book_order_system/internal/logging"
-	"github.com/soicchi/book_order_system/internal/presentation/handlers/customer"
+	customerHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/customers"
 	"github.com/soicchi/book_order_system/internal/presentation/middlewares"
-	"github.com/soicchi/book_order_system/internal/usecase/customers"
+	customerUseCase "github.com/soicchi/book_order_system/internal/usecase/customers"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -36,10 +36,11 @@ func customerRouter(version *echo.Group, logger logging.Logger) {
 
 	// Initialize dependencies
 	repo := repository.NewCustomerRepository()
-	uc := customers.NewCustomerUseCase(repo, logger)
-	handler := customer.NewCustomerHandler(uc, logger)
+	uc := customerUseCase.NewCustomerUseCase(repo, logger)
+	handler := customerHandler.NewCustomerHandler(uc, logger)
 
 	customersPath.POST("/", handler.CreateCustomer)
+	customersPath.GET("/:id", handler.FetchCustomer)
 }
 
 // Output the all routes to stdout in local when the server starts

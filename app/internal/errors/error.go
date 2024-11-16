@@ -55,6 +55,8 @@ func (e ErrorCode) Message() string {
 	switch e {
 	case InvalidRequest:
 		return "Invalid request parameters"
+	case NotFound:
+		return "Resource not found"
 	case AlreadyExist:
 		return "Resource already exists"
 	default:
