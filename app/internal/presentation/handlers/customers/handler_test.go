@@ -235,7 +235,7 @@ func TestFetchCustomer(t *testing.T) {
 			name: "failed to fetch customer",
 			id:   customerID.String(),
 			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
-				m.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, errors.NewCustomError(
+				m.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.NewCustomError(
 					fmt.Errorf("failed to fetch customer"),
 					errors.InternalServerError,
 				))
