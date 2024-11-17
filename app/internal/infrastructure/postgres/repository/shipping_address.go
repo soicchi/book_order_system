@@ -60,6 +60,8 @@ func (r *ShippingAddressRepository) FetchByID(ctx echo.Context, id string) (*ent
 		shippingAddress.Prefecture,
 		shippingAddress.City,
 		shippingAddress.State,
+		shippingAddress.CreatedAt,
+		shippingAddress.UpdatedAt,
 		shippingAddress.CustomerID,
 	), nil
 }
