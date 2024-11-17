@@ -51,11 +51,7 @@ func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Cus
 	var customer models.Customer
 	result := db.Where("id = ?", id).First(&customer)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, er.NewCustomError(
-			fmt.Errorf("customer not found: %w", result.Error),
-			er.NotFound,
-			er.WithNotFoundDetails("customer_id"),
-		)
+		return nil, nil
 	}
 
 	if result.Error != nil {
