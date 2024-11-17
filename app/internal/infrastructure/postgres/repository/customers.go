@@ -66,7 +66,7 @@ func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*entity.Cus
 		customer.Name,
 		customer.Email,
 		values.Password(customer.Password),
-		&customer.CreatedAt,
-		&customer.UpdatedAt,
+		customer.CreatedAt,
+		customer.UpdatedAt,
 	), nil
 }

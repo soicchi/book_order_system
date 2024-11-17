@@ -25,8 +25,8 @@ func TestFetchCustomer(t *testing.T) {
 		"test",
 		"test@test.com",
 		hashedPassword,
-		&now,
-		&now,
+		now,
+		now,
 	)
 
 	tests := []struct {

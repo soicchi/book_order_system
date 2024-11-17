@@ -60,7 +60,7 @@ func TestCreateCustomer(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"name": "required"
+					"Name": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,
@@ -79,7 +79,7 @@ func TestCreateCustomer(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"email": "required"
+					"Email": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,
@@ -98,7 +98,7 @@ func TestCreateCustomer(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"password": "required"
+					"Password": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,
@@ -117,7 +117,7 @@ func TestCreateCustomer(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"email": "email"
+					"Email": "email"
 				},
 				"message": "Invalid request parameters"
 			}`,
@@ -186,8 +186,8 @@ func TestFetchCustomer(t *testing.T) {
 		"test",
 		"test@test.co.jp",
 		hashedPassword,
-		&now,
-		&now,
+		now,
+		now,
 	)
 
 	tests := []struct {
@@ -226,7 +226,7 @@ func TestFetchCustomer(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"id": "required"
+					"ID": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,

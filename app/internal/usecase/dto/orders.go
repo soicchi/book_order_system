@@ -1,6 +1,6 @@
 package dto
 
-type OrderInput struct {
+type CreateOrderInput struct {
 	CustomerID        string
 	ShippingAddressID string
 }

@@ -21,12 +21,12 @@ func TestCreateOrder(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	shippingAddressID, _ := uuid.NewV7()
 	now := time.Now()
-	customerEntity := entity.ReconstructCustomer(customerID, "test", "test@test.co.jp", "hashed_password", &now, &now)
+	customerEntity := entity.ReconstructCustomer(customerID, "test", "test@test.co.jp", "hashed_password", now, now)
 	shippingAddressEntity := entity.ReconstructShippingAddress(shippingAddressID, "tokyo", "shinjuku", "1-1", now, now, customerID)
 
 	tests := []struct {
 		name     string
-		dto      *dto.OrderInput
+		dto      *dto.CreateOrderInput
 		mockFunc func(
 			*interfaces.MockOrderRepository,
 			*interfaces.MockCustomerRepository,
@@ -36,7 +36,7 @@ func TestCreateOrder(t *testing.T) {
 	}{
 		{
 			name: "create order successfully",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        customerID.String(),
 				ShippingAddressID: shippingAddressID.String(),
 			},
@@ -53,7 +53,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name: "failed to generate customer UUID",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        "invalid_uuid",
 				ShippingAddressID: shippingAddressID.String(),
 			},
@@ -67,7 +67,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name: "failed to fetch customer by ID",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        customerID.String(),
 				ShippingAddressID: shippingAddressID.String(),
 			},
@@ -85,7 +85,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name: "customer not found",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        customerID.String(),
 				ShippingAddressID: shippingAddressID.String(),
 			},
@@ -100,7 +100,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name: "failed to fetch shipping address by ID",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        customerID.String(),
 				ShippingAddressID: shippingAddressID.String(),
 			},
@@ -119,7 +119,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name: "shipping address not found",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        customerID.String(),
 				ShippingAddressID: shippingAddressID.String(),
 			},
@@ -135,7 +135,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name: "failed to create order",
-			dto: &dto.OrderInput{
+			dto: &dto.CreateOrderInput{
 				CustomerID:        customerID.String(),
 				ShippingAddressID: shippingAddressID.String(),
 			},

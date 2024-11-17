@@ -76,7 +76,7 @@ func TestCreateShippingAddress(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"prefecture": "required"
+					"Prefecture": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,
@@ -100,7 +100,7 @@ func TestCreateShippingAddress(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"city": "required"
+					"City": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,
@@ -124,7 +124,7 @@ func TestCreateShippingAddress(t *testing.T) {
 			expectedResponse: `{
 				"code": "invalid_request",
 				"details": {
-					"state": "required"
+					"State": "required"
 				},
 				"message": "Invalid request parameters"
 			}`,

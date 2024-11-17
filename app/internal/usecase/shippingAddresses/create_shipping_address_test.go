@@ -27,8 +27,8 @@ func TestCreateShippingAddress(t *testing.T) {
 		"test",
 		"test@test.co.jp",
 		hashedPassword,
-		&now,
-		&now,
+		now,
+		now,
 	)
 
 	tests := []struct {

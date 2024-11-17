@@ -41,10 +41,10 @@ func ReconstructCustomer(
 	name string,
 	email string,
 	password values.Password,
-	createdAt *time.Time,
-	updatedAt *time.Time,
+	createdAt time.Time,
+	updatedAt time.Time,
 ) *Customer {
-	return newCustomer(id, name, email, password, createdAt, updatedAt)
+	return newCustomer(id, name, email, password, &createdAt, &updatedAt)
 }
 
 func newCustomer(

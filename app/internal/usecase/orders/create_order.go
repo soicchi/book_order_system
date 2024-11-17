@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (u *OrderUseCase) CreateOrder(ctx echo.Context, dto *dto.OrderInput) error {
+func (u *OrderUseCase) CreateOrder(ctx echo.Context, dto *dto.CreateOrderInput) error {
 	order, err := entity.NewOrder(
 		dto.CustomerID,
 		dto.ShippingAddressID,
