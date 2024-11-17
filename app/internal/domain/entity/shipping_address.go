@@ -39,6 +39,18 @@ func NewShippingAddress(prefecture, city, state, customerID string) (*ShippingAd
 	return newShippingAddress(shippingAddressUUID, prefecture, city, state, nil, nil, customerUUID), nil
 }
 
+func ReconstructShippingAddress(
+	id uuid.UUID,
+	prefecture string,
+	city string,
+	state string,
+	createdAt time.Time,
+	updatedAt time.Time,
+	customerID uuid.UUID,
+) *ShippingAddress {
+	return newShippingAddress(id, prefecture, city, state, &createdAt, &updatedAt, customerID)
+}
+
 func newShippingAddress(
 	id uuid.UUID,
 	prefecture string,

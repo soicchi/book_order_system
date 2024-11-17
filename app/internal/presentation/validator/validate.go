@@ -3,7 +3,6 @@ package validator
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	er "github.com/soicchi/book_order_system/internal/errors"
 
@@ -38,8 +37,7 @@ func (cv *CustomValidator) generateDetail(err error) er.Details {
 
 	if errors.As(err, &validationErrors) {
 		for _, fieldError := range validationErrors {
-			lowerField := strings.ToLower(fieldError.Field())
-			details[lowerField] = fieldError.Tag()
+			details[fieldError.Field()] = fieldError.Tag()
 		}
 	}
 

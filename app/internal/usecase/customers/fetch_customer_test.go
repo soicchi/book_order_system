@@ -25,8 +25,8 @@ func TestFetchCustomer(t *testing.T) {
 		"test",
 		"test@test.com",
 		hashedPassword,
-		&now,
-		&now,
+		now,
+		now,
 	)
 
 	tests := []struct {
@@ -44,10 +44,18 @@ func TestFetchCustomer(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "customer not found",
+			id:   customerID.String(),
+			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {
+				m.On("FetchByID", mock.Anything, mock.Anything).Return(nil, nil)
+			},
+			wantErr: true,
+		},
+		{
 			name: "failed to fetch customer",
 			id:   customerID.String(),
 			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {
-				m.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, errors.New("error"))
+				m.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.New("error"))
 			},
 			wantErr: true,
 		},

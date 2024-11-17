@@ -1,7 +1,10 @@
 package shippingAddresses
 
 import (
+	"fmt"
+
 	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
 	"github.com/labstack/echo/v4"
@@ -19,13 +22,17 @@ func (u *ShippingAddressUseCase) CreateShippingAddress(ctx echo.Context, shippin
 	}
 
 	// Check if customer exists
-	if _, err := u.customerRepo.FetchByID(ctx, shippingAddress.CustomerID); err != nil {
+	customer, err := u.customerRepo.FetchByID(ctx, shippingAddress.CustomerID)
+	if err != nil {
 		return err
 	}
-
-	if err := u.shippingAddressRepo.Create(ctx, shippingAddressEntity); err != nil {
-		return err
+	if customer == nil {
+		return errors.NewCustomError(
+			fmt.Errorf("customer not found"),
+			errors.NotFound,
+			errors.WithNotFoundDetails("customer_id"),
+		)
 	}
 
-	return nil
+	return u.shippingAddressRepo.Create(ctx, shippingAddressEntity)
 }
