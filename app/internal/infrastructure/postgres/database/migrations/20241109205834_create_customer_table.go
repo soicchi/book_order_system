@@ -9,7 +9,7 @@ import (
 )
 
 var CreateCustomerTable = &gormigrate.Migration{
-	ID: "202411092058",
+	ID: "20241109205834",
 	Migrate: func(tx *gorm.DB) error {
 		type customer struct {
 			ID        uuid.UUID `gorm:"type:uuid;primaryKey"`

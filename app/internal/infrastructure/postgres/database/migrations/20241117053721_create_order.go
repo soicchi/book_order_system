@@ -24,7 +24,7 @@ var CreateOrder = &gormigrate.Migration{
 			return fmt.Errorf("failed to create table: %w", err)
 		}
 
-		return nil
+		return tx.Exec("ALTER TABLE orders ADD CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL").Error
 	},
 	Rollback: func(tx *gorm.DB) error {
 		return tx.Migrator().DropTable("orders")
