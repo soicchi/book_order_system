@@ -12,7 +12,7 @@ import (
 var CreateShippingAddress = &gormigrate.Migration{
 	ID: "20241113121208",
 	Migrate: func(tx *gorm.DB) error {
-		type ShippingAddress struct {
+		type shippingAddress struct {
 			ID         uuid.UUID `gorm:"type:uuid;primaryKey"`
 			CustomerID uuid.UUID `gorm:"type:uuid;not null;index"`
 			Prefecture string    `gorm:"type:varchar(255);not null"`
@@ -22,7 +22,7 @@ var CreateShippingAddress = &gormigrate.Migration{
 			UpdatedAt  time.Time `gorm:"autoUpdateTime;not null"`
 		}
 
-		if err := tx.Migrator().CreateTable(&ShippingAddress{}); err != nil {
+		if err := tx.Migrator().CreateTable(&shippingAddress{}); err != nil {
 			return fmt.Errorf("failed to create table: %w", err)
 		}
 

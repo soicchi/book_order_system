@@ -16,6 +16,10 @@ const content = `
 package migrations
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 )

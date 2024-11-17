@@ -88,6 +88,7 @@ func Migrate() error {
 		// Add migrations here
 		migrations.CreateCustomerTable,
 		migrations.CreateShippingAddress,
+		migrations.CreateOrder,
 	})
 
 	if err := m.Migrate(); err != nil {
