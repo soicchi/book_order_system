@@ -1,4 +1,4 @@
-package shippingAddress
+package shippingAddresses
 
 import (
 	"fmt"
@@ -116,7 +116,7 @@ func TestCreateShippingAddress(t *testing.T) {
 
 			logger := logging.NewMockLogger()
 			useCase := NewShippingAddressUseCase(mockShippingAddressRepo, mockCustomerRepo, logger)
-			err := useCase.CreateShipping(ctx, tt.input)
+			err := useCase.CreateShippingAddress(ctx, tt.input)
 
 			if tt.wantErr {
 				assert.NotNil(t, err)

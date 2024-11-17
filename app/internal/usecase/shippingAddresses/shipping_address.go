@@ -1,4 +1,4 @@
-package shippingAddress
+package shippingAddresses
 
 import (
 	"github.com/soicchi/book_order_system/internal/domain/interfaces"

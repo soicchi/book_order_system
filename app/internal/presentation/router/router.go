@@ -6,8 +6,10 @@ import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/repository"
 	"github.com/soicchi/book_order_system/internal/logging"
 	customerHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/customers"
+	shippingAddressHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/shippingAddresses"
 	"github.com/soicchi/book_order_system/internal/presentation/middlewares"
 	customerUseCase "github.com/soicchi/book_order_system/internal/usecase/customers"
+	shippingAddressUseCase "github.com/soicchi/book_order_system/internal/usecase/shippingAddresses"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -29,6 +31,7 @@ func v1Router(base *echo.Group, logger logging.Logger) {
 	v1 := base.Group("/v1")
 
 	customerRouter(v1, logger)
+	shippingAddressRouter(v1, logger)
 }
 
 // /api/{version}/customers
@@ -42,6 +45,18 @@ func customerRouter(version *echo.Group, logger logging.Logger) {
 
 	customersPath.POST("/", handler.CreateCustomer)
 	customersPath.GET("/:id", handler.FetchCustomer)
+}
+
+func shippingAddressRouter(version *echo.Group, logger logging.Logger) {
+	shippingAddressesPath := version.Group("/customers/:id/shipping_addresses")
+
+	// Initialize dependencies
+	shippingRepo := repository.NewShippingAddressRepository()
+	customerRepo := repository.NewCustomerRepository()
+	uc := shippingAddressUseCase.NewShippingAddressUseCase(shippingRepo, customerRepo, logger)
+	handler := shippingAddressHandler.NewShippingAddressHandler(uc, logger)
+
+	shippingAddressesPath.POST("/", handler.CreateShippingAddress)
 }
 
 // Output the all routes to stdout in local when the server starts

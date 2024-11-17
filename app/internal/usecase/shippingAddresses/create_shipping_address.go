@@ -1,4 +1,4 @@
-package shippingAddress
+package shippingAddresses
 
 import (
 	"github.com/soicchi/book_order_system/internal/domain/entity"
@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (u *ShippingAddressUseCase) CreateShipping(ctx echo.Context, shippingAddress *dto.CreateShippingAddressInput) error {
+func (u *ShippingAddressUseCase) CreateShippingAddress(ctx echo.Context, shippingAddress *dto.CreateShippingAddressInput) error {
 	shippingAddressEntity, err := entity.NewShippingAddress(
 		shippingAddress.Prefecture,
 		shippingAddress.City,
