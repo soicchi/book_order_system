@@ -7,15 +7,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (uc *CustomerUseCase) CreateCustomer(ctx echo.Context, dto dto.CreateCustomerInput) error {
+func (uc *CustomerUseCase) CreateCustomer(ctx echo.Context, dto *dto.CreateCustomerInput) error {
 	customer, err := entity.NewCustomer(dto.Name, dto.Email, dto.Password)
 	if err != nil {
 		return err
 	}
 
-	if err := uc.repository.Create(ctx, customer); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.repository.Create(ctx, customer)
 }

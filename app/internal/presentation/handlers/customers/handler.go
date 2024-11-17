@@ -37,7 +37,7 @@ func (h *CustomerHandler) CreateCustomer(ctx echo.Context) error {
 		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
-	dto := dto.CreateCustomerInput{
+	dto := &dto.CreateCustomerInput{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: req.Password,

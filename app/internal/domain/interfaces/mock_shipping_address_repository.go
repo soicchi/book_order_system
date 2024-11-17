@@ -19,3 +19,12 @@ func (m *MockShippingAddressRepository) Create(ctx echo.Context, shippingAddress
 	args := m.Called(ctx, shippingAddress)
 	return args.Error(0)
 }
+
+func (m *MockShippingAddressRepository) FetchByID(ctx echo.Context, id string) (*entity.ShippingAddress, error) {
+	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*entity.ShippingAddress), args.Error(1)
+}

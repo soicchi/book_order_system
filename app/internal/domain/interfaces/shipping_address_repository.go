@@ -8,4 +8,5 @@ import (
 
 type ShippingAddressRepository interface {
 	Create(ctx echo.Context, shippingAddress *entity.ShippingAddress) error
+	FetchByID(ctx echo.Context, id string) (*entity.ShippingAddress, error)
 }

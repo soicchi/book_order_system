@@ -171,7 +171,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				customerMock *interfaces.MockCustomerRepository,
 				ml *logging.MockLogger,
 			) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(nil, nil)
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create shipping address"),
 					errors.InternalServerError,
