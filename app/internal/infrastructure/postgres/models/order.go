@@ -8,5 +8,6 @@ type Order struct {
 	ID                uuid.UUID `gorm:"type:uuid;primaryKey"`
 	CustomerID        uuid.UUID `gorm:"type:uuid;not null;index"`
 	ShippingAddressID uuid.UUID `gorm:"type:uuid;not null;index"`
+	Customer          Customer
 	TimeStamp         `gorm:"embedded"`
 }

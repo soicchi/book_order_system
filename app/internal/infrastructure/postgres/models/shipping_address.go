@@ -10,6 +10,6 @@ type ShippingAddress struct {
 	Prefecture string    `gorm:"type:varchar(255);not null"`
 	City       string    `gorm:"type:varchar(255);not null"`
 	State      string    `gorm:"type:varchar(255);not null"`
-	TimeStamp  `gorm:"embedded"`
 	Customer   Customer
+	TimeStamp  `gorm:"embedded"`
 }

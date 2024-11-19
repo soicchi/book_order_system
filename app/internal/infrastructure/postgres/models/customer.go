@@ -11,4 +11,5 @@ type Customer struct {
 	Password          string    `gorm:"type:varchar(255);not null"`
 	TimeStamp         `gorm:"embedded"`
 	ShippingAddresses []ShippingAddress `gorm:"constraint:OnDelete:CASCADE"`
+	Orders            []Order           `gorm:"constraint:OnDelete:SET NULL"`
 }

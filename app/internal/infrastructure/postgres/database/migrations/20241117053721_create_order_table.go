@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var CreateOrder = &gormigrate.Migration{
+var CreateOrderTable = &gormigrate.Migration{
 	ID: "20241117053721",
 	Migrate: func(tx *gorm.DB) error {
 		type order struct {

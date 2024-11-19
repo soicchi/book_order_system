@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var CreateShippingAddress = &gormigrate.Migration{
+var CreateShippingAddressTable = &gormigrate.Migration{
 	ID: "20241113121208",
 	Migrate: func(tx *gorm.DB) error {
 		type shippingAddress struct {
