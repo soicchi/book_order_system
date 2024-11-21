@@ -65,7 +65,7 @@ func TestCreateOrder(t *testing.T) {
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(shippingAddressEntity, nil)
-				orderRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
+				orderRepo.On("Create", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus:   http.StatusCreated,

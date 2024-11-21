@@ -8,6 +8,7 @@ import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,7 +18,7 @@ func NewOrderRepository() *OrderRepository {
 	return &OrderRepository{}
 }
 
-func (r *OrderRepository) Create(ctx echo.Context, order *order.Order, customerID, shippingAddressID string) error {
+func (r *OrderRepository) Create(ctx echo.Context, order *order.Order, customerID, shippingAddressID uuid.UUID) error {
 	db := database.GetDB(ctx)
 
 	result := db.Create(&models.Order{

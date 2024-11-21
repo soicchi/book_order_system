@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (uc *CustomerUseCase) FetchCustomer(ctx echo.Context, id string) (*dto.CustomerOutput, error) {
-	customer, err := uc.repository.FetchByID(ctx, id)
+func (uc *CustomerUseCase) FetchCustomer(ctx echo.Context, input *dto.FetchCustomerInput) (*dto.CustomerOutput, error) {
+	customer, err := uc.repository.FetchByID(ctx, input.CustomerID)
 	if err != nil {
 		return nil, err
 	}

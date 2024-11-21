@@ -38,8 +38,8 @@ func TestCreateOrder(t *testing.T) {
 		{
 			name: "create order successfully",
 			dto: &dto.CreateOrderInput{
-				CustomerID:        customerID.String(),
-				ShippingAddressID: shippingAddressID.String(),
+				CustomerID:        customerID,
+				ShippingAddressID: shippingAddressID,
 			},
 			mockFunc: func(
 				orderRepo *order.MockRepository,
@@ -48,29 +48,15 @@ func TestCreateOrder(t *testing.T) {
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(shippingAddressEntity, nil)
-				orderRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
+				orderRepo.On("Create", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
 		},
 		{
-			name: "failed to generate customer UUID",
-			dto: &dto.CreateOrderInput{
-				CustomerID:        "invalid_uuid",
-				ShippingAddressID: shippingAddressID.String(),
-			},
-			mockFunc: func(
-				orderRepo *order.MockRepository,
-				customerRepo *customer.MockRepository,
-				shippingAddressRepo *shippingAddress.MockRepository,
-			) {
-			},
-			wantErr: true,
-		},
-		{
 			name: "failed to fetch customer by ID",
 			dto: &dto.CreateOrderInput{
-				CustomerID:        customerID.String(),
-				ShippingAddressID: shippingAddressID.String(),
+				CustomerID:        customerID,
+				ShippingAddressID: shippingAddressID,
 			},
 			mockFunc: func(
 				orderRepo *order.MockRepository,
@@ -87,8 +73,8 @@ func TestCreateOrder(t *testing.T) {
 		{
 			name: "customer not found",
 			dto: &dto.CreateOrderInput{
-				CustomerID:        customerID.String(),
-				ShippingAddressID: shippingAddressID.String(),
+				CustomerID:        customerID,
+				ShippingAddressID: shippingAddressID,
 			},
 			mockFunc: func(
 				orderRepo *order.MockRepository,
@@ -102,8 +88,8 @@ func TestCreateOrder(t *testing.T) {
 		{
 			name: "failed to fetch shipping address by ID",
 			dto: &dto.CreateOrderInput{
-				CustomerID:        customerID.String(),
-				ShippingAddressID: shippingAddressID.String(),
+				CustomerID:        customerID,
+				ShippingAddressID: shippingAddressID,
 			},
 			mockFunc: func(
 				orderRepo *order.MockRepository,
@@ -121,8 +107,8 @@ func TestCreateOrder(t *testing.T) {
 		{
 			name: "shipping address not found",
 			dto: &dto.CreateOrderInput{
-				CustomerID:        customerID.String(),
-				ShippingAddressID: shippingAddressID.String(),
+				CustomerID:        customerID,
+				ShippingAddressID: shippingAddressID,
 			},
 			mockFunc: func(
 				orderRepo *order.MockRepository,
@@ -137,8 +123,8 @@ func TestCreateOrder(t *testing.T) {
 		{
 			name: "failed to create order",
 			dto: &dto.CreateOrderInput{
-				CustomerID:        customerID.String(),
-				ShippingAddressID: shippingAddressID.String(),
+				CustomerID:        customerID,
+				ShippingAddressID: shippingAddressID,
 			},
 			mockFunc: func(
 				orderRepo *order.MockRepository,
@@ -147,7 +133,7 @@ func TestCreateOrder(t *testing.T) {
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(shippingAddressEntity, nil)
-				orderRepo.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
+				orderRepo.On("Create", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create order"),
 					errors.InternalServerError,
 				))

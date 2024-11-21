@@ -10,6 +10,7 @@ import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -45,7 +46,7 @@ func (r *CustomerRepository) Create(ctx echo.Context, customer *customer.Custome
 	return nil
 }
 
-func (r *CustomerRepository) FetchByID(ctx echo.Context, id string) (*customer.Customer, error) {
+func (r *CustomerRepository) FetchByID(ctx echo.Context, id uuid.UUID) (*customer.Customer, error) {
 	db := database.GetDB(ctx)
 
 	var customerModel models.Customer

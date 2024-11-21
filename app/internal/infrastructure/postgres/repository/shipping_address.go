@@ -40,7 +40,7 @@ func (r *ShippingAddressRepository) Create(ctx echo.Context, shippingAddress *sh
 	return nil
 }
 
-func (r *ShippingAddressRepository) FetchByID(ctx echo.Context, id string) (*shippingAddress.ShippingAddress, error) {
+func (r *ShippingAddressRepository) FetchByID(ctx echo.Context, id uuid.UUID) (*shippingAddress.ShippingAddress, error) {
 	db := database.GetDB(ctx)
 
 	var shippingAddressModel models.ShippingAddress

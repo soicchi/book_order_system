@@ -8,6 +8,7 @@ import (
 	"github.com/soicchi/book_order_system/internal/domain/customer"
 	"github.com/soicchi/book_order_system/internal/domain/values"
 	"github.com/soicchi/book_order_system/internal/logging"
+	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -30,29 +31,29 @@ func TestFetchCustomer(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		id       string
+		input    *dto.FetchCustomerInput
 		mockFunc func(*testing.T, *customer.MockRepository)
 		wantErr  bool
 	}{
 		{
-			name: "fetch customer successfully",
-			id:   customerID.String(),
+			name:  "fetch customer successfully",
+			input: &dto.FetchCustomerInput{CustomerID: customerID},
 			mockFunc: func(t *testing.T, m *customer.MockRepository) {
 				m.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 			},
 			wantErr: false,
 		},
 		{
-			name: "customer not found",
-			id:   customerID.String(),
+			name:  "customer not found",
+			input: &dto.FetchCustomerInput{CustomerID: customerID},
 			mockFunc: func(t *testing.T, m *customer.MockRepository) {
 				m.On("FetchByID", mock.Anything, mock.Anything).Return(nil, nil)
 			},
 			wantErr: true,
 		},
 		{
-			name: "failed to fetch customer",
-			id:   customerID.String(),
+			name:  "failed to fetch customer",
+			input: &dto.FetchCustomerInput{CustomerID: customerID},
 			mockFunc: func(t *testing.T, m *customer.MockRepository) {
 				m.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.New("error"))
 			},
@@ -74,7 +75,7 @@ func TestFetchCustomer(t *testing.T) {
 			ctx := echo.New().NewContext(nil, nil)
 
 			usecase := NewCustomerUseCase(repo, logging.NewMockLogger())
-			dto, err := usecase.FetchCustomer(ctx, tt.id)
+			dto, err := usecase.FetchCustomer(ctx, tt.input)
 
 			if tt.wantErr {
 				assert.Error(t, err)

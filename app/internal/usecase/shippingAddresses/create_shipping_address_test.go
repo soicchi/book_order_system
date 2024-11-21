@@ -43,25 +43,13 @@ func TestCreateShippingAddress(t *testing.T) {
 				Prefecture: "Tokyo",
 				City:       "Shinjuku",
 				State:      "Nishishinjuku",
-				CustomerID: customerID.String(),
+				CustomerID: customerID,
 			},
 			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
-				shippingMock.On("Create", mock.Anything, mock.Anything).Return(nil)
+				shippingMock.On("Create", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
-		},
-		{
-			name: "failed to create shipping address entity",
-			input: &dto.CreateShippingAddressInput{
-				Prefecture: "Tokyo",
-				City:       "Shinjuku",
-				State:      "Nishishinjuku",
-				CustomerID: "invalid-customer-id",
-			},
-			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
-			},
-			wantErr: true,
 		},
 		{
 			name: "failed to fetch customer",
@@ -69,7 +57,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				Prefecture: "Tokyo",
 				City:       "Shinjuku",
 				State:      "Nishishinjuku",
-				CustomerID: customerID.String(),
+				CustomerID: customerID,
 			},
 			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&customer.Customer{}, errors.NewCustomError(
@@ -85,11 +73,11 @@ func TestCreateShippingAddress(t *testing.T) {
 				Prefecture: "Tokyo",
 				City:       "Shinjuku",
 				State:      "Nishishinjuku",
-				CustomerID: customerID.String(),
+				CustomerID: customerID,
 			},
 			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
-				shippingMock.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
+				shippingMock.On("Create", mock.Anything, mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create shipping address"),
 					errors.InternalServerError,
 				))

@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 )
@@ -18,7 +19,7 @@ func (r *MockRepository) Create(ctx echo.Context, customer *Customer) error {
 	return args.Error(0)
 }
 
-func (r *MockRepository) FetchByID(ctx echo.Context, id string) (*Customer, error) {
+func (r *MockRepository) FetchByID(ctx echo.Context, id uuid.UUID) (*Customer, error) {
 	args := r.Called(id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
