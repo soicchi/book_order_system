@@ -164,9 +164,9 @@ func TestCreateOrder(t *testing.T) {
 
 			// setup mock
 			logger := logging.NewMockLogger()
-			customerRepo := interfaces.NewMockCustomerRepository()
-			shippingAddressRepo := interfaces.NewMockShippingAddressRepository()
-			orderRepo := interfaces.NewMockOrderRepository()
+			customerRepo := customer.NewMockRepository()
+			shippingAddressRepo := shippingAddress.NewMockRepository()
+			orderRepo := order.NewMockRepository()
 			tt.mockFunc(orderRepo, customerRepo, shippingAddressRepo)
 
 			// setup context

@@ -63,7 +63,7 @@ func TestCreateCustomer(t *testing.T) {
 			t.Parallel()
 
 			logger := logging.NewMockLogger()
-			repo := interfaces.NewMockCustomerRepository()
+			repo := customer.NewMockRepository()
 			useCase := NewCustomerUseCase(repo, logger)
 			tt.mockFunc(t, repo)
 

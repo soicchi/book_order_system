@@ -105,8 +105,8 @@ func TestCreateShippingAddress(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockShippingAddressRepo := interfaces.NewMockShippingAddressRepository()
-			mockCustomerRepo := interfaces.NewMockCustomerRepository()
+			mockShippingAddressRepo := shippingAddress.NewMockRepository()
+			mockCustomerRepo := customer.NewMockRepository()
 			tt.mockFunc(
 				mockShippingAddressRepo,
 				mockCustomerRepo,
