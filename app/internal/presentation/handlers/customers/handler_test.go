@@ -9,8 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
-	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/domain/customer"
 	"github.com/soicchi/book_order_system/internal/domain/values"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
@@ -27,7 +26,7 @@ func TestCreateCustomer(t *testing.T) {
 	tests := []struct {
 		name             string
 		requestBody      string
-		mockFunc         func(*interfaces.MockCustomerRepository, *logging.MockLogger)
+		mockFunc         func(*customer.MockRepository, *logging.MockLogger)
 		expectedStatus   int
 		expectedResponse string
 	}{
@@ -38,7 +37,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": "password"
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				m.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusCreated,
@@ -53,7 +52,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": "password"
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -72,7 +71,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "",
 				"password": "password"
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -91,7 +90,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": ""
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -110,7 +109,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "invalid",
 				"password": "password"
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -129,7 +128,7 @@ func TestCreateCustomer(t *testing.T) {
 				"email": "test@test.co.jp",
 				"password": "password"
 			}`,
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				m.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create customer"),
 					errors.InternalServerError,
@@ -152,7 +151,7 @@ func TestCreateCustomer(t *testing.T) {
 
 			// make mock
 			logger := logging.NewMockLogger()
-			mockRepo := interfaces.NewMockCustomerRepository()
+			mockRepo := customer.NewMockRepository()
 			tt.mockFunc(mockRepo, logger)
 
 			useCase := customers.NewCustomerUseCase(mockRepo, logging.NewMockLogger())
@@ -193,14 +192,14 @@ func TestFetchCustomer(t *testing.T) {
 	tests := []struct {
 		name             string
 		id               string
-		mockFunc         func(*interfaces.MockCustomerRepository, *logging.MockLogger)
+		mockFunc         func(*customer.MockRepository, *logging.MockLogger)
 		expectedStatus   int
 		expectedResponse string
 	}{
 		{
 			name: "fetch customer successfully",
 			id:   customerID.String(),
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				m.On("FetchByID", mock.Anything, mock.Anything).Return(customer, nil)
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
@@ -219,7 +218,7 @@ func TestFetchCustomer(t *testing.T) {
 		{
 			name: "fetch customer with empty id",
 			id:   "",
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -234,7 +233,7 @@ func TestFetchCustomer(t *testing.T) {
 		{
 			name: "failed to fetch customer",
 			id:   customerID.String(),
-			mockFunc: func(m *interfaces.MockCustomerRepository, ml *logging.MockLogger) {
+			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
 				m.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.NewCustomError(
 					fmt.Errorf("failed to fetch customer"),
 					errors.InternalServerError,
@@ -257,7 +256,7 @@ func TestFetchCustomer(t *testing.T) {
 
 			// make mock
 			logger := logging.NewMockLogger()
-			mockRepo := interfaces.NewMockCustomerRepository()
+			mockRepo := customer.NewMockRepository()
 			tt.mockFunc(mockRepo, logger)
 
 			useCase := customers.NewCustomerUseCase(mockRepo, logger)
