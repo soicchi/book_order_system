@@ -18,7 +18,7 @@ type CustomerOutput struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-func NewCustomerOutput(id, name, email string, createdAt, updatedAt *time.Time) *CustomerOutput {
+func NewCustomerOutput(id, name, email string, createdAt, updatedAt time.Time) *CustomerOutput {
 	return &CustomerOutput{
 		ID:        id,
 		Name:      name,

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/domain/customer"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
@@ -17,7 +17,7 @@ func TestCreateCustomer(t *testing.T) {
 	tests := []struct {
 		name     string
 		dto      *dto.CreateCustomerInput
-		mockFunc func(*testing.T, *interfaces.MockCustomerRepository)
+		mockFunc func(*testing.T, *customer.MockRepository)
 		wantErr  bool
 	}{
 		{
@@ -27,7 +27,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "password",
 			},
-			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {
+			mockFunc: func(t *testing.T, m *customer.MockRepository) {
 				m.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
@@ -39,7 +39,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "pass",
 			},
-			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {},
+			mockFunc: func(t *testing.T, m *customer.MockRepository) {},
 			wantErr:  true,
 		},
 		{
@@ -49,7 +49,7 @@ func TestCreateCustomer(t *testing.T) {
 				Email:    "test@test.co.jp",
 				Password: "password",
 			},
-			mockFunc: func(t *testing.T, m *interfaces.MockCustomerRepository) {
+			mockFunc: func(t *testing.T, m *customer.MockRepository) {
 				m.On("Create", mock.Anything).Return(errors.New("error"))
 			},
 			wantErr: true,

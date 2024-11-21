@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
-	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/domain/customer"
+	"github.com/soicchi/book_order_system/internal/domain/order"
+	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/usecase/dto"
@@ -21,16 +22,16 @@ func TestCreateOrder(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	shippingAddressID, _ := uuid.NewV7()
 	now := time.Now()
-	customerEntity := entity.ReconstructCustomer(customerID, "test", "test@test.co.jp", "hashed_password", now, now)
-	shippingAddressEntity := entity.ReconstructShippingAddress(shippingAddressID, "tokyo", "shinjuku", "1-1", now, now, customerID)
+	customerEntity := customer.Reconstruct(customerID, "test", "test@test.co.jp", "hashed_password", now, now)
+	shippingAddressEntity := shippingAddress.Reconstruct(shippingAddressID, "tokyo", "shinjuku", "1-1", now, now, customerID)
 
 	tests := []struct {
 		name     string
 		dto      *dto.CreateOrderInput
 		mockFunc func(
-			*interfaces.MockOrderRepository,
-			*interfaces.MockCustomerRepository,
-			*interfaces.MockShippingAddressRepository,
+			*order.MockRepository,
+			*customer.MockRepository,
+			*shippingAddress.MockRepository,
 		)
 		wantErr bool
 	}{
@@ -41,9 +42,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(shippingAddressEntity, nil)
@@ -58,9 +59,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 			},
 			wantErr: true,
@@ -72,9 +73,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.NewCustomError(
 					fmt.Errorf("failed to fetch customer by ID"),
@@ -90,9 +91,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(nil, nil)
 			},
@@ -105,9 +106,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.NewCustomError(
@@ -124,9 +125,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(nil, nil)
@@ -140,9 +141,9 @@ func TestCreateOrder(t *testing.T) {
 				ShippingAddressID: shippingAddressID.String(),
 			},
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(shippingAddressEntity, nil)

@@ -2,8 +2,9 @@ package orders
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/domain/order"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
@@ -11,10 +12,7 @@ import (
 )
 
 func (u *OrderUseCase) CreateOrder(ctx echo.Context, dto *dto.CreateOrderInput) error {
-	order, err := entity.NewOrder(
-		dto.CustomerID,
-		dto.ShippingAddressID,
-	)
+	order, err := order.New(time.Now(), time.Now())
 	if err != nil {
 		return err
 	}
@@ -34,7 +32,7 @@ func (u *OrderUseCase) CreateOrder(ctx echo.Context, dto *dto.CreateOrderInput) 
 	}
 
 	// Check if shipping address exists
-	shippingAddress, err := u.shippingAddressRepo.FetchByID(ctx, order.ShippingAddressID().String())
+	shippingAddress, err := u.shippingAddressRepo.FetchByID(ctx, dto.ShippingAddressID)
 	if err != nil {
 		return err
 	}
@@ -47,5 +45,5 @@ func (u *OrderUseCase) CreateOrder(ctx echo.Context, dto *dto.CreateOrderInput) 
 		)
 	}
 
-	return u.orderRepo.Create(ctx, order)
+	return u.orderRepo.Create(ctx, order, dto.CustomerID, dto.ShippingAddressID)
 }

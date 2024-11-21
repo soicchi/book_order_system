@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/domain/customer"
 	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/domain/values"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
@@ -22,7 +23,7 @@ func TestCreateShippingAddress(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	hashedPassword, _ := values.NewPassword("password")
 	now := time.Now()
-	customer := entity.ReconstructCustomer(
+	customer := customer.Reconstruct(
 		customerID,
 		"test",
 		"test@test.co.jp",
@@ -34,7 +35,7 @@ func TestCreateShippingAddress(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    *dto.CreateShippingAddressInput
-		mockFunc func(*interfaces.MockShippingAddressRepository, *interfaces.MockCustomerRepository)
+		mockFunc func(*shippingAddress.MockRepository, *customer.MockRepository)
 		wantErr  bool
 	}{
 		{
@@ -45,7 +46,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				State:      "Nishishinjuku",
 				CustomerID: customerID.String(),
 			},
-			mockFunc: func(shippingMock *interfaces.MockShippingAddressRepository, customerMock *interfaces.MockCustomerRepository) {
+			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customer, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
@@ -59,7 +60,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				State:      "Nishishinjuku",
 				CustomerID: "invalid-customer-id",
 			},
-			mockFunc: func(shippingMock *interfaces.MockShippingAddressRepository, customerMock *interfaces.MockCustomerRepository) {
+			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 			},
 			wantErr: true,
 		},
@@ -71,7 +72,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				State:      "Nishishinjuku",
 				CustomerID: customerID.String(),
 			},
-			mockFunc: func(shippingMock *interfaces.MockShippingAddressRepository, customerMock *interfaces.MockCustomerRepository) {
+			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, errors.NewCustomError(
 					fmt.Errorf("failed to fetch customer"),
 					errors.InternalServerError,
@@ -87,7 +88,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				State:      "Nishishinjuku",
 				CustomerID: customerID.String(),
 			},
-			mockFunc: func(shippingMock *interfaces.MockShippingAddressRepository, customerMock *interfaces.MockCustomerRepository) {
+			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customer, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create shipping address"),
