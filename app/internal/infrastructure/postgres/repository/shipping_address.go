@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	er "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -19,7 +20,7 @@ func NewShippingAddressRepository() *ShippingAddressRepository {
 	return &ShippingAddressRepository{}
 }
 
-func (r *ShippingAddressRepository) Create(ctx echo.Context, shippingAddress *entity.ShippingAddress) error {
+func (r *ShippingAddressRepository) Create(ctx echo.Context, shippingAddress *shippingAddress.ShippingAddress, customerID uuid.UUID) error {
 	db := database.GetDB(ctx)
 
 	result := db.Create(&models.ShippingAddress{
@@ -27,7 +28,7 @@ func (r *ShippingAddressRepository) Create(ctx echo.Context, shippingAddress *en
 		Prefecture: shippingAddress.Prefecture(),
 		City:       shippingAddress.City(),
 		State:      shippingAddress.State(),
-		CustomerID: shippingAddress.CustomerID(),
+		CustomerID: customerID,
 	})
 	if result.Error != nil {
 		return er.NewCustomError(
@@ -39,11 +40,11 @@ func (r *ShippingAddressRepository) Create(ctx echo.Context, shippingAddress *en
 	return nil
 }
 
-func (r *ShippingAddressRepository) FetchByID(ctx echo.Context, id string) (*entity.ShippingAddress, error) {
+func (r *ShippingAddressRepository) FetchByID(ctx echo.Context, id uuid.UUID) (*shippingAddress.ShippingAddress, error) {
 	db := database.GetDB(ctx)
 
-	var shippingAddress models.ShippingAddress
-	result := db.Where("id = ?", id).First(&shippingAddress)
+	var shippingAddressModel models.ShippingAddress
+	result := db.Where("id = ?", id).First(&shippingAddressModel)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -55,13 +56,12 @@ func (r *ShippingAddressRepository) FetchByID(ctx echo.Context, id string) (*ent
 		)
 	}
 
-	return entity.ReconstructShippingAddress(
-		shippingAddress.ID,
-		shippingAddress.Prefecture,
-		shippingAddress.City,
-		shippingAddress.State,
-		shippingAddress.CreatedAt,
-		shippingAddress.UpdatedAt,
-		shippingAddress.CustomerID,
+	return shippingAddress.Reconstruct(
+		shippingAddressModel.ID,
+		shippingAddressModel.Prefecture,
+		shippingAddressModel.City,
+		shippingAddressModel.State,
+		&shippingAddressModel.CreatedAt,
+		&shippingAddressModel.UpdatedAt,
 	), nil
 }

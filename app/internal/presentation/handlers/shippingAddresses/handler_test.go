@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
-	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/domain/customer"
+	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/presentation/validator"
@@ -29,8 +29,8 @@ func TestCreateShippingAddress(t *testing.T) {
 		requestCustomerID string
 		requestBody       string
 		mockFunc          func(
-			*interfaces.MockShippingAddressRepository,
-			*interfaces.MockCustomerRepository,
+			*shippingAddress.MockRepository,
+			*customer.MockRepository,
 			*logging.MockLogger,
 		)
 		expectedStatus   int
@@ -45,12 +45,12 @@ func TestCreateShippingAddress(t *testing.T) {
 				"state": "Nishishinjuku"
 			}`,
 			mockFunc: func(
-				shippingMock *interfaces.MockShippingAddressRepository,
-				customerMock *interfaces.MockCustomerRepository,
+				shippingMock *shippingAddress.MockRepository,
+				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, nil)
-				shippingMock.On("Create", mock.Anything, mock.Anything).Return(nil)
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&customer.Customer{}, nil)
+				shippingMock.On("Create", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusCreated,
 			expectedResponse: `{
@@ -66,8 +66,8 @@ func TestCreateShippingAddress(t *testing.T) {
 				"state": "Nishishinjuku"
 			}`,
 			mockFunc: func(
-				shippingMock *interfaces.MockShippingAddressRepository,
-				customerMock *interfaces.MockCustomerRepository,
+				shippingMock *shippingAddress.MockRepository,
+				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
@@ -90,8 +90,8 @@ func TestCreateShippingAddress(t *testing.T) {
 				"state": "Nishishinjuku"
 			}`,
 			mockFunc: func(
-				shippingMock *interfaces.MockShippingAddressRepository,
-				customerMock *interfaces.MockCustomerRepository,
+				shippingMock *shippingAddress.MockRepository,
+				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
@@ -114,8 +114,8 @@ func TestCreateShippingAddress(t *testing.T) {
 				"state": ""
 			}`,
 			mockFunc: func(
-				shippingMock *interfaces.MockShippingAddressRepository,
-				customerMock *interfaces.MockCustomerRepository,
+				shippingMock *shippingAddress.MockRepository,
+				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
@@ -138,8 +138,8 @@ func TestCreateShippingAddress(t *testing.T) {
 				"state": "Nishishinjuku"
 			}`,
 			mockFunc: func(
-				shippingMock *interfaces.MockShippingAddressRepository,
-				customerMock *interfaces.MockCustomerRepository,
+				shippingMock *shippingAddress.MockRepository,
+				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(nil, errors.NewCustomError(
@@ -167,12 +167,12 @@ func TestCreateShippingAddress(t *testing.T) {
 				"state": "Nishishinjuku"
 			}`,
 			mockFunc: func(
-				shippingMock *interfaces.MockShippingAddressRepository,
-				customerMock *interfaces.MockCustomerRepository,
+				shippingMock *shippingAddress.MockRepository,
+				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, nil)
-				shippingMock.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&customer.Customer{}, nil)
+				shippingMock.On("Create", mock.Anything, mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create shipping address"),
 					errors.InternalServerError,
 				))
@@ -208,8 +208,8 @@ func TestCreateShippingAddress(t *testing.T) {
 			ctx.SetParamValues(tt.requestCustomerID)
 
 			// setup mock
-			shippingMock := interfaces.NewMockShippingAddressRepository()
-			customerMock := interfaces.NewMockCustomerRepository()
+			shippingMock := shippingAddress.NewMockRepository()
+			customerMock := customer.NewMockRepository()
 			logger := logging.NewMockLogger()
 			tt.mockFunc(shippingMock, customerMock, logger)
 

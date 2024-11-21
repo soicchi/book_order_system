@@ -28,24 +28,17 @@ ShippingAddress {
 
 Order {
 	UUID order_id "PK"
-	DATETIME ordered_at "index"
-	DATETIME created_at
+	DATETIME created_at "index"
 	DATETIME updated_at
 	UUID customer_id "FK, index, on_delete:SET NULL"
-	UUID order_status_id "FK, index"
-}
-
-OrderStatus {
-	UUID order_status_id "PK"
-	VARCHAR(255) type
-	DATETIME created_at
-	DATETIME updated_at	
+	UUID shipping_address_id "FK, index"
 }
 
 OrderDetail {
 	UUID order_detail_id "PK"
 	INTEGER quantity
-	INTEGER price
+	DECIMAL price
+	DECIMAL tax
 	DATETIME created_at
 	DATETIME updated_at
 	UUID order_id "FK, index"
@@ -55,23 +48,15 @@ OrderDetail {
 
 OrderTransaction {
 	UUID order_transaction_id "PK"
+	VARCHAR(255) status "index, unique_order_id_status"
 	UUID order_id "FK"
 	UUID transaction_status_id "FK"
 }
 
-TransactionStatus {
-	UUID transaction_status_id "PK"
-	string status "unique"
-	TIMESTAMP create_at
-	TIMESTAMP updated_at
-}
-
-Tax {
-	UUID tax_id "PK"
-	DECIMAL rate
-	TIMESTAMP limited_at "NULLABLE"
-	TIMESTAMP created_at
-	TIMESTAMP updated_at
+Cart {
+	UUID cart_id "PK"
+	VARCHAR(255) status
+	UUID customer_id "FK"
 }
 
 CartItem {
@@ -79,8 +64,8 @@ CartItem {
 	INTEGER quantity
 	DATETIME created_at
 	DATETIME updated_at
-	UUID customer_id_id "FK, index"
 	UUID book_id "FK, index"
+	UUID cart_id "FK, index"
 }
 
 Book {
@@ -123,15 +108,13 @@ Author {
 
 Customer ||--o{ Order : customer_id
 Customer ||--o{ ShippingAddress : customer_id
-Customer ||--o{ CartItem : customer_id
 ShippingAddress ||--o{ Order : shipping_address_id
 Order ||--o{ OrderDetail : order_id
 Order ||--o{ OrderTransaction : order_id
-TransactionStatus ||--o{ OrderTransaction : transaction_status_id
-OrderStatus ||--o{ Order : order_status_id
+Cart ||--|| Customer : customer_id
+Cart ||--o{ CartItem : cart_id
 Book ||--o{ CartItem : book_id
 Book ||--o{ OrderDetail : book_id
-Tax ||--o{ OrderDetail : tax_id
 Book ||--o{ BookCategory : book_id
 Category ||--o{ BookCategory : category_id
 Book ||--o{ Stock : book_id

@@ -1,4 +1,4 @@
-package entity
+package customer
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ type Customer struct {
 	updatedAt *time.Time
 }
 
-func NewCustomer(name, email, plainPassword string) (*Customer, error) {
+func New(name, email, plainPassword string) (*Customer, error) {
 	customerUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -33,21 +33,21 @@ func NewCustomer(name, email, plainPassword string) (*Customer, error) {
 		return nil, err
 	}
 
-	return newCustomer(customerUUID, name, email, hashedPassword, nil, nil), nil
+	return new(customerUUID, name, email, hashedPassword, nil, nil), nil
 }
 
-func ReconstructCustomer(
+func Reconstruct(
 	id uuid.UUID,
 	name string,
 	email string,
 	password values.Password,
-	createdAt time.Time,
-	updatedAt time.Time,
+	createdAt *time.Time,
+	updatedAt *time.Time,
 ) *Customer {
-	return newCustomer(id, name, email, password, &createdAt, &updatedAt)
+	return new(id, name, email, password, createdAt, updatedAt)
 }
 
-func newCustomer(
+func new(
 	id uuid.UUID,
 	name string,
 	email string,

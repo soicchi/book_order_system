@@ -64,13 +64,19 @@ func (h *CustomerHandler) FetchCustomer(ctx echo.Context) error {
 		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
-	dto, err := h.useCase.FetchCustomer(ctx, req.ID)
+	dto, err := dto.NewFetchCustomerInput(req.ID)
+	if err != nil {
+		h.logger.Error("failed to create dto", slog.String("error", err.Error()))
+		return err.(*errors.CustomError).ReturnJSON(ctx)
+	}
+
+	customer, err := h.useCase.FetchCustomer(ctx, dto)
 	if err != nil {
 		h.logger.Error("failed to get customer", slog.String("error", err.Error()))
 		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
-	res := NewCustomerResponse(dto, "fetched customer successfully")
+	res := NewCustomerResponse(customer, "fetched customer successfully")
 
 	return ctx.JSON(http.StatusOK, res)
 }

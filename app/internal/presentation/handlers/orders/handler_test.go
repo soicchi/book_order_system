@@ -8,8 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
-	"github.com/soicchi/book_order_system/internal/domain/interfaces"
+	"github.com/soicchi/book_order_system/internal/domain/customer"
+	"github.com/soicchi/book_order_system/internal/domain/order"
+	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/presentation/validator"
 	"github.com/soicchi/book_order_system/internal/usecase/orders"
@@ -24,31 +25,30 @@ func TestCreateOrder(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	ShippingAddressID, _ := uuid.NewV7()
 	now := time.Now()
-	customerEntity := entity.ReconstructCustomer(
+	customerEntity := customer.Reconstruct(
 		customerID,
 		"test",
 		"test@test.co.jp",
 		"hashed_password",
-		now,
-		now,
+		&now,
+		&now,
 	)
-	shippingAddressEntity := entity.ReconstructShippingAddress(
+	shippingAddressEntity := shippingAddress.Reconstruct(
 		ShippingAddressID,
 		"tokyo",
 		"shinjuku",
 		"1-1",
-		now,
-		now,
-		customerID,
+		&now,
+		&now,
 	)
 
 	tests := []struct {
 		name        string
 		requestBody string
 		mockFunc    func(
-			*interfaces.MockOrderRepository,
-			*interfaces.MockCustomerRepository,
-			*interfaces.MockShippingAddressRepository,
+			*order.MockRepository,
+			*customer.MockRepository,
+			*shippingAddress.MockRepository,
 			*logging.MockLogger,
 		)
 		expectedStatus   int
@@ -58,14 +58,14 @@ func TestCreateOrder(t *testing.T) {
 			name:        "create order successfully",
 			requestBody: `{"shipping_address_id": "` + ShippingAddressID.String() + `"}`,
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingAddressRepo.On("FetchByID", mock.Anything, mock.Anything).Return(shippingAddressEntity, nil)
-				orderRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
+				orderRepo.On("Create", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus:   http.StatusCreated,
@@ -77,9 +77,9 @@ func TestCreateOrder(t *testing.T) {
 				"shipping_address_id": "` + ShippingAddressID.String() + `"
 			}`,
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(nil, nil)
@@ -100,9 +100,9 @@ func TestCreateOrder(t *testing.T) {
 				"shipping_address_id": "` + ShippingAddressID.String() + `"
 			}`,
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				customerRepo.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
@@ -124,9 +124,9 @@ func TestCreateOrder(t *testing.T) {
 				"shipping_address_id": ""
 			}`,
 			mockFunc: func(
-				orderRepo *interfaces.MockOrderRepository,
-				customerRepo *interfaces.MockCustomerRepository,
-				shippingAddressRepo *interfaces.MockShippingAddressRepository,
+				orderRepo *order.MockRepository,
+				customerRepo *customer.MockRepository,
+				shippingAddressRepo *shippingAddress.MockRepository,
 				ml *logging.MockLogger,
 			) {
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
@@ -158,9 +158,9 @@ func TestCreateOrder(t *testing.T) {
 
 			// setup mock
 			logger := logging.NewMockLogger()
-			orderRepo := interfaces.NewMockOrderRepository()
-			customerRepo := interfaces.NewMockCustomerRepository()
-			shippingAddressRepo := interfaces.NewMockShippingAddressRepository()
+			orderRepo := order.NewMockRepository()
+			customerRepo := customer.NewMockRepository()
+			shippingAddressRepo := shippingAddress.NewMockRepository()
 			tt.mockFunc(orderRepo, customerRepo, shippingAddressRepo, logger)
 
 			useCase := orders.NewOrderUseCase(orderRepo, customerRepo, shippingAddressRepo, logger)

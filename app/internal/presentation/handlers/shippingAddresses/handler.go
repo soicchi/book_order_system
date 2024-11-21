@@ -36,11 +36,10 @@ func (h *ShippingAddressHandler) CreateShippingAddress(ctx echo.Context) error {
 		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
-	dto := &dto.CreateShippingAddressInput{
-		Prefecture: req.Prefecture,
-		City:       req.City,
-		State:      req.State,
-		CustomerID: req.CustomerID,
+	dto, err := dto.NewCreateShippingAddressInput(req.CustomerID, req.Prefecture, req.City, req.State)
+	if err != nil {
+		h.logger.Error("failed to create dto", "error", err.Error())
+		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
 	if err := h.useCase.CreateShippingAddress(ctx, dto); err != nil {

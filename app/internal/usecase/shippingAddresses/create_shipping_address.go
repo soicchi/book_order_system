@@ -3,26 +3,16 @@ package shippingAddresses
 import (
 	"fmt"
 
-	"github.com/soicchi/book_order_system/internal/domain/entity"
+	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/usecase/dto"
 
 	"github.com/labstack/echo/v4"
 )
 
-func (u *ShippingAddressUseCase) CreateShippingAddress(ctx echo.Context, shippingAddress *dto.CreateShippingAddressInput) error {
-	shippingAddressEntity, err := entity.NewShippingAddress(
-		shippingAddress.Prefecture,
-		shippingAddress.City,
-		shippingAddress.State,
-		shippingAddress.CustomerID,
-	)
-	if err != nil {
-		return err
-	}
-
+func (u *ShippingAddressUseCase) CreateShippingAddress(ctx echo.Context, dto *dto.CreateShippingAddressInput) error {
 	// Check if customer exists
-	customer, err := u.customerRepo.FetchByID(ctx, shippingAddress.CustomerID)
+	customer, err := u.customerRepo.FetchByID(ctx, dto.CustomerID)
 	if err != nil {
 		return err
 	}
@@ -34,5 +24,14 @@ func (u *ShippingAddressUseCase) CreateShippingAddress(ctx echo.Context, shippin
 		)
 	}
 
-	return u.shippingAddressRepo.Create(ctx, shippingAddressEntity)
+	shippingAddressEntity, err := shippingAddress.New(
+		dto.Prefecture,
+		dto.City,
+		dto.State,
+	)
+	if err != nil {
+		return err
+	}
+
+	return u.shippingAddressRepo.Create(ctx, shippingAddressEntity, dto.CustomerID)
 }

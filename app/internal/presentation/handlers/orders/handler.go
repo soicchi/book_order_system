@@ -36,9 +36,10 @@ func (h *OrderHandler) CreateOrder(ctx echo.Context) error {
 		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
-	dto := &dto.CreateOrderInput{
-		CustomerID:        req.CustomerID,
-		ShippingAddressID: req.ShippingAddressID,
+	dto, err := dto.NewCreateOrderInput(req.CustomerID, req.ShippingAddressID)
+	if err != nil {
+		h.logger.Error("failed to create dto", "error", err.Error())
+		return err.(*errors.CustomError).ReturnJSON(ctx)
 	}
 
 	if err := h.useCase.CreateOrder(ctx, dto); err != nil {
