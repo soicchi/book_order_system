@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/soicchi/book_order_system/internal/domain/customer"
-	"github.com/soicchi/book_order_system/internal/domain/interfaces"
 	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/domain/values"
 	"github.com/soicchi/book_order_system/internal/errors"
@@ -23,13 +22,13 @@ func TestCreateShippingAddress(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	hashedPassword, _ := values.NewPassword("password")
 	now := time.Now()
-	customer := customer.Reconstruct(
+	customerEntity := customer.Reconstruct(
 		customerID,
 		"test",
 		"test@test.co.jp",
 		hashedPassword,
-		now,
-		now,
+		&now,
+		&now,
 	)
 
 	tests := []struct {
@@ -47,7 +46,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				CustomerID: customerID.String(),
 			},
 			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customer, nil)
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
@@ -73,7 +72,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				CustomerID: customerID.String(),
 			},
 			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, errors.NewCustomError(
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&customer.Customer{}, errors.NewCustomError(
 					fmt.Errorf("failed to fetch customer"),
 					errors.InternalServerError,
 				))
@@ -89,7 +88,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				CustomerID: customerID.String(),
 			},
 			mockFunc: func(shippingMock *shippingAddress.MockRepository, customerMock *customer.MockRepository) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customer, nil)
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create shipping address"),
 					errors.InternalServerError,

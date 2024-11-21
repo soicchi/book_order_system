@@ -11,11 +11,11 @@ import (
 
 type Order struct {
 	id        uuid.UUID
-	createdAt time.Time
-	updatedAt time.Time
+	createdAt *time.Time
+	updatedAt *time.Time
 }
 
-func New(createdAt, updatedAt time.Time) (*Order, error) {
+func New() (*Order, error) {
 	orderUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -24,10 +24,10 @@ func New(createdAt, updatedAt time.Time) (*Order, error) {
 		)
 	}
 
-	return new(orderUUID, createdAt, updatedAt), nil
+	return new(orderUUID, nil, nil), nil
 }
 
-func new(id uuid.UUID, createdAt, updatedAt time.Time) *Order {
+func new(id uuid.UUID, createdAt, updatedAt *time.Time) *Order {
 	return &Order{
 		id:        id,
 		createdAt: createdAt,
@@ -39,10 +39,10 @@ func (o *Order) ID() uuid.UUID {
 	return o.id
 }
 
-func (o *Order) CreatedAt() time.Time {
+func (o *Order) CreatedAt() *time.Time {
 	return o.createdAt
 }
 
-func (o *Order) UpdatedAt() time.Time {
+func (o *Order) UpdatedAt() *time.Time {
 	return o.updatedAt
 }

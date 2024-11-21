@@ -27,7 +27,7 @@ func (uc *CustomerUseCase) FetchCustomer(ctx echo.Context, id string) (*dto.Cust
 		customer.ID().String(),
 		customer.Name(),
 		customer.Email(),
-		customer.CreatedAt(),
-		customer.UpdatedAt(),
+		*customer.CreatedAt(),
+		*customer.UpdatedAt(),
 	), nil
 }

@@ -2,7 +2,6 @@ package orders
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/soicchi/book_order_system/internal/domain/order"
 	"github.com/soicchi/book_order_system/internal/errors"
@@ -12,7 +11,7 @@ import (
 )
 
 func (u *OrderUseCase) CreateOrder(ctx echo.Context, dto *dto.CreateOrderInput) error {
-	order, err := order.New(time.Now(), time.Now())
+	order, err := order.New()
 	if err != nil {
 		return err
 	}

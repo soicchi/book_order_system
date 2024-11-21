@@ -30,16 +30,16 @@ func TestCreateOrder(t *testing.T) {
 		"test",
 		"test@test.co.jp",
 		"hashed_password",
-		now,
-		now,
+		&now,
+		&now,
 	)
 	shippingAddressEntity := shippingAddress.Reconstruct(
 		ShippingAddressID,
 		"tokyo",
 		"shinjuku",
 		"1-1",
-		now,
-		now,
+		&now,
+		&now,
 	)
 
 	tests := []struct {

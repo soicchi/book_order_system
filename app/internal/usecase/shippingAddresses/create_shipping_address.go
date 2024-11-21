@@ -2,7 +2,6 @@ package shippingAddresses
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/soicchi/book_order_system/internal/domain/shippingAddress"
 	"github.com/soicchi/book_order_system/internal/errors"
@@ -29,8 +28,6 @@ func (u *ShippingAddressUseCase) CreateShippingAddress(ctx echo.Context, dto *dt
 		dto.Prefecture,
 		dto.City,
 		dto.State,
-		time.Now(),
-		time.Now(),
 	)
 	if err != nil {
 		return err

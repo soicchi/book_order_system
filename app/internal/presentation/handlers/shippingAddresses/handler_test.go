@@ -49,7 +49,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, nil)
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&customer.Customer{}, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusCreated,
@@ -171,7 +171,7 @@ func TestCreateShippingAddress(t *testing.T) {
 				customerMock *customer.MockRepository,
 				ml *logging.MockLogger,
 			) {
-				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&entity.Customer{}, nil)
+				customerMock.On("FetchByID", mock.Anything, mock.Anything).Return(&customer.Customer{}, nil)
 				shippingMock.On("Create", mock.Anything, mock.Anything).Return(errors.NewCustomError(
 					fmt.Errorf("failed to create shipping address"),
 					errors.InternalServerError,

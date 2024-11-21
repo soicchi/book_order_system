@@ -180,13 +180,13 @@ func TestFetchCustomer(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	now := time.Now()
 	hashedPassword, _ := values.NewPassword("password")
-	customer := entity.ReconstructCustomer(
+	customerEntity := customer.Reconstruct(
 		customerID,
 		"test",
 		"test@test.co.jp",
 		hashedPassword,
-		now,
-		now,
+		&now,
+		&now,
 	)
 
 	tests := []struct {
@@ -200,7 +200,7 @@ func TestFetchCustomer(t *testing.T) {
 			name: "fetch customer successfully",
 			id:   customerID.String(),
 			mockFunc: func(m *customer.MockRepository, ml *logging.MockLogger) {
-				m.On("FetchByID", mock.Anything, mock.Anything).Return(customer, nil)
+				m.On("FetchByID", mock.Anything, mock.Anything).Return(customerEntity, nil)
 				ml.On("Error", mock.Anything, mock.Anything).Return(nil)
 			},
 			expectedStatus: http.StatusOK,
@@ -208,10 +208,10 @@ func TestFetchCustomer(t *testing.T) {
 				"message": "fetched customer successfully",
 				"customer": {
 					"id": "` + customerID.String() + `",
-					"name": "` + customer.Name() + `",
-					"email": "` + customer.Email() + `",
-					"created_at": "` + customer.CreatedAt().Format("2006-01-02 15:04:05") + `",
-					"updated_at": "` + customer.UpdatedAt().Format("2006-01-02 15:04:05") + `"
+					"name": "` + customerEntity.Name() + `",
+					"email": "` + customerEntity.Email() + `",
+					"created_at": "` + customerEntity.CreatedAt().Format("2006-01-02 15:04:05") + `",
+					"updated_at": "` + customerEntity.UpdatedAt().Format("2006-01-02 15:04:05") + `"
 				}
 			}`,
 		},

@@ -6,7 +6,7 @@ import (
 )
 
 type CustomerUseCase struct {
-	repository customer.CustomerRepository
+	repository customer.Repository
 	logger     logging.Logger
 }
 

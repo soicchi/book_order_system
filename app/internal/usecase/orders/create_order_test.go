@@ -22,8 +22,8 @@ func TestCreateOrder(t *testing.T) {
 	customerID, _ := uuid.NewV7()
 	shippingAddressID, _ := uuid.NewV7()
 	now := time.Now()
-	customerEntity := customer.Reconstruct(customerID, "test", "test@test.co.jp", "hashed_password", now, now)
-	shippingAddressEntity := shippingAddress.Reconstruct(shippingAddressID, "tokyo", "shinjuku", "1-1", now, now, customerID)
+	customerEntity := customer.Reconstruct(customerID, "test", "test@test.co.jp", "hashed_password", &now, &now)
+	shippingAddressEntity := shippingAddress.Reconstruct(shippingAddressID, "tokyo", "shinjuku", "1-1", &now, &now)
 
 	tests := []struct {
 		name     string

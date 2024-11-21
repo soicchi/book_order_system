@@ -15,11 +15,11 @@ type Customer struct {
 	name      string
 	email     string
 	password  values.Password
-	createdAt time.Time
-	updatedAt time.Time
+	createdAt *time.Time
+	updatedAt *time.Time
 }
 
-func New(name, email, plainPassword string, createdAt, updatedAt time.Time) (*Customer, error) {
+func New(name, email, plainPassword string) (*Customer, error) {
 	customerUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -33,7 +33,7 @@ func New(name, email, plainPassword string, createdAt, updatedAt time.Time) (*Cu
 		return nil, err
 	}
 
-	return new(customerUUID, name, email, hashedPassword, createdAt, updatedAt), nil
+	return new(customerUUID, name, email, hashedPassword, nil, nil), nil
 }
 
 func Reconstruct(
@@ -41,8 +41,8 @@ func Reconstruct(
 	name string,
 	email string,
 	password values.Password,
-	createdAt time.Time,
-	updatedAt time.Time,
+	createdAt *time.Time,
+	updatedAt *time.Time,
 ) *Customer {
 	return new(id, name, email, password, createdAt, updatedAt)
 }
@@ -52,8 +52,8 @@ func new(
 	name string,
 	email string,
 	password values.Password,
-	createdAt time.Time,
-	updatedAt time.Time,
+	createdAt *time.Time,
+	updatedAt *time.Time,
 ) *Customer {
 	return &Customer{
 		id:        id,
@@ -81,10 +81,10 @@ func (c *Customer) Password() values.Password {
 	return c.password
 }
 
-func (c *Customer) CreatedAt() time.Time {
+func (c *Customer) CreatedAt() *time.Time {
 	return c.createdAt
 }
 
-func (c *Customer) UpdatedAt() time.Time {
+func (c *Customer) UpdatedAt() *time.Time {
 	return c.updatedAt
 }

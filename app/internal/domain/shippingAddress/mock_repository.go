@@ -13,8 +13,8 @@ func NewMockRepository() *MockRepository {
 	return &MockRepository{}
 }
 
-func (m *MockRepository) Create(ctx echo.Context, shippingAddress *ShippingAddress) error {
-	args := m.Called(ctx, shippingAddress)
+func (m *MockRepository) Create(ctx echo.Context, shippingAddress *ShippingAddress, customerID string) error {
+	args := m.Called(ctx, shippingAddress, customerID)
 	return args.Error(0)
 }
 
