@@ -15,7 +15,7 @@ type Order struct {
 	updatedAt time.Time
 }
 
-func NewOrder(createdAt, updatedAt time.Time) (*Order, error) {
+func New(createdAt, updatedAt time.Time) (*Order, error) {
 	orderUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -24,10 +24,10 @@ func NewOrder(createdAt, updatedAt time.Time) (*Order, error) {
 		)
 	}
 
-	return newOrder(orderUUID, createdAt, updatedAt), nil
+	return new(orderUUID, createdAt, updatedAt), nil
 }
 
-func newOrder(id uuid.UUID, createdAt, updatedAt time.Time) *Order {
+func new(id uuid.UUID, createdAt, updatedAt time.Time) *Order {
 	return &Order{
 		id:        id,
 		createdAt: createdAt,

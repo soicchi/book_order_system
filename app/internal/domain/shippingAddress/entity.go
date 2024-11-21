@@ -18,7 +18,7 @@ type ShippingAddress struct {
 	updatedAt  time.Time
 }
 
-func NewShippingAddress(prefecture, city, state string, createdAt, updatedAt time.Time) (*ShippingAddress, error) {
+func New(prefecture, city, state string, createdAt, updatedAt time.Time) (*ShippingAddress, error) {
 	shippingAddressUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -27,10 +27,10 @@ func NewShippingAddress(prefecture, city, state string, createdAt, updatedAt tim
 		)
 	}
 
-	return newShippingAddress(shippingAddressUUID, prefecture, city, state, createdAt, updatedAt), nil
+	return new(shippingAddressUUID, prefecture, city, state, createdAt, updatedAt), nil
 }
 
-func ReconstructShippingAddress(
+func Reconstruct(
 	id uuid.UUID,
 	prefecture string,
 	city string,
@@ -38,10 +38,10 @@ func ReconstructShippingAddress(
 	createdAt time.Time,
 	updatedAt time.Time,
 ) *ShippingAddress {
-	return newShippingAddress(id, prefecture, city, state, createdAt, updatedAt)
+	return new(id, prefecture, city, state, createdAt, updatedAt)
 }
 
-func newShippingAddress(
+func new(
 	id uuid.UUID,
 	prefecture string,
 	city string,

@@ -5,20 +5,20 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockShippingAddressRepository struct {
+type MockRepository struct {
 	mock.Mock
 }
 
-func NewMockShippingAddressRepository() *MockShippingAddressRepository {
-	return &MockShippingAddressRepository{}
+func NewMockRepository() *MockRepository {
+	return &MockRepository{}
 }
 
-func (m *MockShippingAddressRepository) Create(ctx echo.Context, shippingAddress *ShippingAddress) error {
+func (m *MockRepository) Create(ctx echo.Context, shippingAddress *ShippingAddress) error {
 	args := m.Called(ctx, shippingAddress)
 	return args.Error(0)
 }
 
-func (m *MockShippingAddressRepository) FetchByID(ctx echo.Context, id string) (*ShippingAddress, error) {
+func (m *MockRepository) FetchByID(ctx echo.Context, id string) (*ShippingAddress, error) {
 	args := m.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

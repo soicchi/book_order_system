@@ -5,15 +5,15 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockOrderRepository struct {
+type MockRepository struct {
 	mock.Mock
 }
 
-func NewMockOrderRepository() *MockOrderRepository {
-	return &MockOrderRepository{}
+func NewMockRepository() *MockRepository {
+	return &MockRepository{}
 }
 
-func (m *MockOrderRepository) Create(ctx echo.Context, order *Order) error {
+func (m *MockRepository) Create(ctx echo.Context, order *Order) error {
 	args := m.Called(ctx, order)
 	return args.Error(0)
 }

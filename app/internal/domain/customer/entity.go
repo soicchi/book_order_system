@@ -19,7 +19,7 @@ type Customer struct {
 	updatedAt time.Time
 }
 
-func NewCustomer(name, email, plainPassword string, createdAt, updatedAt time.Time) (*Customer, error) {
+func New(name, email, plainPassword string, createdAt, updatedAt time.Time) (*Customer, error) {
 	customerUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -33,10 +33,10 @@ func NewCustomer(name, email, plainPassword string, createdAt, updatedAt time.Ti
 		return nil, err
 	}
 
-	return newCustomer(customerUUID, name, email, hashedPassword, createdAt, updatedAt), nil
+	return new(customerUUID, name, email, hashedPassword, createdAt, updatedAt), nil
 }
 
-func ReconstructCustomer(
+func Reconstruct(
 	id uuid.UUID,
 	name string,
 	email string,
@@ -44,10 +44,10 @@ func ReconstructCustomer(
 	createdAt time.Time,
 	updatedAt time.Time,
 ) *Customer {
-	return newCustomer(id, name, email, password, createdAt, updatedAt)
+	return new(id, name, email, password, createdAt, updatedAt)
 }
 
-func newCustomer(
+func new(
 	id uuid.UUID,
 	name string,
 	email string,
