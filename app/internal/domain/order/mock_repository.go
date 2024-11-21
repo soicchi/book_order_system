@@ -1,8 +1,6 @@
-package interfaces
+package order
 
 import (
-	"github.com/soicchi/book_order_system/internal/domain/entity"
-
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 )
@@ -15,7 +13,7 @@ func NewMockOrderRepository() *MockOrderRepository {
 	return &MockOrderRepository{}
 }
 
-func (m *MockOrderRepository) Create(ctx echo.Context, order *entity.Order) error {
+func (m *MockOrderRepository) Create(ctx echo.Context, order *Order) error {
 	args := m.Called(ctx, order)
 	return args.Error(0)
 }

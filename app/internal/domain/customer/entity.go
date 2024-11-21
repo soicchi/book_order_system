@@ -1,4 +1,4 @@
-package entity
+package customer
 
 import (
 	"fmt"
@@ -15,11 +15,11 @@ type Customer struct {
 	name      string
 	email     string
 	password  values.Password
-	createdAt *time.Time
-	updatedAt *time.Time
+	createdAt time.Time
+	updatedAt time.Time
 }
 
-func NewCustomer(name, email, plainPassword string) (*Customer, error) {
+func NewCustomer(name, email, plainPassword string, createdAt, updatedAt time.Time) (*Customer, error) {
 	customerUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -33,7 +33,7 @@ func NewCustomer(name, email, plainPassword string) (*Customer, error) {
 		return nil, err
 	}
 
-	return newCustomer(customerUUID, name, email, hashedPassword, nil, nil), nil
+	return newCustomer(customerUUID, name, email, hashedPassword, createdAt, updatedAt), nil
 }
 
 func ReconstructCustomer(
@@ -44,7 +44,7 @@ func ReconstructCustomer(
 	createdAt time.Time,
 	updatedAt time.Time,
 ) *Customer {
-	return newCustomer(id, name, email, password, &createdAt, &updatedAt)
+	return newCustomer(id, name, email, password, createdAt, updatedAt)
 }
 
 func newCustomer(
@@ -52,8 +52,8 @@ func newCustomer(
 	name string,
 	email string,
 	password values.Password,
-	createdAt *time.Time,
-	updatedAt *time.Time,
+	createdAt time.Time,
+	updatedAt time.Time,
 ) *Customer {
 	return &Customer{
 		id:        id,
@@ -81,10 +81,10 @@ func (c *Customer) Password() values.Password {
 	return c.password
 }
 
-func (c *Customer) CreatedAt() *time.Time {
+func (c *Customer) CreatedAt() time.Time {
 	return c.createdAt
 }
 
-func (c *Customer) UpdatedAt() *time.Time {
+func (c *Customer) UpdatedAt() time.Time {
 	return c.updatedAt
 }

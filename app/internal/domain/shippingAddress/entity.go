@@ -1,4 +1,4 @@
-package entity
+package shippingAddress
 
 import (
 	"fmt"
@@ -14,12 +14,11 @@ type ShippingAddress struct {
 	prefecture string
 	city       string
 	state      string
-	createdAt  *time.Time
-	updatedAt  *time.Time
-	customerID uuid.UUID
+	createdAt  time.Time
+	updatedAt  time.Time
 }
 
-func NewShippingAddress(prefecture, city, state, customerID string) (*ShippingAddress, error) {
+func NewShippingAddress(prefecture, city, state string, createdAt, updatedAt time.Time) (*ShippingAddress, error) {
 	shippingAddressUUID, err := uuid.NewV7()
 	if err != nil {
 		return nil, errors.NewCustomError(
@@ -28,15 +27,7 @@ func NewShippingAddress(prefecture, city, state, customerID string) (*ShippingAd
 		)
 	}
 
-	customerUUID, err := uuid.Parse(customerID)
-	if err != nil {
-		return nil, errors.NewCustomError(
-			fmt.Errorf("failed to parse customer UUID: %w", err),
-			errors.InternalServerError,
-		)
-	}
-
-	return newShippingAddress(shippingAddressUUID, prefecture, city, state, nil, nil, customerUUID), nil
+	return newShippingAddress(shippingAddressUUID, prefecture, city, state, createdAt, updatedAt), nil
 }
 
 func ReconstructShippingAddress(
@@ -46,9 +37,8 @@ func ReconstructShippingAddress(
 	state string,
 	createdAt time.Time,
 	updatedAt time.Time,
-	customerID uuid.UUID,
 ) *ShippingAddress {
-	return newShippingAddress(id, prefecture, city, state, &createdAt, &updatedAt, customerID)
+	return newShippingAddress(id, prefecture, city, state, createdAt, updatedAt)
 }
 
 func newShippingAddress(
@@ -56,9 +46,8 @@ func newShippingAddress(
 	prefecture string,
 	city string,
 	state string,
-	createdAt *time.Time,
-	updatedAt *time.Time,
-	customerID uuid.UUID,
+	createdAt time.Time,
+	updatedAt time.Time,
 ) *ShippingAddress {
 	return &ShippingAddress{
 		id:         id,
@@ -67,7 +56,6 @@ func newShippingAddress(
 		state:      state,
 		createdAt:  createdAt,
 		updatedAt:  updatedAt,
-		customerID: customerID,
 	}
 }
 
@@ -87,14 +75,10 @@ func (sa *ShippingAddress) State() string {
 	return sa.state
 }
 
-func (sa *ShippingAddress) CreatedAt() *time.Time {
+func (sa *ShippingAddress) CreatedAt() time.Time {
 	return sa.createdAt
 }
 
-func (sa *ShippingAddress) UpdatedAt() *time.Time {
+func (sa *ShippingAddress) UpdatedAt() time.Time {
 	return sa.updatedAt
-}
-
-func (sa *ShippingAddress) CustomerID() uuid.UUID {
-	return sa.customerID
 }
