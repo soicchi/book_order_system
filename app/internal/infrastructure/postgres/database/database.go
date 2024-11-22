@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/soicchi/book_order_system/internal/config"
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database/migrations"
 
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/labstack/echo/v4"
@@ -85,6 +86,7 @@ func GetDB(ctx echo.Context) *gorm.DB {
 func Migrate() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// Add migrations here
+		migrations.CreateCustomerTable,
 	})
 
 	if err := m.Migrate(); err != nil {
