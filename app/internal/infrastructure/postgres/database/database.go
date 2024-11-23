@@ -86,6 +86,17 @@ func GetDB(ctx echo.Context) *gorm.DB {
 	return db
 }
 
+func BeginTx(ctx echo.Context) (*gorm.DB, error) {
+	tx := db.Begin()
+	if tx.Error != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", tx.Error)
+	}
+
+	ctx.Set("tx", tx)
+
+	return tx, nil
+}
+
 func Migrate() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// Add migrations here
