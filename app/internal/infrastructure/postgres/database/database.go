@@ -78,8 +78,11 @@ func (d *DBConfig) dsn() string {
 }
 
 func GetDB(ctx echo.Context) *gorm.DB {
-	// TODO: return tx if exists in context
-	// TODO: we plan to implement this when we implement the transaction management
+	tx, ok := ctx.Get("tx").(*gorm.DB)
+	if ok {
+		return tx
+	}
+
 	return db
 }
 
