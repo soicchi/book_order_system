@@ -10,12 +10,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var sensitiveFields = []string{"password", "email"}
-
 type SensitiveField int
 
 const (
-	Password SensitiveField = iota
+	Password SensitiveField = iota + 1
 	Email
 )
 
