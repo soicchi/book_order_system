@@ -87,7 +87,7 @@ func WithNotFoundDetails(key string) option {
 	}
 }
 
-func NewCustomError(err error, code ErrorCode, options ...option) *CustomError {
+func New(err error, code ErrorCode, options ...option) *CustomError {
 	customErr := &CustomError{
 		Err:     err,
 		Code:    code,
