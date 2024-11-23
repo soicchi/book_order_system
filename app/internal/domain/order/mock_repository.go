@@ -10,6 +10,10 @@ type MockRepository struct {
 	mock.Mock
 }
 
+func NewMockRepository() *MockRepository {
+	return &MockRepository{}
+}
+
 func (m *MockRepository) Create(ctx echo.Context, order *Order, customerID uuid.UUID) error {
 	args := m.Called(ctx, order, customerID)
 	return args.Error(0)
