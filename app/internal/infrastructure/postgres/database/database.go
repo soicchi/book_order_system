@@ -87,6 +87,11 @@ func Migrate() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// Add migrations here
 		migrations.CreateCustomerTable,
+		migrations.CreateOrderTable,
+		migrations.CreateShippingTable,
+		migrations.CreatePaymentTable,
+		migrations.CreateOrderItemTable,
+		migrations.CreateProductTable,
 	})
 
 	if err := m.Migrate(); err != nil {
