@@ -38,3 +38,11 @@ func new(id uuid.UUID, quantity int) *OrderItem {
 		quantity: quantity,
 	}
 }
+
+func (o *OrderItem) ID() uuid.UUID {
+	return o.id
+}
+
+func (o *OrderItem) Quantity() int {
+	return o.quantity
+}
