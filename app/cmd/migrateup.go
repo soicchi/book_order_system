@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// migrateCmd represents the migrate command
+// Migrationを行うためのコマンドを定義
 var migrateCmd = &cobra.Command{
 	Use:   "migrateup",
 	Short: "Migrate the database to the latest version",

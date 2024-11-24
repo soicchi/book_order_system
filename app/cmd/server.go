@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// APIサーバーを起動するためのコマンドを定義
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Start the API server",

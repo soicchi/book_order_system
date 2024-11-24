@@ -42,7 +42,7 @@ type MigrationInfo struct {
 	MigrationName string
 }
 
-// makemigrationCmd represents the makemigration command
+// Migration用のファイルを作成するコマンドを定義
 var makemigrationCmd = &cobra.Command{
 	Use:   "makemigration",
 	Short: "A brief description of your command",
