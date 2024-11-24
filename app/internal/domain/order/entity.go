@@ -18,7 +18,7 @@ type Order struct {
 	userID       uuid.UUID
 	totalPrice   float64
 	orderedAt    time.Time
-	orderDetails []*orderdetail.OrderDetail
+	orderDetails orderdetail.OrderDetails
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
@@ -71,4 +71,27 @@ func (o *Order) TotalPrice() float64 {
 
 func (o *Order) OrderedAt() time.Time {
 	return o.orderedAt
+}
+
+func (o *Order) OrderDetails() orderdetail.OrderDetails {
+	return o.orderDetails
+}
+
+func (o *Order) AddOrderDetails(orderDetails orderdetail.OrderDetails) {
+	o.orderDetails = append(o.orderDetails, orderDetails...)
+}
+
+func (o *Order) CalculateTotalPrice() error {
+	totalPrice := o.orderDetails.TotalPrice()
+
+	if totalPrice < 0 {
+		return errors.New(
+			fmt.Errorf("total price must be greater than or equal to 0. got: %f", totalPrice),
+			errors.InvalidRequest,
+		)
+	}
+
+	o.totalPrice = totalPrice
+
+	return nil
 }

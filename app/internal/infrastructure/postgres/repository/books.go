@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type BookRepository struct{}
@@ -87,7 +88,7 @@ func (r *BookRepository) FindAll(ctx echo.Context) ([]*book.Book, error) {
 		)
 	}
 
-	var books []*book.Book
+	var books book.Books
 	for _, b := range bs {
 		books = append(books, book.Reconstruct(
 			b.ID,
@@ -130,20 +131,27 @@ func (r *BookRepository) Update(ctx echo.Context, book *book.Book) error {
 	return nil
 }
 
-func (r *BookRepository) Delete(ctx echo.Context, id uuid.UUID) error {
+func (r *BookRepository) BulkUpdate(ctx echo.Context, books []*book.Book) error {
 	db := database.GetDB(ctx)
 
-	err := db.Delete(&models.Book{}, id).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return ers.New(
-			fmt.Errorf("book with id %s not found", id),
-			ers.NotFound,
-		)
+	var bs []models.Book
+	for _, b := range books {
+		bs = append(bs, models.Book{
+			ID:        b.ID(),
+			Title:     b.Title(),
+			Author:    b.Author(),
+			Price:     b.Price(),
+			Stock:     b.Stock(),
+			UpdatedAt: b.UpdatedAt(),
+		})
 	}
 
-	if err != nil {
+	if err := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"title", "author", "price", "stock", "updated_at"}),
+	}).Create(&bs).Error; err != nil {
 		return ers.New(
-			fmt.Errorf("failed to delete book: %w", err),
+			fmt.Errorf("failed to bulk update books: %w", err),
 			ers.InternalServerError,
 		)
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -19,14 +20,14 @@ func NewOrderDetailRepository() *OrderDetailRepository {
 	return &OrderDetailRepository{}
 }
 
-func (r *OrderDetailRepository) BulkCreate(ctx echo.Context, orderDetails []*orderdetail.OrderDetail) error {
+func (r *OrderDetailRepository) BulkCreate(ctx echo.Context, orderDetails []*orderdetail.OrderDetail, orderID uuid.UUID) error {
 	db := database.GetDB(ctx)
 
 	var ods []models.OrderDetail
 	for _, od := range orderDetails {
 		ods = append(ods, models.OrderDetail{
 			ID:       od.ID(),
-			OrderID:  od.OrderID(),
+			OrderID:  orderID,
 			BookID:   od.BookID(),
 			Quantity: od.Quantity(),
 			Price:    od.Price(),

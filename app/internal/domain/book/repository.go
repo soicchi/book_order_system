@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	Create(ctx echo.Context, book *Book) error
 	FindByID(ctx echo.Context, id uuid.UUID) (*Book, error)
-	FindAll(ctx echo.Context) ([]*Book, error)
+	FindAll(ctx echo.Context) (Books, error)
 	Update(ctx echo.Context, book *Book) error
+	BulkUpdate(ctx echo.Context, books Books) error
 }

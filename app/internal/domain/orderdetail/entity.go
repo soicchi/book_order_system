@@ -84,3 +84,13 @@ func (od *OrderDetail) Quantity() int {
 func (od *OrderDetail) Price() float64 {
 	return od.price
 }
+
+type OrderDetails []*OrderDetail
+
+func (ods OrderDetails) TotalPrice() float64 {
+	var totalPrice float64
+	for _, od := range ods {
+		totalPrice += od.Price()
+	}
+	return totalPrice
+}

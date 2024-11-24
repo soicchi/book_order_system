@@ -1,9 +1,13 @@
 package user
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/soicchi/book_order_system/internal/errors"
+
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Userはユーザー情報を表すEntity
@@ -19,15 +23,24 @@ type User struct {
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
-func New(username string, email string, password string) *User {
+func New(username string, email string, password string) (*User, error) {
+	// convert password to hash
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, errors.New(
+			fmt.Errorf("failed to generate hash from password: %w", err),
+			errors.InternalServerError,
+		)
+	}
+
 	return &User{
 		id:        uuid.New(),
 		username:  username,
 		email:     email,
-		password:  password,
+		password:  string(passwordHash),
 		createdAt: time.Now(),
 		updatedAt: time.Now(),
-	}
+	}, nil
 }
 
 // DBからデータを取得した際にEntityに変換するための関数

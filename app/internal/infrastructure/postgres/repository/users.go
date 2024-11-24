@@ -80,7 +80,7 @@ func (r *UserRepository) FindAll(ctx echo.Context) ([]*user.User, error) {
 	var users []*models.User
 	err := db.Find(&users).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		return []*user.User{}, nil
 	}
 
 	if err != nil {
@@ -90,7 +90,7 @@ func (r *UserRepository) FindAll(ctx echo.Context) ([]*user.User, error) {
 		)
 	}
 
-	var result []*user.User
+	result := make([]*user.User, 0, len(users))
 	for _, u := range users {
 		result = append(result, user.Reconstruct(
 			u.ID,

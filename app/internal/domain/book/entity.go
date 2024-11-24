@@ -94,3 +94,29 @@ func (b *Book) CreatedAt() time.Time {
 func (b *Book) UpdatedAt() time.Time {
 	return b.updatedAt
 }
+
+func (b *Book) ReduceStock(quantity int) error {
+	if b.stock < quantity {
+		return errors.New(
+			fmt.Errorf("stock is not enough. stock: %d, quantity: %d", b.stock, quantity),
+			errors.InvalidRequest,
+		)
+	}
+
+	b.stock -= quantity
+	return nil
+}
+
+func (b *Book) HasStock(quantity int) bool {
+	return b.stock >= quantity
+}
+
+type Books []*Book
+
+func (bs Books) IDToBook() map[uuid.UUID]*Book {
+	idToBook := make(map[uuid.UUID]*Book, len(bs))
+	for _, b := range bs {
+		idToBook[b.id] = b
+	}
+	return idToBook
+}
