@@ -66,3 +66,31 @@ func new(id uuid.UUID, title, author string, price float64, stock int, createdAt
 		updatedAt: updatedAt,
 	}
 }
+
+func (b *Book) ID() uuid.UUID {
+	return b.id
+}
+
+func (b *Book) Title() string {
+	return b.title
+}
+
+func (b *Book) Author() string {
+	return b.author
+}
+
+func (b *Book) Price() float64 {
+	return b.price
+}
+
+func (b *Book) Stock() int {
+	return b.stock
+}
+
+func (b *Book) CreatedAt() time.Time {
+	return b.createdAt
+}
+
+func (b *Book) UpdatedAt() time.Time {
+	return b.updatedAt
+}
