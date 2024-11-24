@@ -95,15 +95,18 @@ func (b *Book) UpdatedAt() time.Time {
 	return b.updatedAt
 }
 
-func (b *Book) ReduceStock(quantity int) error {
-	if b.stock < quantity {
+func (b *Book) UpdateStock(quantity int) error {
+	b.stock += quantity
+
+	if b.stock < 0 {
 		return errors.New(
-			fmt.Errorf("stock is not enough. stock: %d, quantity: %d", b.stock, quantity),
+			fmt.Errorf("stock must be greater than or equal to 0. got: %d", b.stock),
 			errors.InvalidRequest,
 		)
 	}
 
-	b.stock -= quantity
+	b.updatedAt = time.Now()
+
 	return nil
 }
 

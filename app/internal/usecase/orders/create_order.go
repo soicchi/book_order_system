@@ -26,6 +26,10 @@ func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 		}
 
 		// create order
-		return ou.orderService.OrderBooks(ctx, o, orderDetails)
+		if err := ou.orderService.OrderBooks(ctx, o, orderDetails); err != nil {
+			return err
+		}
+
+		return ou.orderDetailRepo.BulkCreate(ctx, orderDetails, o.ID())
 	})
 }

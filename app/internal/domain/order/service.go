@@ -11,20 +11,17 @@ import (
 )
 
 type OrderService struct {
-	bookRepository        book.Repository
-	orderRepository       Repository
-	orderDetailRepository orderdetail.Repository
+	bookRepository  book.Repository
+	orderRepository Repository
 }
 
 func NewOrderService(
 	bookRepo book.Repository,
 	orderRepo Repository,
-	orderDetailRepo orderdetail.Repository,
 ) *OrderService {
 	return &OrderService{
-		bookRepository:        bookRepo,
-		orderRepository:       orderRepo,
-		orderDetailRepository: orderDetailRepo,
+		bookRepository:  bookRepo,
+		orderRepository: orderRepo,
 	}
 }
 
@@ -52,7 +49,7 @@ func (s *OrderService) OrderBooks(ctx echo.Context, order *Order, orderDetails [
 			)
 		}
 
-		targetBook.ReduceStock(od.Quantity())
+		targetBook.UpdateStock(-od.Quantity())
 	}
 
 	// Update stock
@@ -67,9 +64,5 @@ func (s *OrderService) OrderBooks(ctx echo.Context, order *Order, orderDetails [
 		return err
 	}
 
-	if err := s.orderRepository.Create(ctx, order); err != nil {
-		return err
-	}
-
-	return s.orderDetailRepository.BulkCreate(ctx, orderDetails, order.ID())
+	return s.orderRepository.Create(ctx, order)
 }
