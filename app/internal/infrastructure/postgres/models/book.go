@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// gormigrateを利用している関係上、
+// gormタグは実際のDBのカラムの情報をわかりやすく定義しているだけで、これをもとにDBのテーブルを作成するわけではない
 type Book struct {
 	ID           uuid.UUID     `gorm:"type:uuid;primary_key"`
 	Title        string        `gorm:"type:varchar(255);not null"`
