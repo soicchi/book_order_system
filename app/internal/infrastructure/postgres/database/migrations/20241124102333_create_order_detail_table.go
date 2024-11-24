@@ -33,7 +33,7 @@ var CreateOrderDetailTable = &gormigrate.Migration{
 		if err := tx.Migrator().DropTable("order_details"); err != nil {
 			return fmt.Errorf("failed to drop order_details table: %w", err)
 		}
-	
+
 		return nil
 	},
 }
