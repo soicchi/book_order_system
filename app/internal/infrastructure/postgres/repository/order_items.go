@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	domain "github.com/soicchi/book_order_system/internal/domain/orderItem"
+	"github.com/soicchi/book_order_system/internal/domain/orderItem"
 	ers "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
@@ -20,15 +20,26 @@ func NewOrderItemRepository() *OrderItemRepository {
 	return &OrderItemRepository{}
 }
 
-func (r *OrderItemRepository) Create(ctx echo.Context, orderItem *domain.OrderItem, orderID, productID uuid.UUID) error {
+func (r *OrderItemRepository) BulkCreate(
+	ctx echo.Context,
+	orderItem []*orderItem.OrderItem,
+	orderID uuid.UUID,
+	productIDs []uuid.UUID,
+) error {
 	db := database.GetDB(ctx)
 
-	err := db.Create(&models.OrderItem{
-		ID:        orderItem.ID(),
-		Quantity:  orderItem.Quantity(),
-		OrderID:   orderID,
-		ProductID: productID,
-	}).Error
+	orderItemModels := make([]*models.OrderItem, 0, len(orderItem))
+
+	for i := 0; i < len(orderItem); i++ {
+		orderItemModels = append(orderItemModels, &models.OrderItem{
+			ID:        orderItem[i].ID(),
+			Quantity:  orderItem[i].Quantity(),
+			OrderID:   orderID,
+			ProductID: productIDs[i],
+		})
+	}
+
+	err := db.Create(&orderItemModels).Error
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
 			fmt.Errorf("order item already exists: %w", err),

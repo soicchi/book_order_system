@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	domain "github.com/soicchi/book_order_system/internal/domain/product"
+	"github.com/soicchi/book_order_system/internal/domain/product"
 	ers "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -19,7 +20,7 @@ func NewProductRepository() *ProductRepository {
 	return &ProductRepository{}
 }
 
-func (r *ProductRepository) Create(ctx echo.Context, product *domain.Product) error {
+func (r *ProductRepository) Create(ctx echo.Context, product *product.Product) error {
 	db := database.GetDB(ctx)
 
 	err := db.Create(&models.Product{
@@ -44,4 +45,38 @@ func (r *ProductRepository) Create(ctx echo.Context, product *domain.Product) er
 	}
 
 	return nil
+}
+
+func (r *ProductRepository) FetchAllByIDs(ctx echo.Context, ids []uuid.UUID) (product.Products, error) {
+	db := database.GetDB(ctx)
+
+	var productModels []models.Product
+	err := db.Where("id IN (?)", ids).Find(&productModels).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ers.New(
+			fmt.Errorf("products not found: %w", err),
+			ers.NotFound,
+			ers.WithNotFoundDetails("product_ids"),
+		)
+	}
+
+	if err != nil {
+		return nil, ers.New(
+			fmt.Errorf("failed to fetch products: %w", err),
+			ers.InternalServerError,
+		)
+	}
+
+	var productEntities []*product.Product
+	for _, pm := range productModels {
+		productEntities = append(productEntities, product.Reconstruct(
+			pm.ID,
+			pm.Name,
+			pm.Price,
+			&pm.CreatedAt,
+			&pm.UpdatedAt,
+		))
+	}
+
+	return productEntities, nil
 }

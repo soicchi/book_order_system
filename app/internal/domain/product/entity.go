@@ -45,6 +45,16 @@ func New(name string, price float64) (*Product, error) {
 	return new(productUUID, name, price, &now, &now), nil
 }
 
+func Reconstruct(
+	id uuid.UUID,
+	name string,
+	price float64,
+	createdAt *time.Time,
+	updatedAt *time.Time,
+) *Product {
+	return new(id, name, price, createdAt, updatedAt)
+}
+
 func new(id uuid.UUID, name string, price float64, createdAt *time.Time, updatedAt *time.Time) *Product {
 	return &Product{
 		id:        id,
@@ -73,4 +83,15 @@ func (p *Product) CreatedAt() *time.Time {
 
 func (p *Product) UpdatedAt() *time.Time {
 	return p.updatedAt
+}
+
+type Products []*Product
+
+func (p Products) CalculateTotalPrice() float64 {
+	var totalPrice float64
+	for _, product := range p {
+		totalPrice += product.Price()
+	}
+
+	return totalPrice
 }

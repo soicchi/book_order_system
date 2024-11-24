@@ -6,5 +6,5 @@ import (
 )
 
 type Repository interface {
-	Create(ctx echo.Context, orderItem *OrderItem, orderID, productID uuid.UUID) error
+	BulkCreate(ctx echo.Context, orderItem []*OrderItem, orderID uuid.UUID, productIDs []uuid.UUID) error
 }
