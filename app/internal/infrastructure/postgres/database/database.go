@@ -104,6 +104,7 @@ func Migrate() error {
 		migrations.CreateBookTable,
 		migrations.CreateOrderTable,
 		migrations.CreateOrderDetailTable,
+		migrations.AddColumnStatusInOrderTable,
 	})
 
 	if err := m.Migrate(); err != nil {
