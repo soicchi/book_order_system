@@ -31,6 +31,13 @@ func New(title string, author string, price float64, stock int) (*Book, error) {
 		)
 	}
 
+	if stock < 0 {
+		return nil, errors.New(
+			fmt.Errorf("stock must be greater than or equal to 0. got: %d", stock),
+			errors.InvalidRequest,
+		)
+	}
+
 	return &Book{
 		id:        uuid.New(),
 		title:     title,
@@ -110,8 +117,20 @@ func (b *Book) UpdateStock(quantity int) error {
 	return nil
 }
 
-func (b *Book) HasStock(quantity int) bool {
-	return b.stock >= quantity
+func (b *Book) Update(title, author string, price float64) error {
+	if price < 0 {
+		return errors.New(
+			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
+			errors.InvalidRequest,
+		)
+	}
+
+	b.title = title
+	b.author = author
+	b.price = price
+	b.updatedAt = time.Now()
+
+	return nil
 }
 
 type Books []*Book

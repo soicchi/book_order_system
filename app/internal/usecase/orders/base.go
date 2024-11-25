@@ -10,7 +10,7 @@ import (
 
 type OrderUseCase struct {
 	orderRepository       order.Repository
-	bookRepository        book.Repository
+	bookService           book.Service
 	orderDetailRepository orderdetail.Repository
 	txManager             txmanager.Repository
 	logger                logging.Logger
@@ -18,14 +18,14 @@ type OrderUseCase struct {
 
 func NewOrderUseCase(
 	orderRepository order.Repository,
-	bookRepository book.Repository,
+	bookService book.Service,
 	orderDetailRepository orderdetail.Repository,
 	txManager txmanager.Repository,
 	logger logging.Logger,
 ) *OrderUseCase {
 	return &OrderUseCase{
 		orderRepository:       orderRepository,
-		bookRepository:        bookRepository,
+		bookService:           bookService,
 		orderDetailRepository: orderDetailRepository,
 		txManager:             txManager,
 		logger:                logger,

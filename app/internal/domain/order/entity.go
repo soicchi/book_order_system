@@ -22,18 +22,11 @@ type Order struct {
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
-func New(userID uuid.UUID, totalPrice float64) (*Order, error) {
-	if totalPrice < 0 {
-		return nil, errors.New(
-			fmt.Errorf("total price must be greater than or equal to 0. got: %f", totalPrice),
-			errors.InvalidRequest,
-		)
-	}
-
+func New(userID uuid.UUID) (*Order, error) {
 	return &Order{
 		id:         uuid.New(),
 		userID:     userID,
-		totalPrice: totalPrice,
+		totalPrice: 0,
 		orderedAt:  time.Now(),
 	}, nil
 }
@@ -82,7 +75,10 @@ func (o *Order) AddOrderDetails(orderDetails orderdetail.OrderDetails) {
 }
 
 func (o *Order) CalculateTotalPrice() error {
-	totalPrice := o.orderDetails.TotalPrice()
+	var totalPrice float64
+	for _, od := range o.orderDetails {
+		totalPrice += od.Price()
+	}
 
 	if totalPrice < 0 {
 		return errors.New(

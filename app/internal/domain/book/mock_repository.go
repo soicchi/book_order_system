@@ -33,6 +33,15 @@ func (m *MockRepository) FindAll(ctx echo.Context) ([]*Book, error) {
 	return args.Get(0).([]*Book), args.Error(1)
 }
 
+func (m *MockRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*Book, error) {
+	args := m.Called(ctx, ids)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).([]*Book), args.Error(1)
+}
+
 func (m *MockRepository) Update(ctx echo.Context, book *Book) error {
 	args := m.Called(ctx, book)
 	return args.Error(0)

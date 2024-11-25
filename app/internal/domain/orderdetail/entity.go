@@ -87,10 +87,11 @@ func (od *OrderDetail) Price() float64 {
 
 type OrderDetails []*OrderDetail
 
-func (ods OrderDetails) TotalPrice() float64 {
-	var totalPrice float64
+func (ods OrderDetails) AdjustmentInOrder() map[uuid.UUID]int {
+	bookIDToQuantity := make(map[uuid.UUID]int, len(ods))
 	for _, od := range ods {
-		totalPrice += od.Price()
+		bookIDToQuantity[od.BookID()] = od.Quantity()
 	}
-	return totalPrice
+
+	return bookIDToQuantity
 }

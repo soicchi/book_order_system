@@ -89,3 +89,21 @@ func (u *User) CreatedAt() time.Time {
 func (u *User) UpdatedAt() time.Time {
 	return u.updatedAt
 }
+
+func (u *User) Update(username, email, password string) error {
+	// convert password to hash
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.New(
+			fmt.Errorf("failed to generate hash from password: %w", err),
+			errors.InternalServerError,
+		)
+	}
+
+	u.username = username
+	u.email = email
+	u.password = string(passwordHash)
+	u.updatedAt = time.Now()
+
+	return nil
+}

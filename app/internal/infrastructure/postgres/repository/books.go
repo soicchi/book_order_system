@@ -76,15 +76,50 @@ func (r *BookRepository) FindByID(ctx echo.Context, id uuid.UUID) (*book.Book, e
 	), nil
 }
 
-func (r *BookRepository) FindAll(ctx echo.Context) ([]*book.Book, error) {
+func (r *BookRepository) FindAll(ctx echo.Context) (book.Books, error) {
 	db := database.GetDB(ctx)
 
 	var bs []models.Book
-	err := db.Find(&bs).Error
-	if err != nil {
+	result := db.Find(&bs)
+	if result.Error != nil {
 		return nil, ers.New(
-			fmt.Errorf("failed to find all books: %w", err),
+			fmt.Errorf("failed to find all books: %w", result.Error),
 			ers.InternalServerError,
+		)
+	}
+
+	books := make(book.Books, 0, len(bs))
+	for _, b := range bs {
+		books = append(books, book.Reconstruct(
+			b.ID,
+			b.Title,
+			b.Author,
+			b.Price,
+			b.Stock,
+			b.CreatedAt,
+			b.UpdatedAt,
+		))
+	}
+
+	return books, nil
+}
+
+func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*book.Book, error) {
+	db := database.GetDB(ctx)
+
+	var bs []models.Book
+	result := db.Find(&bs, ids)
+	if result.Error != nil {
+		return nil, ers.New(
+			fmt.Errorf("failed to find all books: %w", result.Error),
+			ers.InternalServerError,
+		)
+	}
+
+	if len(bs) != len(ids) {
+		return nil, ers.New(
+			fmt.Errorf("failed to find all books by ids: %w", gorm.ErrRecordNotFound),
+			ers.NotFound,
 		)
 	}
 

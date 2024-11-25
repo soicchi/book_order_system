@@ -1,74 +1,63 @@
 package orders
 
 import (
-	"fmt"
+	"log/slog"
 
 	"github.com/soicchi/book_order_system/internal/domain/order"
 	"github.com/soicchi/book_order_system/internal/domain/orderdetail"
-	"github.com/soicchi/book_order_system/internal/errors"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 	return ou.txManager.WithTransaction(ctx, func(ctx echo.Context) error {
-		// construct dto to order entity
-		orderEntity, err := order.New(dto.UserID, 0)
+		// convert dto to order entity
+		o, err := order.New(dto.UserID)
 		if err != nil {
 			return err
 		}
 
-		orderDetails := make(orderdetail.OrderDetails, 0, len(dto.OrderDetails))
-		for _, d := range dto.OrderDetails {
-			od, err := orderdetail.New(orderEntity.ID(), d.BookID, d.Quantity, d.Price)
-			if err != nil {
-				return err
-			}
-
-			orderDetails = append(orderDetails, od)
-		}
-
-		books, err := ou.bookRepository.FindAll(ctx)
+		// convert dto to order details entity
+		ods, err := ou.constructOrderDetails(dto.OrderDetails, o.ID())
 		if err != nil {
 			return err
 		}
 
-		bookIDToBook := books.IDToBook()
-		for _, od := range orderDetails {
-			targetBook, ok := bookIDToBook[od.BookID()]
-			if !ok {
-				return errors.New(
-					fmt.Errorf("book not found. bookID: %s", od.BookID()),
-					errors.NotFound,
-				)
-			}
+		bookIDToQuantity := ods.AdjustmentInOrder()
 
-			if !targetBook.HasStock(od.Quantity()) {
-				return errors.New(
-					fmt.Errorf("stock is not enough. bookID: %s, stock: %d, quantity: %d", od.BookID(), targetBook.Stock(), od.Quantity()),
-					errors.InvalidRequest,
-				)
-			}
-
-			targetBook.UpdateStock(-od.Quantity())
-		}
-
-		// Update stock
-		if err := ou.bookRepository.BulkUpdate(ctx, books); err != nil {
+		// update book stock
+		if err := ou.bookService.UpdateStock(ctx, bookIDToQuantity); err != nil {
 			return err
 		}
 
 		// set order details
-		orderEntity.AddOrderDetails(orderDetails)
+		o.AddOrderDetails(ods)
 
-		if err := orderEntity.CalculateTotalPrice(); err != nil {
+		if err := o.CalculateTotalPrice(); err != nil {
 			return err
 		}
 
-		if err := ou.orderRepository.Create(ctx, orderEntity); err != nil {
+		if err := ou.orderRepository.Create(ctx, o); err != nil {
 			return err
 		}
 
-		return ou.orderDetailRepository.BulkCreate(ctx, orderDetails, orderEntity.ID())
+		ou.logger.Info("create order success", slog.Any("order_id", o.ID()), slog.Any("total_price", o.TotalPrice()))
+
+		return ou.orderDetailRepository.BulkCreate(ctx, ods, o.ID())
 	})
+}
+
+func (ou *OrderUseCase) constructOrderDetails(dto []*CreateDetailInput, orderID uuid.UUID) (orderdetail.OrderDetails, error) {
+	ods := make(orderdetail.OrderDetails, 0, len(dto))
+	for _, d := range dto {
+		od, err := orderdetail.New(orderID, d.BookID, d.Quantity, d.Price)
+		if err != nil {
+			return nil, err
+		}
+
+		ods = append(ods, od)
+	}
+
+	return ods, nil
 }
