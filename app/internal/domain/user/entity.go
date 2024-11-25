@@ -1,13 +1,11 @@
 package user
 
 import (
-	"fmt"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/errors"
+	"github.com/soicchi/book_order_system/internal/domain/values"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // Userはユーザー情報を表すEntity
@@ -17,27 +15,23 @@ type User struct {
 	id        uuid.UUID
 	username  string
 	email     string
-	password  string
+	password  values.Password
 	createdAt time.Time
 	updatedAt time.Time
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
 func New(username string, email string, password string) (*User, error) {
-	// convert password to hash
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	passwordHash, err := values.NewPassword(password)
 	if err != nil {
-		return nil, errors.New(
-			fmt.Errorf("failed to generate hash from password: %w", err),
-			errors.InternalServerError,
-		)
+		return nil, err
 	}
 
 	return &User{
 		id:        uuid.New(),
 		username:  username,
 		email:     email,
-		password:  string(passwordHash),
+		password:  passwordHash,
 		createdAt: time.Now(),
 		updatedAt: time.Now(),
 	}, nil
@@ -45,22 +39,13 @@ func New(username string, email string, password string) (*User, error) {
 
 // DBからデータを取得した際にEntityに変換するための関数
 func Reconstruct(id uuid.UUID, username, email, password string, createdAt, updatedAt time.Time) *User {
-	return &User{
-		id:        id,
-		username:  username,
-		email:     email,
-		password:  password,
-		createdAt: createdAt,
-		updatedAt: updatedAt,
-	}
-}
+	passwordHash := values.ReconstructPassword(password)
 
-func new(id uuid.UUID, username, email, password string, createdAt, updatedAt time.Time) *User {
 	return &User{
 		id:        id,
 		username:  username,
 		email:     email,
-		password:  password,
+		password:  passwordHash,
 		createdAt: createdAt,
 		updatedAt: updatedAt,
 	}
@@ -78,7 +63,7 @@ func (u *User) Email() string {
 	return u.email
 }
 
-func (u *User) Password() string {
+func (u *User) Password() values.Password {
 	return u.password
 }
 
@@ -91,18 +76,14 @@ func (u *User) UpdatedAt() time.Time {
 }
 
 func (u *User) Update(username, email, password string) error {
-	// convert password to hash
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	passwordHash, err := values.NewPassword(password)
 	if err != nil {
-		return errors.New(
-			fmt.Errorf("failed to generate hash from password: %w", err),
-			errors.InternalServerError,
-		)
+		return err
 	}
 
 	u.username = username
 	u.email = email
-	u.password = string(passwordHash)
+	u.password = passwordHash
 	u.updatedAt = time.Now()
 
 	return nil

@@ -55,16 +55,6 @@ func Reconstruct(id uuid.UUID, orderID uuid.UUID, bookID uuid.UUID, quantity int
 	}
 }
 
-func new(id uuid.UUID, orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) *OrderDetail {
-	return &OrderDetail{
-		id:       id,
-		orderID:  orderID,
-		bookID:   bookID,
-		quantity: quantity,
-		price:    price,
-	}
-}
-
 func (od *OrderDetail) ID() uuid.UUID {
 	return od.id
 }

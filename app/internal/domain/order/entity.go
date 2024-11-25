@@ -41,15 +41,6 @@ func Reconstruct(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt t
 	}
 }
 
-func new(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt time.Time) *Order {
-	return &Order{
-		id:         id,
-		userID:     userID,
-		totalPrice: totalPrice,
-		orderedAt:  orderedAt,
-	}
-}
-
 func (o *Order) ID() uuid.UUID {
 	return o.id
 }

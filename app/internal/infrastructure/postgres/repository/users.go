@@ -27,7 +27,7 @@ func (r *UserRepository) Create(ctx echo.Context, user *user.User) error {
 		ID:        user.ID(),
 		Username:  user.Username(),
 		Email:     user.Email(),
-		Password:  user.Password(),
+		Password:  user.Password().Value(),
 		CreatedAt: user.CreatedAt(),
 		UpdatedAt: user.UpdatedAt(),
 	}).Error
@@ -111,7 +111,7 @@ func (r *UserRepository) Update(ctx echo.Context, user *user.User) error {
 	err := db.Model(&models.User{}).Where("id = ?", user.ID()).Updates(&models.User{
 		Username: user.Username(),
 		Email:    user.Email(),
-		Password: user.Password(),
+		Password: user.Password().Value(),
 	}).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return ers.New(

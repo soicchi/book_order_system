@@ -62,18 +62,6 @@ func Reconstruct(id uuid.UUID, title, author string, price float64, stock int, c
 	}
 }
 
-func new(id uuid.UUID, title, author string, price float64, stock int, createdAt, updatedAt time.Time) *Book {
-	return &Book{
-		id:        id,
-		title:     title,
-		author:    author,
-		price:     price,
-		stock:     stock,
-		createdAt: createdAt,
-		updatedAt: updatedAt,
-	}
-}
-
 func (b *Book) ID() uuid.UUID {
 	return b.id
 }
