@@ -9,6 +9,7 @@ import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -44,6 +45,25 @@ func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
 	}
 
 	return nil
+}
+
+func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order, error) {
+	db := database.GetDB(ctx)
+
+	var o models.Order
+	err := db.Where("id = ?", id).First(&o).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, ers.New(
+			fmt.Errorf("failed to find order: %w", err),
+			ers.InternalServerError,
+		)
+	}
+
+	return order.Reconstruct(o.ID, o.UserID, o.TotalPrice, o.OrderedAt, o.Status)
 }
 
 func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) error {

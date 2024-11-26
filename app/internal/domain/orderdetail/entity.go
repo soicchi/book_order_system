@@ -85,3 +85,12 @@ func (ods OrderDetails) AdjustmentInOrder() map[uuid.UUID]int {
 
 	return bookIDToQuantity
 }
+
+func (ods OrderDetails) AdjustmentInCancel() map[uuid.UUID]int {
+	bookIDToQuantity := make(map[uuid.UUID]int, len(ods))
+	for _, od := range ods {
+		bookIDToQuantity[od.BookID()] = -od.Quantity()
+	}
+
+	return bookIDToQuantity
+}

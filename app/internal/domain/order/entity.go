@@ -25,11 +25,17 @@ type Order struct {
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
 func New(userID uuid.UUID) (*Order, error) {
+	status, err := values.NewOrderStatus(values.Ordered)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Order{
 		id:         uuid.New(),
 		userID:     userID,
 		totalPrice: 0,
 		orderedAt:  time.Now(),
+		status:     status,
 	}, nil
 }
 
@@ -91,6 +97,14 @@ func (o *Order) CalculateTotalPrice() error {
 	}
 
 	o.totalPrice = totalPrice
+
+	return nil
+}
+
+func (o *Order) UpdateStatus(newStatus values.OrderStatusValue) error {
+	if err := o.status.Update(newStatus); err != nil {
+		return err
+	}
 
 	return nil
 }

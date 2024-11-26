@@ -51,3 +51,33 @@ func (r *OrderDetailRepository) BulkCreate(ctx echo.Context, orderDetails []*ord
 
 	return nil
 }
+
+func (r *OrderDetailRepository) FindByOrderID(ctx echo.Context, orderID uuid.UUID) (orderdetail.OrderDetails, error) {
+	db := database.GetDB(ctx)
+
+	var ods []models.OrderDetail
+	err := db.Where("order_id = ?", orderID).Find(&ods).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, ers.New(
+			fmt.Errorf("failed to find order details by order id: %w", err),
+			ers.InternalServerError,
+		)
+	}
+
+	var orderDetails orderdetail.OrderDetails
+	for _, od := range ods {
+		orderDetails = append(orderDetails, orderdetail.Reconstruct(
+			od.ID,
+			od.BookID,
+			od.BookID,
+			od.Quantity,
+			od.Price,
+		))
+	}
+
+	return orderDetails, nil
+}

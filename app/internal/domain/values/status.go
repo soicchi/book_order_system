@@ -6,15 +6,15 @@ import (
 	"github.com/soicchi/book_order_system/internal/errors"
 )
 
-type orderStatus int
+type OrderStatusValue int
 
 const (
-	Ordered orderStatus = iota + 1
+	Ordered OrderStatusValue = iota + 1
 	Complete
 	Cancelled
 )
 
-func (os orderStatus) String() string {
+func (os OrderStatusValue) String() string {
 	switch os {
 	case Ordered:
 		return "ordered"
@@ -27,7 +27,7 @@ func (os orderStatus) String() string {
 	}
 }
 
-func (os orderStatus) validate() error {
+func (os OrderStatusValue) validate() error {
 	switch os {
 	case Ordered, Complete, Cancelled:
 		return nil
@@ -40,10 +40,10 @@ func (os orderStatus) validate() error {
 }
 
 type OrderStatus struct {
-	value orderStatus
+	value OrderStatusValue
 }
 
-func NewOrderStatus(value orderStatus) (OrderStatus, error) {
+func NewOrderStatus(value OrderStatusValue) (OrderStatus, error) {
 	if err := value.validate(); err != nil {
 		return OrderStatus{}, err
 	}
@@ -69,6 +69,15 @@ func ReconstructOrderStatus(value string) (OrderStatus, error) {
 	}
 }
 
-func (os OrderStatus) Value() orderStatus {
+func (os OrderStatus) Value() OrderStatusValue {
 	return os.value
+}
+
+func (os OrderStatus) Update(value OrderStatusValue) error {
+	if err := value.validate(); err != nil {
+		return err
+	}
+
+	os.value = value
+	return nil
 }
