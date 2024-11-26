@@ -24,14 +24,18 @@ func New(orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) (*Ord
 	if quantity <= 0 {
 		return nil, errors.New(
 			fmt.Errorf("quantity must be greater than 0. got: %d", quantity),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.OrderDetailQuantity),
+			errors.WithIssue(errors.ZeroOrLess),
 		)
 	}
 
 	if price < 0 {
 		return nil, errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.OrderDetailPrice),
+			errors.WithIssue(errors.LessThanZero),
 		)
 	}
 

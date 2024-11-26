@@ -27,14 +27,18 @@ func New(title string, author string, price float64, stock int) (*Book, error) {
 	if price < 0 {
 		return nil, errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.BookPrice),
+			errors.WithIssue(errors.LessThanZero),
 		)
 	}
 
 	if stock < 0 {
 		return nil, errors.New(
 			fmt.Errorf("stock must be greater than or equal to 0. got: %d", stock),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.BookStock),
+			errors.WithIssue(errors.LessThanZero),
 		)
 	}
 
@@ -96,7 +100,9 @@ func (b *Book) UpdateStock(quantity int) error {
 	if b.stock < 0 {
 		return errors.New(
 			fmt.Errorf("stock must be greater than or equal to 0. got: %d", b.stock),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.BookStock),
+			errors.WithIssue(errors.LessThanZero),
 		)
 	}
 
@@ -109,7 +115,9 @@ func (b *Book) Update(title, author string, price float64) error {
 	if price < 0 {
 		return errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.BookPrice),
+			errors.WithIssue(errors.LessThanZero),
 		)
 	}
 

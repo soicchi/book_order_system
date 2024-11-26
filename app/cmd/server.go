@@ -25,7 +25,13 @@ clients, or to test the API endpoints directly.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Database initialization
 		dbConfig := database.NewDBConfig(cfg)
-		dbConfig.Connect()
+
+		// Connect to the database
+		if err := dbConfig.Connect(); err != nil {
+			logger.Error("Failed to connect to the database", err)
+			panic(err)
+		}
+
 		logger.Info("Database initialized")
 
 		// Initialize Echo

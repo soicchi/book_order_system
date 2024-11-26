@@ -16,7 +16,9 @@ func NewPassword(value string) (Password, error) {
 	if len(value) == 0 {
 		return Password{}, errors.New(
 			fmt.Errorf("password must not be empty"),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.UserPassword),
+			errors.WithIssue(errors.Empty),
 		)
 	}
 
@@ -25,7 +27,7 @@ func NewPassword(value string) (Password, error) {
 	if err != nil {
 		return Password{}, errors.New(
 			fmt.Errorf("failed to generate hash from password: %w", err),
-			errors.InternalServerError,
+			errors.UnexpectedError,
 		)
 	}
 

@@ -38,14 +38,15 @@ func (r *OrderDetailRepository) BulkCreate(ctx echo.Context, orderDetails []*ord
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
 			fmt.Errorf("order detail already exists: %w", err),
-			ers.AlreadyExist,
+			ers.AlreadyExistError,
+			ers.WithField(ers.OrderDetail),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to create order detail: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -64,7 +65,7 @@ func (r *OrderDetailRepository) FindByOrderID(ctx echo.Context, orderID uuid.UUI
 	if err != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find order details by order id: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 

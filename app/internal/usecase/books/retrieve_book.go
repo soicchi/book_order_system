@@ -18,7 +18,8 @@ func (bu *BookUseCase) RetrieveBook(ctx echo.Context, id uuid.UUID) (*RetrieveOu
 	if b == nil {
 		return nil, errors.New(
 			fmt.Errorf("book not found"),
-			errors.NotFound,
+			errors.NotFoundError,
+			errors.WithField(errors.Book),
 		)
 	}
 

@@ -17,7 +17,11 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 	}
 
 	if o == nil {
-		return errors.New(fmt.Errorf("order not found"), errors.NotFound)
+		return errors.New(
+			fmt.Errorf("order not found"),
+			errors.NotFoundError,
+			errors.WithField(errors.Order),
+		)
 	}
 
 	// update status to canceled in order entity
@@ -31,7 +35,11 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 	}
 
 	if ods == nil {
-		return errors.New(fmt.Errorf("order details not found"), errors.NotFound)
+		return errors.New(
+			fmt.Errorf("order details not found"),
+			errors.NotFoundError,
+			errors.WithField(errors.OrderDetail),
+		)
 	}
 
 	// manage transaction
