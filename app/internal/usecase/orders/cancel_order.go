@@ -40,7 +40,7 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 			return errors.New(fmt.Errorf("order details not found"), errors.NotFound)
 		}
 
-		bookIDToQuantity := ods.AdjustmentInCancel()
+		bookIDToQuantity := ods.ToQuantityMapForCancel()
 
 		// update book stock
 		if err := ou.bookService.UpdateStock(ctx, bookIDToQuantity); err != nil {

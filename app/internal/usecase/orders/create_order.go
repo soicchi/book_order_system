@@ -24,7 +24,7 @@ func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 			return err
 		}
 
-		bookIDToQuantity := ods.AdjustmentInOrder()
+		bookIDToQuantity := ods.ToQuantityMapForOrder()
 
 		// update book stock
 		if err := ou.bookService.UpdateStock(ctx, bookIDToQuantity); err != nil {
