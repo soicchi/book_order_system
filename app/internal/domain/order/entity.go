@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/soicchi/book_order_system/internal/domain/orderdetail"
+	"github.com/soicchi/book_order_system/internal/domain/values"
 	"github.com/soicchi/book_order_system/internal/errors"
 
 	"github.com/google/uuid"
@@ -19,6 +20,7 @@ type Order struct {
 	totalPrice   float64
 	orderedAt    time.Time
 	orderDetails orderdetail.OrderDetails
+	status       values.OrderStatus
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
@@ -32,13 +34,19 @@ func New(userID uuid.UUID) (*Order, error) {
 }
 
 // DBからデータを取得した際にEntityに変換するための関数
-func Reconstruct(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt time.Time) *Order {
+func Reconstruct(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt time.Time, status string) (*Order, error) {
+	orderStatus, err := values.ReconstructOrderStatus(status)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Order{
 		id:         id,
 		userID:     userID,
 		totalPrice: totalPrice,
 		orderedAt:  orderedAt,
-	}
+		status:     orderStatus,
+	}, nil
 }
 
 func (o *Order) ID() uuid.UUID {
@@ -55,6 +63,10 @@ func (o *Order) TotalPrice() float64 {
 
 func (o *Order) OrderedAt() time.Time {
 	return o.orderedAt
+}
+
+func (o *Order) Status() values.OrderStatus {
+	return o.status
 }
 
 func (o *Order) OrderDetails() orderdetail.OrderDetails {
