@@ -68,3 +68,7 @@ func ReconstructOrderStatus(value string) (OrderStatus, error) {
 		)
 	}
 }
+
+func (os OrderStatus) Value() orderStatus {
+	return os.value
+}

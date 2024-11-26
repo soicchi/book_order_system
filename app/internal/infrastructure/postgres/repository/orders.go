@@ -45,3 +45,24 @@ func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
 
 	return nil
 }
+
+func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) error {
+	db := database.GetDB(ctx)
+
+	result := db.Model(&models.Order{}).Where("id = ?", order.ID()).Update("status", order.Status().Value().String())
+	if result.Error != nil {
+		return ers.New(
+			fmt.Errorf("failed to update order status: %w", result.Error),
+			ers.InternalServerError,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ers.New(
+			fmt.Errorf("order not found: %w", result.Error),
+			ers.NotFound,
+		)
+	}
+
+	return nil
+}
