@@ -6,5 +6,7 @@ import (
 )
 
 type Repository interface {
-	Create(ctx echo.Context, order *Order, customerID, shippingAddressID uuid.UUID) error
+	Create(ctx echo.Context, order *Order) error
+	FindByID(ctx echo.Context, orderID uuid.UUID) (*Order, error)
+	UpdateStatus(ctx echo.Context, order *Order) error
 }

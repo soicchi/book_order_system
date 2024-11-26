@@ -12,14 +12,11 @@ import (
 	"golang.org/x/text/language"
 )
 
-const content = `
-package migrations
+const content = `package migrations
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 )
@@ -35,7 +32,6 @@ var {{.MigrationName}} = &gormigrate.Migration{
 		return nil
 	},
 }
-
 `
 const targetDir = "internal/infrastructure/postgres/database/migrations"
 
@@ -46,7 +42,7 @@ type MigrationInfo struct {
 	MigrationName string
 }
 
-// makemigrationCmd represents the makemigration command
+// Migration用のファイルを作成するコマンドを定義
 var makemigrationCmd = &cobra.Command{
 	Use:   "makemigration",
 	Short: "A brief description of your command",

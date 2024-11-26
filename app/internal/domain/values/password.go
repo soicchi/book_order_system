@@ -1,30 +1,45 @@
 package values
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 
 	"github.com/soicchi/book_order_system/internal/errors"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
-type Password string
+type Password struct {
+	value string
+}
 
-func NewPassword(plainPassword string) (Password, error) {
-	if len(plainPassword) < 8 {
-		return "", errors.NewCustomError(
-			fmt.Errorf("password must be at least 8 characters"),
+func NewPassword(value string) (Password, error) {
+	if len(value) == 0 {
+		return Password{}, errors.New(
+			fmt.Errorf("password must not be empty"),
 			errors.InvalidRequest,
 		)
 	}
 
-	// convert plain password to sh256 hash
-	sha256Hash := sha256.Sum256([]byte(plainPassword))
-	hashedPassword := hex.EncodeToString(sha256Hash[:])
+	// convert password to hash
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(value), bcrypt.DefaultCost)
+	if err != nil {
+		return Password{}, errors.New(
+			fmt.Errorf("failed to generate hash from password: %w", err),
+			errors.InternalServerError,
+		)
+	}
 
-	return Password(hashedPassword), nil
+	return Password{
+		value: string(passwordHash),
+	}, nil
 }
 
-func (p Password) String() string {
-	return string(p)
+func ReconstructPassword(value string) Password {
+	return Password{
+		value: value,
+	}
+}
+
+func (p Password) Value() string {
+	return p.value
 }

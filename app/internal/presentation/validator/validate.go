@@ -21,7 +21,7 @@ func NewCustomValidator() *CustomValidator {
 
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.validator.Struct(i); err != nil {
-		return er.NewCustomError(
+		return er.New(
 			fmt.Errorf("validation error: %w", err),
 			er.InvalidRequest,
 			er.WithDetails(cv.generateDetail(err)),

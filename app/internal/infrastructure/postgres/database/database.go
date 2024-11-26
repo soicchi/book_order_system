@@ -78,18 +78,33 @@ func (d *DBConfig) dsn() string {
 }
 
 func GetDB(ctx echo.Context) *gorm.DB {
-	// TODO: return tx if exists in context
-	// TODO: we plan to implement this when we implement the transaction management
+	tx, ok := ctx.Get("tx").(*gorm.DB)
+	if ok {
+		return tx
+	}
+
 	return db
+}
+
+func BeginTx(ctx echo.Context) (*gorm.DB, error) {
+	tx := db.Begin()
+	if tx.Error != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", tx.Error)
+	}
+
+	ctx.Set("tx", tx)
+
+	return tx, nil
 }
 
 func Migrate() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// Add migrations here
-		migrations.CreateCustomerTable,
-		migrations.CreateShippingAddressTable,
+		migrations.CreateUserTable,
+		migrations.CreateBookTable,
 		migrations.CreateOrderTable,
-		migrations.CreateCartTable,
+		migrations.CreateOrderDetailTable,
+		migrations.AddColumnStatusInOrderTable,
 	})
 
 	if err := m.Migrate(); err != nil {
