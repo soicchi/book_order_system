@@ -11,18 +11,20 @@ import (
 )
 
 func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
-	return ou.txManager.WithTransaction(ctx, func(ctx echo.Context) error {
-		// convert dto to order entity
-		o, err := order.New(dto.UserID)
-		if err != nil {
-			return err
-		}
+	// convert dto to order entity
+	o, err := order.New(dto.UserID)
+	if err != nil {
+		return err
+	}
 
-		// convert dto to order details entity
-		ods, err := ou.constructOrderDetails(dto.OrderDetails, o.ID())
-		if err != nil {
-			return err
-		}
+	// convert dto to order details entity
+	ods, err := ou.constructOrderDetails(dto.OrderDetails, o.ID())
+	if err != nil {
+		return err
+	}
+
+	// manage transaction
+	return ou.txManager.WithTransaction(ctx, func(ctx echo.Context) error {
 
 		bookIDToQuantity := ods.ToQuantityMapForOrder()
 
