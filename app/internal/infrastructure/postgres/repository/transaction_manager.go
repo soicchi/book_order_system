@@ -20,7 +20,7 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 	if err != nil {
 		return errors.New(
 			fmt.Errorf("failed to begin transaction: %w", err),
-			errors.InternalServerError,
+			errors.UnexpectedError,
 		)
 	}
 
@@ -28,7 +28,7 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 		if err := tx.Rollback().Error; err != nil {
 			return errors.New(
 				fmt.Errorf("failed to rollback transaction: %w", err),
-				errors.InternalServerError,
+				errors.UnexpectedError,
 			)
 		}
 
@@ -38,7 +38,7 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 	if err := tx.Commit().Error; err != nil {
 		return errors.New(
 			fmt.Errorf("failed to commit transaction: %w", err),
-			errors.InternalServerError,
+			errors.UnexpectedError,
 		)
 	}
 

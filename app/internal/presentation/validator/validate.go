@@ -1,10 +1,9 @@
 package validator
 
 import (
-	"errors"
 	"fmt"
 
-	er "github.com/soicchi/book_order_system/internal/errors"
+	ers "github.com/soicchi/book_order_system/internal/errors"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -19,27 +18,15 @@ func NewCustomValidator() *CustomValidator {
 	}
 }
 
+// TODO: 特定のFieldとIssueを返すようにする
+// 一旦バリデーションエラーだけ返す
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.validator.Struct(i); err != nil {
-		return er.New(
+		return ers.New(
 			fmt.Errorf("validation error: %w", err),
-			er.InvalidRequest,
-			er.WithDetails(cv.generateDetail(err)),
+			ers.ValidationError,
 		)
 	}
 
 	return nil
-}
-
-func (cv *CustomValidator) generateDetail(err error) er.Details {
-	details := make(er.Details, len(err.(validator.ValidationErrors)))
-	var validationErrors validator.ValidationErrors
-
-	if errors.As(err, &validationErrors) {
-		for _, fieldError := range validationErrors {
-			details[fieldError.Field()] = fieldError.Tag()
-		}
-	}
-
-	return details
 }

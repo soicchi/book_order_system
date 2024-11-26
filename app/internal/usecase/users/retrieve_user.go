@@ -1,6 +1,9 @@
 package users
 
 import (
+	"fmt"
+	"github.com/soicchi/book_order_system/internal/errors"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -9,6 +12,14 @@ func (uu *UserUseCase) RetrieveUser(ctx echo.Context, id uuid.UUID) (*RetrieveOu
 	u, err := uu.userRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
+	}
+
+	if u == nil {
+		return nil, errors.New(
+			fmt.Errorf("user not found"),
+			errors.NotFoundError,
+			errors.WithField(errors.User),
+		)
 	}
 
 	return NewRetrieveOutput(

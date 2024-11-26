@@ -35,14 +35,15 @@ func (r *BookRepository) Create(ctx echo.Context, book *book.Book) error {
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
 			fmt.Errorf("book with title %s already exists", book.Title()),
-			ers.AlreadyExist,
+			ers.AlreadyExistError,
+			ers.WithField(ers.Book),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to create book: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -61,7 +62,7 @@ func (r *BookRepository) FindByID(ctx echo.Context, id uuid.UUID) (*book.Book, e
 	if err != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find book by id: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -84,7 +85,7 @@ func (r *BookRepository) FindAll(ctx echo.Context) (book.Books, error) {
 	if result.Error != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find all books: %w", result.Error),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -112,14 +113,15 @@ func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*book.B
 	if result.Error != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find all books: %w", result.Error),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
 	if len(bs) != len(ids) {
 		return nil, ers.New(
 			fmt.Errorf("failed to find all books by ids: %w", gorm.ErrRecordNotFound),
-			ers.NotFound,
+			ers.NotFoundError,
+			ers.WithField(ers.Book),
 		)
 	}
 
@@ -152,14 +154,15 @@ func (r *BookRepository) Update(ctx echo.Context, book *book.Book) error {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return ers.New(
 			fmt.Errorf("book with id %s not found", book.ID()),
-			ers.NotFound,
+			ers.NotFoundError,
+			ers.WithField(ers.Book),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to update book: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -187,7 +190,7 @@ func (r *BookRepository) BulkUpdate(ctx echo.Context, books []*book.Book) error 
 	}).Create(&bs).Error; err != nil {
 		return ers.New(
 			fmt.Errorf("failed to bulk update books: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 

@@ -17,7 +17,8 @@ func (uu *UserUseCase) UpdateUser(ctx echo.Context, dto *UpdateInput) error {
 	if u == nil {
 		return errors.New(
 			fmt.Errorf("user not found"),
-			errors.NotFound,
+			errors.NotFoundError,
+			errors.WithField(errors.User),
 		)
 	}
 

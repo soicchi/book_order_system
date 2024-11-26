@@ -34,14 +34,15 @@ func (r *UserRepository) Create(ctx echo.Context, user *user.User) error {
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
 			fmt.Errorf("user with email %s already exists", user.Email()),
-			ers.AlreadyExist,
+			ers.AlreadyExistError,
+			ers.WithField(ers.User),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to create user: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -60,7 +61,7 @@ func (r *UserRepository) FindByID(ctx echo.Context, id uuid.UUID) (*user.User, e
 	if err != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find user: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -86,7 +87,7 @@ func (r *UserRepository) FindAll(ctx echo.Context) ([]*user.User, error) {
 	if err != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find users: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -116,14 +117,15 @@ func (r *UserRepository) Update(ctx echo.Context, user *user.User) error {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return ers.New(
 			fmt.Errorf("user with id %s not found", user.ID()),
-			ers.NotFound,
+			ers.NotFoundError,
+			ers.WithField(ers.User),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to update user: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -137,14 +139,15 @@ func (r *UserRepository) Delete(ctx echo.Context, id uuid.UUID) error {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return ers.New(
 			fmt.Errorf("user with id %s not found", id),
-			ers.NotFound,
+			ers.NotFoundError,
+			ers.WithField(ers.User),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to delete user: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 

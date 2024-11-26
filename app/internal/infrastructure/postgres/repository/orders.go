@@ -33,14 +33,15 @@ func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
 			fmt.Errorf("order already exists: %w", err),
-			ers.AlreadyExist,
+			ers.AlreadyExistError,
+			ers.WithField(ers.Order),
 		)
 	}
 
 	if err != nil {
 		return ers.New(
 			fmt.Errorf("failed to create order: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -59,7 +60,7 @@ func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order
 	if err != nil {
 		return nil, ers.New(
 			fmt.Errorf("failed to find order: %w", err),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
@@ -73,14 +74,15 @@ func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) err
 	if result.Error != nil {
 		return ers.New(
 			fmt.Errorf("failed to update order status: %w", result.Error),
-			ers.InternalServerError,
+			ers.UnexpectedError,
 		)
 	}
 
 	if result.RowsAffected == 0 {
 		return ers.New(
 			fmt.Errorf("order not found: %w", result.Error),
-			ers.NotFound,
+			ers.NotFoundError,
+			ers.WithField(ers.Order),
 		)
 	}
 

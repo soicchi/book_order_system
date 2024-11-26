@@ -1,101 +1,41 @@
 package errors
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
 
-type ErrorCode int
-
-const (
-	InvalidRequest ErrorCode = iota
-	NotAuthorized
-	NotFound
-	Forbidden
-	AlreadyExist
-	InternalServerError
-)
-
-func (e ErrorCode) String() string {
-	switch e {
-	case InvalidRequest:
-		return "invalid_request"
-	case NotAuthorized:
-		return "authorized_error"
-	case NotFound:
-		return "not_found"
-	case Forbidden:
-		return "forbidden"
-	case AlreadyExist:
-		return "already_exist"
-	case InternalServerError:
-		return "internal_error"
-	default:
-		return "internal_error"
-	}
-}
-
-func (e ErrorCode) Status() int {
-	switch e {
-	case InvalidRequest:
-		return http.StatusBadRequest
-	case NotFound:
-		return http.StatusNotFound
-	case AlreadyExist:
-		return http.StatusConflict
-	case InternalServerError:
-		return http.StatusInternalServerError
-	default:
-		return http.StatusInternalServerError
-	}
-}
-
-func (e ErrorCode) Message() string {
-	switch e {
-	case InvalidRequest:
-		return "Invalid request parameters"
-	case NotFound:
-		return "Resource not found"
-	case AlreadyExist:
-		return "Resource already exists"
-	default:
-		return "An internal server error occurred"
-	}
-}
-
-type Details map[string]interface{}
-
 type CustomError struct {
-	Err     error
-	Message string
-	Code    ErrorCode
-	Details Details
+	Err   error
+	Code  ErrorCode
+	Field ErrorField
+	Issue ErrorIssue
 }
 
 type option func(*CustomError)
 
-func WithDetails(details Details) option {
-	return func(e *CustomError) {
-		e.Details = details
+func WithField(field ErrorField) option {
+	return func(options *CustomError) {
+		options.Field = field
 	}
 }
 
-func WithNotFoundDetails(key string) option {
-	return func(e *CustomError) {
-		e.Details = Details{key: "not found"}
+func WithIssue(issue ErrorIssue) option {
+	return func(options *CustomError) {
+		options.Issue = issue
 	}
 }
 
-func New(err error, code ErrorCode, options ...option) *CustomError {
+func New(err error, code ErrorCode, opts ...option) *CustomError {
 	customErr := &CustomError{
-		Err:     err,
-		Code:    code,
-		Message: code.Message(),
-		Details: nil,
+		Err:   err,
+		Code:  code,
+		Field: NoField,
+		Issue: NoIssue,
 	}
 
-	for _, opt := range options {
+	for _, opt := range opts {
 		opt(customErr)
 	}
 
@@ -111,22 +51,39 @@ func (c *CustomError) Unwrap() error {
 	return c.Err
 }
 
-func (c *CustomError) ReturnJSON(ctx echo.Context) error {
-	response := newErrorResponse(c.Code.String(), c.Message, c.Details)
+func (c *CustomError) ErrorCode() string {
+	if c.Field != NoField && c.Issue != NoIssue {
+		return fmt.Sprintf("%s.%s.%s", c.Code.String(), c.Field.String(), c.Issue.String())
+	}
 
-	return ctx.JSON(c.Code.Status(), response)
+	// If there is no issue, return the error code with the field.
+	// ex) "NotFound.BookID"
+	if c.Field != NoField {
+		return fmt.Sprintf("%s_%s", c.Code.String(), c.Field.String())
+	}
+
+	return c.Code.String()
+}
+
+func ReturnJSON(ctx echo.Context, err error) error {
+	customErr, ok := err.(*CustomError)
+	if !ok {
+		customErr = New(err, UnexpectedError)
+	}
+
+	res := newErrorResponse(customErr.ErrorCode(), customErr.Code.Message())
+
+	return ctx.JSON(customErr.Code.Status(), res)
 }
 
 type ErrorResponse struct {
-	Code    string  `json:"code"`
-	Message string  `json:"message"`
-	Details Details `json:"details,omitempty"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }
 
-func newErrorResponse(code, message string, details Details) ErrorResponse {
+func newErrorResponse(code, message string) ErrorResponse {
 	return ErrorResponse{
 		Code:    code,
 		Message: message,
-		Details: details,
 	}
 }

@@ -92,7 +92,9 @@ func (o *Order) CalculateTotalPrice() error {
 	if totalPrice < 0 {
 		return errors.New(
 			fmt.Errorf("total price must be greater than or equal to 0. got: %f", totalPrice),
-			errors.InvalidRequest,
+			errors.ValidationError,
+			errors.WithField(errors.OrderTotalPrice),
+			errors.WithIssue(errors.LessThanZero),
 		)
 	}
 

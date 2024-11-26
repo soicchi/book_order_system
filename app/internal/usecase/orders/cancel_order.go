@@ -11,33 +11,42 @@ import (
 )
 
 func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
+	o, err := ou.orderRepository.FindByID(ctx, orderID)
+	if err != nil {
+		return err
+	}
+
+	if o == nil {
+		return errors.New(
+			fmt.Errorf("order not found"),
+			errors.NotFoundError,
+			errors.WithField(errors.Order),
+		)
+	}
+
+	// update status to canceled in order entity
+	if err := o.UpdateStatus(values.Cancelled); err != nil {
+		return err
+	}
+
+	ods, err := ou.orderDetailRepository.FindByOrderID(ctx, orderID)
+	if err != nil {
+		return err
+	}
+
+	if ods == nil {
+		return errors.New(
+			fmt.Errorf("order details not found"),
+			errors.NotFoundError,
+			errors.WithField(errors.OrderDetail),
+		)
+	}
+
+	// manage transaction
 	return ou.txManager.WithTransaction(ctx, func(ctx echo.Context) error {
-		o, err := ou.orderRepository.FindByID(ctx, orderID)
-		if err != nil {
-			return err
-		}
-
-		if o == nil {
-			return errors.New(fmt.Errorf("order not found"), errors.NotFound)
-		}
-
-		// update status to canceled in order entity
-		if err := o.UpdateStatus(values.Cancelled); err != nil {
-			return err
-		}
-
 		// update status to canceled in order repository
 		if err := ou.orderRepository.UpdateStatus(ctx, o); err != nil {
 			return err
-		}
-
-		ods, err := ou.orderDetailRepository.FindByOrderID(ctx, orderID)
-		if err != nil {
-			return err
-		}
-
-		if ods == nil {
-			return errors.New(fmt.Errorf("order details not found"), errors.NotFound)
 		}
 
 		bookIDToQuantity := ods.ToQuantityMapForCancel()
