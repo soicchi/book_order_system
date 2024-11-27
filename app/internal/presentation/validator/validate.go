@@ -42,6 +42,8 @@ func TagToErrorIssue(tag string) ers.ErrorIssue {
 		return ers.Required
 	case "email":
 		return ers.Invalid
+	case "uuid":
+		return ers.Invalid
 	default:
 		return ers.Unknown
 	}

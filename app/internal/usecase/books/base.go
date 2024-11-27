@@ -10,7 +10,7 @@ type BookUseCase struct {
 	logger         logging.Logger
 }
 
-func NewBookUseCase(bookRepository book.Repository, logger logging.Logger) *BookUseCase {
+func NewUseCase(bookRepository book.Repository, logger logging.Logger) *BookUseCase {
 	return &BookUseCase{
 		bookRepository: bookRepository,
 		logger:         logger,

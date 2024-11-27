@@ -10,7 +10,7 @@ type UserUseCase struct {
 	logger         logging.Logger
 }
 
-func NewUserUseCase(userRepository user.Repository, logger logging.Logger) *UserUseCase {
+func NewUseCase(userRepository user.Repository, logger logging.Logger) *UserUseCase {
 	return &UserUseCase{
 		userRepository: userRepository,
 		logger:         logger,

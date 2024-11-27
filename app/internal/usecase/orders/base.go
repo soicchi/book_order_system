@@ -16,7 +16,7 @@ type OrderUseCase struct {
 	logger                logging.Logger
 }
 
-func NewOrderUseCase(
+func NewUseCase(
 	orderRepository order.Repository,
 	bookService book.Service,
 	orderDetailRepository orderdetail.Repository,

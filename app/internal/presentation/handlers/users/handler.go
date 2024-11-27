@@ -26,7 +26,7 @@ type UserHandler struct {
 	logger  logging.Logger
 }
 
-func NewUserHandler(useCase UseCase, logger logging.Logger) *UserHandler {
+func NewHandler(useCase UseCase, logger logging.Logger) *UserHandler {
 	return &UserHandler{
 		useCase: useCase,
 		logger:  logger,
@@ -57,4 +57,87 @@ func (h *UserHandler) CreateUser(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusCreated, nil)
+}
+
+func (h *UserHandler) RetrieveUser(ctx echo.Context) error {
+	var req RetrieveRequest
+
+	if err := ctx.Bind(&req); err != nil {
+		h.logger.Error("failed to bind request", slog.Any("error", err))
+		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
+		return errors.ReturnJSON(ctx, customErr)
+	}
+
+	if err := ctx.Validate(&req); err != nil {
+		h.logger.Error("failed to validate request", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	dto, err := h.useCase.RetrieveUser(ctx, req.ID)
+	if err != nil {
+		h.logger.Error("failed to retrieve user", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	res := NewUserResponse(dto)
+
+	return ctx.JSON(http.StatusOK, res)
+}
+
+func (h *UserHandler) ListUsers(ctx echo.Context) error {
+	dto, err := h.useCase.ListUsers(ctx)
+	if err != nil {
+		h.logger.Error("failed to list users", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	res := NewUsersResponse(dto)
+
+	return ctx.JSON(http.StatusOK, res)
+}
+
+func (h *UserHandler) UpdateUser(ctx echo.Context) error {
+	var req UpdateRequest
+
+	if err := ctx.Bind(&req); err != nil {
+		h.logger.Error("failed to bind request", slog.Any("error", err))
+		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
+		return errors.ReturnJSON(ctx, customErr)
+	}
+
+	if err := ctx.Validate(&req); err != nil {
+		h.logger.Error("failed to validate request", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	dto := dto.NewUpdateInput(req.ID, req.Name, req.Email, req.Password)
+
+	if err := h.useCase.UpdateUser(ctx, dto); err != nil {
+		h.logger.Error("failed to update user", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
+}
+
+func (h *UserHandler) DeleteUser(ctx echo.Context) error {
+	var req DeleteRequest
+
+	if err := ctx.Bind(&req); err != nil {
+		h.logger.Error("failed to bind request", slog.Any("error", err))
+		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
+		return errors.ReturnJSON(ctx, customErr)
+	}
+
+	if err := ctx.Validate(&req); err != nil {
+		h.logger.Error("failed to validate request", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	if err := h.useCase.DeleteUser(ctx, req.ID); err != nil {
+		h.logger.Error("failed to delete user", slog.Any("error", err))
+		return errors.ReturnJSON(ctx, err)
+	}
+
+	return ctx.JSON(http.StatusNoContent, nil)
 }

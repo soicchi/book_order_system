@@ -3,8 +3,11 @@ package router
 import (
 	"log"
 
+	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/repository"
 	"github.com/soicchi/book_order_system/internal/logging"
+	usersHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/users"
 	"github.com/soicchi/book_order_system/internal/presentation/middlewares"
+	usersUseCase "github.com/soicchi/book_order_system/internal/usecase/users"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -23,7 +26,25 @@ func NewRouter(e *echo.Echo, logger logging.Logger) {
 
 // /api/v1
 func v1Router(base *echo.Group, logger logging.Logger) {
-	// v1 := base.Group("/v1")
+	v1 := base.Group("/v1")
+
+	usersRouter(v1, logger)
+}
+
+func usersRouter(version *echo.Group, logger logging.Logger) {
+	users := version.Group("/users")
+
+	// set up dependencies
+	userRepo := repository.NewUserRepository()
+	useCase := usersUseCase.NewUseCase(userRepo, logger)
+	handler := usersHandler.NewHandler(useCase, logger)
+
+	// routes
+	users.POST("", handler.CreateUser)
+	users.GET("", handler.ListUsers)
+	users.GET("/:user_id", handler.RetrieveUser)
+	users.PUT("/:user_id", handler.UpdateUser)
+	users.DELETE("/:user_id", handler.DeleteUser)
 }
 
 // Output the all routes to stdout in local when the server starts
