@@ -5,12 +5,12 @@ type ErrorIssue int
 // Add ErrorIssue when you need a new error issue
 const (
 	NoIssue ErrorIssue = iota
+	Unknown
 	Required
 	Invalid
 	ZeroOrLess
 	LessThanZero
 	Empty
-	Unknown
 )
 
 func (e ErrorIssue) String() string {

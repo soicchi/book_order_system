@@ -105,7 +105,7 @@ func (r *BookRepository) FindAll(ctx echo.Context) (book.Books, error) {
 	return books, nil
 }
 
-func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*book.Book, error) {
+func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) (book.Books, error) {
 	db := database.GetDB(ctx)
 
 	var bs []models.Book
@@ -169,7 +169,7 @@ func (r *BookRepository) Update(ctx echo.Context, book *book.Book) error {
 	return nil
 }
 
-func (r *BookRepository) BulkUpdate(ctx echo.Context, books []*book.Book) error {
+func (r *BookRepository) BulkUpdate(ctx echo.Context, books book.Books) error {
 	db := database.GetDB(ctx)
 
 	var bs []models.Book

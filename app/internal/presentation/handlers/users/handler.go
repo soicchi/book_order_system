@@ -7,17 +7,17 @@ import (
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
 	"github.com/soicchi/book_order_system/internal/presentation/validator"
-	dto "github.com/soicchi/book_order_system/internal/usecase/users"
+	"github.com/soicchi/book_order_system/internal/usecase/users"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type UseCase interface {
-	CreateUser(ctx echo.Context, dto *dto.CreateInput) error
-	RetrieveUser(ctx echo.Context, id uuid.UUID) (*dto.RetrieveOutput, error)
-	ListUsers(ctx echo.Context) ([]*dto.ListOutput, error)
-	UpdateUser(ctx echo.Context, dto *dto.UpdateInput) error
+	CreateUser(ctx echo.Context, dto *users.CreateInput) error
+	RetrieveUser(ctx echo.Context, id uuid.UUID) (*users.RetrieveOutput, error)
+	ListUsers(ctx echo.Context) ([]*users.ListOutput, error)
+	UpdateUser(ctx echo.Context, dto *users.UpdateInput) error
 	DeleteUser(ctx echo.Context, id uuid.UUID) error
 }
 
@@ -41,7 +41,7 @@ func (h *UserHandler) CreateUser(ctx echo.Context) error {
 		return errors.ReturnJSON(ctx, err)
 	}
 
-	dto := dto.NewCreateInput(req.Name, req.Email, req.Password)
+	dto := users.NewCreateInput(req.Name, req.Email, req.Password)
 
 	if err := h.useCase.CreateUser(ctx, dto); err != nil {
 		h.logger.Error("failed to create user", slog.Any("error", err))
@@ -90,7 +90,7 @@ func (h *UserHandler) UpdateUser(ctx echo.Context) error {
 		return errors.ReturnJSON(ctx, err)
 	}
 
-	dto := dto.NewUpdateInput(req.ID, req.Name, req.Email, req.Password)
+	dto := users.NewUpdateInput(req.ID, req.Name, req.Email, req.Password)
 
 	if err := h.useCase.UpdateUser(ctx, dto); err != nil {
 		h.logger.Error("failed to update user", slog.Any("error", err))

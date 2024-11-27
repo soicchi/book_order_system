@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (bu *BookUseCase) ListBook(ctx echo.Context) ([]*ListOutput, error) {
+func (bu *BookUseCase) ListBooks(ctx echo.Context) ([]*ListOutput, error) {
 	books, err := bu.bookRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
