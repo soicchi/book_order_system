@@ -9,13 +9,13 @@ import (
 type CustomError struct {
 	Err   error
 	Code  ErrorCode
-	Field ErrorField
+	Field string
 	Issue ErrorIssue
 }
 
 type option func(*CustomError)
 
-func WithField(field ErrorField) option {
+func WithField(field string) option {
 	return func(options *CustomError) {
 		options.Field = field
 	}
@@ -31,7 +31,7 @@ func New(err error, code ErrorCode, opts ...option) *CustomError {
 	customErr := &CustomError{
 		Err:   err,
 		Code:  code,
-		Field: NoField,
+		Field: "",
 		Issue: NoIssue,
 	}
 
@@ -52,14 +52,14 @@ func (c *CustomError) Unwrap() error {
 }
 
 func (c *CustomError) ErrorCode() string {
-	if c.Field != NoField && c.Issue != NoIssue {
-		return fmt.Sprintf("%s.%s.%s", c.Code.String(), c.Field.String(), c.Issue.String())
+	if c.Field != "" && c.Issue != NoIssue {
+		return fmt.Sprintf("%s.%s.%s", c.Code.String(), c.Field, c.Issue.String())
 	}
 
 	// If there is no issue, return the error code with the field.
 	// ex) "NotFound.BookID"
-	if c.Field != NoField {
-		return fmt.Sprintf("%s_%s", c.Code.String(), c.Field.String())
+	if c.Field != "" {
+		return fmt.Sprintf("%s_%s", c.Code.String(), c.Field)
 	}
 
 	return c.Code.String()

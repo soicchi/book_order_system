@@ -22,11 +22,27 @@ func NewCustomValidator() *CustomValidator {
 // 一旦バリデーションエラーだけ返す
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.validator.Struct(i); err != nil {
-		return ers.New(
-			fmt.Errorf("validation error: %w", err),
-			ers.ValidationError,
-		)
+		// https://github.com/go-playground/validator/blob/6c3307e6c64040ebc0efffe9366927c68146ffba/errors.go#L80
+		for _, fieldError := range err.(validator.ValidationErrors) {
+			return ers.New(
+				fmt.Errorf("validation error: %s. got: %s", fieldError.Field(), fieldError.Tag()),
+				ers.ValidationError,
+				ers.WithField(fieldError.Field()),
+				ers.WithIssue(TagToErrorIssue(fieldError.Tag())),
+			)
+		}
 	}
 
 	return nil
+}
+
+func TagToErrorIssue(tag string) ers.ErrorIssue {
+	switch tag {
+	case "required":
+		return ers.Required
+	case "email":
+		return ers.Invalid
+	default:
+		return ers.Unknown
+	}
 }

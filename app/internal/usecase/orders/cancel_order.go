@@ -20,7 +20,7 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 		return errors.New(
 			fmt.Errorf("order not found"),
 			errors.NotFoundError,
-			errors.WithField(errors.Order),
+			errors.WithField("Order"),
 		)
 	}
 
@@ -38,7 +38,7 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 		return errors.New(
 			fmt.Errorf("order details not found"),
 			errors.NotFoundError,
-			errors.WithField(errors.OrderDetail),
+			errors.WithField("OrderDetail"),
 		)
 	}
 

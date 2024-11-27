@@ -17,7 +17,7 @@ func NewPassword(value string) (Password, error) {
 		return Password{}, errors.New(
 			fmt.Errorf("password must not be empty"),
 			errors.ValidationError,
-			errors.WithField(errors.UserPassword),
+			errors.WithField("Password"),
 			errors.WithIssue(errors.Empty),
 		)
 	}

@@ -36,7 +36,7 @@ func (r *BookRepository) Create(ctx echo.Context, book *book.Book) error {
 		return ers.New(
 			fmt.Errorf("book with title %s already exists", book.Title()),
 			ers.AlreadyExistError,
-			ers.WithField(ers.Book),
+			ers.WithField("Book"),
 		)
 	}
 
@@ -121,7 +121,7 @@ func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*book.B
 		return nil, ers.New(
 			fmt.Errorf("failed to find all books by ids: %w", gorm.ErrRecordNotFound),
 			ers.NotFoundError,
-			ers.WithField(ers.Book),
+			ers.WithField("Book"),
 		)
 	}
 
@@ -155,7 +155,7 @@ func (r *BookRepository) Update(ctx echo.Context, book *book.Book) error {
 		return ers.New(
 			fmt.Errorf("book with id %s not found", book.ID()),
 			ers.NotFoundError,
-			ers.WithField(ers.Book),
+			ers.WithField("Book"),
 		)
 	}
 

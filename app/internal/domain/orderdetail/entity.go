@@ -25,7 +25,7 @@ func New(orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) (*Ord
 		return nil, errors.New(
 			fmt.Errorf("quantity must be greater than 0. got: %d", quantity),
 			errors.ValidationError,
-			errors.WithField(errors.OrderDetailQuantity),
+			errors.WithField("Quantity"),
 			errors.WithIssue(errors.ZeroOrLess),
 		)
 	}
@@ -34,7 +34,7 @@ func New(orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) (*Ord
 		return nil, errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
 			errors.ValidationError,
-			errors.WithField(errors.OrderDetailPrice),
+			errors.WithField("Price"),
 			errors.WithIssue(errors.LessThanZero),
 		)
 	}

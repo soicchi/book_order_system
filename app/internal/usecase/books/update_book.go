@@ -18,7 +18,7 @@ func (bu *BookUseCase) UpdateBook(ctx echo.Context, dto *UpdateInput) error {
 		return errors.New(
 			fmt.Errorf("book not found"),
 			errors.NotFoundError,
-			errors.WithField(errors.Book),
+			errors.WithField("Book"),
 		)
 	}
 

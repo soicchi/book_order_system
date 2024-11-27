@@ -10,6 +10,7 @@ const (
 	ZeroOrLess
 	LessThanZero
 	Empty
+	Unknown
 )
 
 func (e ErrorIssue) String() string {
@@ -24,6 +25,8 @@ func (e ErrorIssue) String() string {
 		return "LessThanZero"
 	case Empty:
 		return "Empty"
+	case Unknown:
+		return "Unknown"
 	default:
 		return "Unknown"
 	}
