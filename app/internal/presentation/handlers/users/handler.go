@@ -1,12 +1,12 @@
 package users
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/logging"
+	"github.com/soicchi/book_order_system/internal/presentation/validator"
 	dto "github.com/soicchi/book_order_system/internal/usecase/users"
 
 	"github.com/google/uuid"
@@ -36,16 +36,8 @@ func NewHandler(useCase UseCase, logger logging.Logger) *UserHandler {
 func (h *UserHandler) CreateUser(ctx echo.Context) error {
 	var req CreateRequest
 
-	// Echo の Bind 関数はJSON形式や型のチェックを行うものでユーザーからの入力を検証するものではないので、
-	// ValidationErrorとだけ返す。
-	if err := ctx.Bind(&req); err != nil {
-		h.logger.Error("failed to bind request", slog.Any("error", err))
-		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
-		return errors.ReturnJSON(ctx, customErr)
-	}
-
-	if err := ctx.Validate(&req); err != nil {
-		h.logger.Error("failed to validate request", slog.Any("error", err))
+	if err := validator.BindAndValidate(ctx, &req); err != nil {
+		h.logger.Error("failed to bind and validate request", slog.Any("error", err))
 		return errors.ReturnJSON(ctx, err)
 	}
 
@@ -62,14 +54,8 @@ func (h *UserHandler) CreateUser(ctx echo.Context) error {
 func (h *UserHandler) RetrieveUser(ctx echo.Context) error {
 	var req RetrieveRequest
 
-	if err := ctx.Bind(&req); err != nil {
-		h.logger.Error("failed to bind request", slog.Any("error", err))
-		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
-		return errors.ReturnJSON(ctx, customErr)
-	}
-
-	if err := ctx.Validate(&req); err != nil {
-		h.logger.Error("failed to validate request", slog.Any("error", err))
+	if err := validator.BindAndValidate(ctx, &req); err != nil {
+		h.logger.Error("failed to bind and validate request", slog.Any("error", err))
 		return errors.ReturnJSON(ctx, err)
 	}
 
@@ -99,14 +85,8 @@ func (h *UserHandler) ListUsers(ctx echo.Context) error {
 func (h *UserHandler) UpdateUser(ctx echo.Context) error {
 	var req UpdateRequest
 
-	if err := ctx.Bind(&req); err != nil {
-		h.logger.Error("failed to bind request", slog.Any("error", err))
-		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
-		return errors.ReturnJSON(ctx, customErr)
-	}
-
-	if err := ctx.Validate(&req); err != nil {
-		h.logger.Error("failed to validate request", slog.Any("error", err))
+	if err := validator.BindAndValidate(ctx, &req); err != nil {
+		h.logger.Error("failed to bind and validate request", slog.Any("error", err))
 		return errors.ReturnJSON(ctx, err)
 	}
 
@@ -123,14 +103,8 @@ func (h *UserHandler) UpdateUser(ctx echo.Context) error {
 func (h *UserHandler) DeleteUser(ctx echo.Context) error {
 	var req DeleteRequest
 
-	if err := ctx.Bind(&req); err != nil {
-		h.logger.Error("failed to bind request", slog.Any("error", err))
-		customErr := errors.New(fmt.Errorf("failed to bind request: %w", err), errors.ValidationError)
-		return errors.ReturnJSON(ctx, customErr)
-	}
-
-	if err := ctx.Validate(&req); err != nil {
-		h.logger.Error("failed to validate request", slog.Any("error", err))
+	if err := validator.BindAndValidate(ctx, &req); err != nil {
+		h.logger.Error("failed to bind and validate request", slog.Any("error", err))
 		return errors.ReturnJSON(ctx, err)
 	}
 

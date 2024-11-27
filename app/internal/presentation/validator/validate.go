@@ -6,6 +6,7 @@ import (
 	ers "github.com/soicchi/book_order_system/internal/errors"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 )
 
 type CustomValidator struct {
@@ -47,4 +48,19 @@ func TagToErrorIssue(tag string) ers.ErrorIssue {
 	default:
 		return ers.Unknown
 	}
+}
+
+func BindAndValidate(ctx echo.Context, i interface{}) error {
+	// Echo の Bind 関数はJSON形式や型のチェックを行うものでユーザーからの入力を検証するものではないく、
+	// どのフィールドがエラーなのかを判定することができないため
+	// ValidationErrorとだけ返す。
+	if err := ctx.Bind(i); err != nil {
+		return ers.New(fmt.Errorf("failed to bind request: %w", err), ers.ValidationError)
+	}
+
+	if err := ctx.Validate(i); err != nil {
+		return err
+	}
+
+	return nil
 }
