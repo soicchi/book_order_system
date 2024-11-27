@@ -19,7 +19,7 @@ func (uu *UserUseCase) DeleteUser(ctx echo.Context, id uuid.UUID) error {
 		return errors.New(
 			fmt.Errorf("user not found"),
 			errors.NotFoundError,
-			errors.WithField(errors.User),
+			errors.WithField("User"),
 		)
 	}
 

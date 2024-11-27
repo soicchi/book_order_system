@@ -5,6 +5,7 @@ type ErrorIssue int
 // Add ErrorIssue when you need a new error issue
 const (
 	NoIssue ErrorIssue = iota
+	Unknown
 	Required
 	Invalid
 	ZeroOrLess
@@ -24,6 +25,8 @@ func (e ErrorIssue) String() string {
 		return "LessThanZero"
 	case Empty:
 		return "Empty"
+	case Unknown:
+		return "Unknown"
 	default:
 		return "Unknown"
 	}

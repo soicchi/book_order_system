@@ -34,7 +34,7 @@ func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
 		return ers.New(
 			fmt.Errorf("order already exists: %w", err),
 			ers.AlreadyExistError,
-			ers.WithField(ers.Order),
+			ers.WithField("Order"),
 		)
 	}
 
@@ -82,7 +82,7 @@ func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) err
 		return ers.New(
 			fmt.Errorf("order not found: %w", result.Error),
 			ers.NotFoundError,
-			ers.WithField(ers.Order),
+			ers.WithField("Order"),
 		)
 	}
 

@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (uu *UserUseCase) ListUser(ctx echo.Context) ([]*ListOutput, error) {
+func (uu *UserUseCase) ListUsers(ctx echo.Context) ([]*ListOutput, error) {
 	users, err := uu.userRepository.FindAll(ctx)
 	if err != nil {
 		return []*ListOutput{}, err

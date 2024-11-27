@@ -28,7 +28,7 @@ func New(title string, author string, price float64, stock int) (*Book, error) {
 		return nil, errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
 			errors.ValidationError,
-			errors.WithField(errors.BookPrice),
+			errors.WithField("Price"),
 			errors.WithIssue(errors.LessThanZero),
 		)
 	}
@@ -37,7 +37,7 @@ func New(title string, author string, price float64, stock int) (*Book, error) {
 		return nil, errors.New(
 			fmt.Errorf("stock must be greater than or equal to 0. got: %d", stock),
 			errors.ValidationError,
-			errors.WithField(errors.BookStock),
+			errors.WithField("Stock"),
 			errors.WithIssue(errors.LessThanZero),
 		)
 	}
@@ -101,7 +101,7 @@ func (b *Book) UpdateStock(quantity int) error {
 		return errors.New(
 			fmt.Errorf("stock must be greater than or equal to 0. got: %d", b.stock),
 			errors.ValidationError,
-			errors.WithField(errors.BookStock),
+			errors.WithField("Stock"),
 			errors.WithIssue(errors.LessThanZero),
 		)
 	}
@@ -116,7 +116,7 @@ func (b *Book) Update(title, author string, price float64) error {
 		return errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
 			errors.ValidationError,
-			errors.WithField(errors.BookPrice),
+			errors.WithField("Price"),
 			errors.WithIssue(errors.LessThanZero),
 		)
 	}

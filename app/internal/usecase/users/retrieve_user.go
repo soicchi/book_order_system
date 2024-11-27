@@ -18,7 +18,7 @@ func (uu *UserUseCase) RetrieveUser(ctx echo.Context, id uuid.UUID) (*RetrieveOu
 		return nil, errors.New(
 			fmt.Errorf("user not found"),
 			errors.NotFoundError,
-			errors.WithField(errors.User),
+			errors.WithField("User"),
 		)
 	}
 

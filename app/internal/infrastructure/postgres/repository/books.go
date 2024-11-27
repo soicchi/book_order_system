@@ -36,7 +36,7 @@ func (r *BookRepository) Create(ctx echo.Context, book *book.Book) error {
 		return ers.New(
 			fmt.Errorf("book with title %s already exists", book.Title()),
 			ers.AlreadyExistError,
-			ers.WithField(ers.Book),
+			ers.WithField("Book"),
 		)
 	}
 
@@ -105,7 +105,7 @@ func (r *BookRepository) FindAll(ctx echo.Context) (book.Books, error) {
 	return books, nil
 }
 
-func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*book.Book, error) {
+func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) (book.Books, error) {
 	db := database.GetDB(ctx)
 
 	var bs []models.Book
@@ -121,7 +121,7 @@ func (r *BookRepository) FindByIDs(ctx echo.Context, ids []uuid.UUID) ([]*book.B
 		return nil, ers.New(
 			fmt.Errorf("failed to find all books by ids: %w", gorm.ErrRecordNotFound),
 			ers.NotFoundError,
-			ers.WithField(ers.Book),
+			ers.WithField("Book"),
 		)
 	}
 
@@ -155,7 +155,7 @@ func (r *BookRepository) Update(ctx echo.Context, book *book.Book) error {
 		return ers.New(
 			fmt.Errorf("book with id %s not found", book.ID()),
 			ers.NotFoundError,
-			ers.WithField(ers.Book),
+			ers.WithField("Book"),
 		)
 	}
 
@@ -169,7 +169,7 @@ func (r *BookRepository) Update(ctx echo.Context, book *book.Book) error {
 	return nil
 }
 
-func (r *BookRepository) BulkUpdate(ctx echo.Context, books []*book.Book) error {
+func (r *BookRepository) BulkUpdate(ctx echo.Context, books book.Books) error {
 	db := database.GetDB(ctx)
 
 	var bs []models.Book

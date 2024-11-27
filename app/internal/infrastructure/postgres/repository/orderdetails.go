@@ -39,7 +39,7 @@ func (r *OrderDetailRepository) BulkCreate(ctx echo.Context, orderDetails []*ord
 		return ers.New(
 			fmt.Errorf("order detail already exists: %w", err),
 			ers.AlreadyExistError,
-			ers.WithField(ers.OrderDetail),
+			ers.WithField("OrderDetail"),
 		)
 	}
 

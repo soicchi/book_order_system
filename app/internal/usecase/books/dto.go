@@ -88,8 +88,9 @@ type UpdateInput struct {
 	Stock  int
 }
 
-func NewUpdateInput(title, author string, price float64, stock int) *UpdateInput {
+func NewUpdateInput(id uuid.UUID, title, author string, price float64, stock int) *UpdateInput {
 	return &UpdateInput{
+		ID:     id,
 		Title:  title,
 		Author: author,
 		Price:  price,

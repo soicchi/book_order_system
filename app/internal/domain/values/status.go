@@ -35,7 +35,7 @@ func (os OrderStatusValue) validate() error {
 		return errors.New(
 			fmt.Errorf("invalid order status: %d", os),
 			errors.ValidationError,
-			errors.WithField(errors.OrderStatus),
+			errors.WithField("Status"),
 			errors.WithIssue(errors.Invalid),
 		)
 	}
@@ -67,7 +67,7 @@ func ReconstructOrderStatus(value string) (OrderStatus, error) {
 		return OrderStatus{}, errors.New(
 			fmt.Errorf("invalid order status: %s", value),
 			errors.ValidationError,
-			errors.WithField(errors.OrderStatus),
+			errors.WithField("Status"),
 			errors.WithIssue(errors.Invalid),
 		)
 	}

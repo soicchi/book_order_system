@@ -35,7 +35,7 @@ func (r *UserRepository) Create(ctx echo.Context, user *user.User) error {
 		return ers.New(
 			fmt.Errorf("user with email %s already exists", user.Email()),
 			ers.AlreadyExistError,
-			ers.WithField(ers.User),
+			ers.WithField("User"),
 		)
 	}
 
@@ -118,7 +118,7 @@ func (r *UserRepository) Update(ctx echo.Context, user *user.User) error {
 		return ers.New(
 			fmt.Errorf("user with id %s not found", user.ID()),
 			ers.NotFoundError,
-			ers.WithField(ers.User),
+			ers.WithField("User"),
 		)
 	}
 
@@ -140,7 +140,7 @@ func (r *UserRepository) Delete(ctx echo.Context, id uuid.UUID) error {
 		return ers.New(
 			fmt.Errorf("user with id %s not found", id),
 			ers.NotFoundError,
-			ers.WithField(ers.User),
+			ers.WithField("User"),
 		)
 	}
 
