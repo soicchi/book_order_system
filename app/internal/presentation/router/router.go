@@ -6,9 +6,11 @@ import (
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/repository"
 	"github.com/soicchi/book_order_system/internal/logging"
 	booksHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/books"
+	orderHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/orders"
 	usersHandler "github.com/soicchi/book_order_system/internal/presentation/handlers/users"
 	"github.com/soicchi/book_order_system/internal/presentation/middlewares"
 	booksUseCase "github.com/soicchi/book_order_system/internal/usecase/books"
+	ordersUseCase "github.com/soicchi/book_order_system/internal/usecase/orders"
 	usersUseCase "github.com/soicchi/book_order_system/internal/usecase/users"
 
 	"github.com/labstack/echo/v4"
@@ -63,6 +65,22 @@ func booksRouter(version *echo.Group, logger logging.Logger) {
 	books.GET("", handler.ListBooks)
 	books.GET("/:book_id", handler.RetrieveBook)
 	books.PUT("/:book_id", handler.UpdateBook)
+}
+
+func ordersRouter(version *echo.Group, logger logging.Logger) {
+	orders := version.Group("/users/:user_id/orders")
+
+	// set up dependencies
+	orderRepo := repository.NewOrderRepository()
+	orderDetailRepo := repository.NewOrderDetailRepository()
+	bookRepo := repository.NewBookRepository()
+	txManager := repository.NewTransactionManager()
+	useCase := ordersUseCase.NewUseCase(orderRepo, orderDetailRepo, bookRepo, txManager, logger)
+	handler := orderHandler.NewHandler(useCase, logger)
+
+	// routes
+	orders.POST("", handler.CreateOrder)
+	orders.PUT("/:order_id", handler.CancelOrder)
 }
 
 // Output the all routes to stdout in local when the server starts
