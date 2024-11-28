@@ -1,8 +1,6 @@
 package errors
 
 import (
-	"fmt"
-
 	"github.com/labstack/echo/v4"
 )
 
@@ -51,39 +49,46 @@ func (c *CustomError) Unwrap() error {
 	return c.Err
 }
 
-func (c *CustomError) ErrorCode() string {
-	if c.Field != "" && c.Issue != NoIssue {
-		return fmt.Sprintf("%s.%s.%s", c.Code.String(), c.Field, c.Issue.String())
-	}
-
-	// If there is no issue, return the error code with the field.
-	// ex) "NotFound.BookID"
-	if c.Field != "" {
-		return fmt.Sprintf("%s_%s", c.Code.String(), c.Field)
-	}
-
-	return c.Code.String()
-}
-
 func ReturnJSON(ctx echo.Context, err error) error {
 	customErr, ok := err.(*CustomError)
 	if !ok {
 		customErr = New(err, UnexpectedError)
 	}
 
-	res := newErrorResponse(customErr.ErrorCode(), customErr.Code.Message())
+	res := newErrorResponse(
+		customErr.Code.String(),
+		customErr.Field,
+		customErr.Issue.String(),
+		customErr.Code.Message(),
+	)
 
 	return ctx.JSON(customErr.Code.Status(), res)
 }
 
-type ErrorResponse struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
+type DetailResponse struct {
+	Field string `json:"field"`
+	Issue string `json:"issue"`
 }
 
-func newErrorResponse(code, message string) ErrorResponse {
+func newDetailResponse(field, issue string) DetailResponse {
+	return DetailResponse{
+		Field: field,
+		Issue: issue,
+	}
+}
+
+type ErrorResponse struct {
+	Code    string         `json:"code"`
+	Detail  DetailResponse `json:"detail"`
+	Message string         `json:"message"`
+}
+
+func newErrorResponse(code, field string, issue string, message string) ErrorResponse {
+	detail := newDetailResponse(field, issue)
+
 	return ErrorResponse{
 		Code:    code,
+		Detail:  detail,
 		Message: message,
 	}
 }
