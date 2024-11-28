@@ -66,8 +66,8 @@ func ReturnJSON(ctx echo.Context, err error) error {
 }
 
 type DetailResponse struct {
-	Field string `json:"field"`
-	Issue string `json:"issue"`
+	Field string `json:"field,omitempty"`
+	Issue string `json:"issue,omitempty"`
 }
 
 func newDetailResponse(field, issue string) DetailResponse {
