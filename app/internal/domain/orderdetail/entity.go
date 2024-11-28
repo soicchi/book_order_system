@@ -81,33 +81,6 @@ func (od *OrderDetail) Price() float64 {
 
 type OrderDetails []*OrderDetail
 
-func (ods OrderDetails) ToQuantityMapForOrder() map[uuid.UUID]int {
-	bookIDToQuantity := make(map[uuid.UUID]int, len(ods))
-	for _, od := range ods {
-		bookIDToQuantity[od.BookID()] = od.Quantity()
-	}
-
-	return bookIDToQuantity
-}
-
-func (ods OrderDetails) ToQuantityMapForCancel() map[uuid.UUID]int {
-	bookIDToQuantity := make(map[uuid.UUID]int, len(ods))
-	for _, od := range ods {
-		bookIDToQuantity[od.BookID()] = -od.Quantity()
-	}
-
-	return bookIDToQuantity
-}
-
-func (ods OrderDetails) TotalPrice() float64 {
-	var totalPrice float64
-	for _, od := range ods {
-		totalPrice += od.Price()
-	}
-
-	return totalPrice
-}
-
 func (ods OrderDetails) BookIDs() []uuid.UUID {
 	bookIDs := make([]uuid.UUID, 0, len(ods))
 	for _, od := range ods {

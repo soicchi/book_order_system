@@ -17,8 +17,8 @@ type Order struct {
 	userID       uuid.UUID
 	totalPrice   float64
 	orderedAt    time.Time
-	orderDetails orderdetail.OrderDetails
 	status       values.OrderStatus
+	orderDetails orderdetail.OrderDetails
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
@@ -74,34 +74,23 @@ func (o *Order) OrderDetails() orderdetail.OrderDetails {
 	return o.orderDetails
 }
 
-func (o *Order) SetTotalPrice(totalPrice float64) {
+func (o *Order) AddOrderDetails(od orderdetail.OrderDetails) {
+	o.orderDetails = append(o.orderDetails, od...)
+}
+
+func (o *Order) CalculateTotalPrice() {
+	var totalPrice float64
+	for _, od := range o.orderDetails {
+		totalPrice += od.Price()
+	}
+
 	o.totalPrice = totalPrice
 }
 
-func (o *Order) SetStatus(newStatus values.OrderStatusValue) error {
+func (o *Order) ChangeStatus(newStatus values.OrderStatusValue) error {
 	if err := o.status.Set(newStatus); err != nil {
 		return err
 	}
 
 	return nil
-}
-
-type OrderWithDetails struct {
-	order        Order
-	orderDetails orderdetail.OrderDetails
-}
-
-func ReconstructOrderWithDetails(order *Order, orderDetails orderdetail.OrderDetails) *OrderWithDetails {
-	return &OrderWithDetails{
-		order:        *order,
-		orderDetails: orderDetails,
-	}
-}
-
-func (owd *OrderWithDetails) Order() *Order {
-	return &owd.order
-}
-
-func (owd *OrderWithDetails) OrderDetails() orderdetail.OrderDetails {
-	return owd.orderDetails
 }

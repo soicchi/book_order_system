@@ -12,19 +12,22 @@ import (
 
 func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 	// convert dto to order entity
-	o, err := order.New(dto.UserID)
+	order, err := order.New(dto.UserID)
 	if err != nil {
 		return err
 	}
 
 	// convert dto to order details entity
-	ods, err := ou.constructOrderDetails(dto.OrderDetails, o.ID())
+	orderDetails, err := ou.constructOrderDetails(dto.OrderDetails, order.ID())
 	if err != nil {
 		return err
 	}
 
-	bookIDToQuantity := ods.ToQuantityMapForOrder()
-	bookIDs := ods.BookIDs()
+	order.AddOrderDetails(orderDetails)
+	order.CalculateTotalPrice()
+
+	bookIDToQuantity := ou.toQuantityMapForOrder(orderDetails)
+	bookIDs := orderDetails.BookIDs()
 
 	// update book stock
 	books, err := ou.bookRepository.FindByIDs(ctx, bookIDs)
@@ -42,16 +45,16 @@ func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 			return err
 		}
 
-		totalPrice := ods.TotalPrice()
-		o.SetTotalPrice(totalPrice)
-
-		if err := ou.orderRepository.Create(ctx, o); err != nil {
+		if err := ou.orderRepository.Create(ctx, order); err != nil {
 			return err
 		}
 
-		ou.logger.Info("create order success", slog.Any("order_id", o.ID()), slog.Any("total_price", o.TotalPrice()))
+		ou.logger.Info(
+			"create order success",
+			slog.Any("order_id", order.ID()), slog.Any("total_price", order.TotalPrice()),
+		)
 
-		return ou.orderDetailRepository.BulkCreate(ctx, ods, o.ID())
+		return ou.orderDetailRepository.BulkCreate(ctx, orderDetails, order.ID())
 	})
 }
 
@@ -67,4 +70,12 @@ func (ou *OrderUseCase) constructOrderDetails(dto []*CreateDetailInput, orderID 
 	}
 
 	return ods, nil
+}
+
+func (ou *OrderUseCase) toQuantityMapForOrder(orderDetails orderdetail.OrderDetails) map[uuid.UUID]int {
+	bookIDToQuantity := make(map[uuid.UUID]int, len(orderDetails))
+	for _, od := range orderDetails {
+		bookIDToQuantity[od.BookID()] = -od.Quantity()
+	}
+	return bookIDToQuantity
 }

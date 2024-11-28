@@ -68,10 +68,7 @@ func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order
 	return order.Reconstruct(o.ID, o.UserID, o.TotalPrice, o.OrderedAt, o.Status), nil
 }
 
-func (r *OrderRepository) FindByIDWithOrderDetails(
-	ctx echo.Context,
-	id uuid.UUID,
-) (*order.OrderWithDetails, error) {
+func (r *OrderRepository) FindByIDWithOrderDetails(ctx echo.Context, id uuid.UUID) (*order.Order, error) {
 	db := database.GetDB(ctx)
 
 	var orderModel models.Order
@@ -87,13 +84,17 @@ func (r *OrderRepository) FindByIDWithOrderDetails(
 		)
 	}
 
-	o := order.Reconstruct(orderModel.ID, orderModel.UserID, orderModel.TotalPrice, orderModel.OrderedAt, orderModel.Status)
-	ods := make(orderdetail.OrderDetails, 0, len(orderModel.OrderDetails))
-	for _, od := range orderModel.OrderDetails {
-		ods = append(ods, orderdetail.Reconstruct(od.ID, od.OrderID, od.BookID, od.Quantity, od.Price))
-	}
+	orderEntity := order.Reconstruct(
+		orderModel.ID,
+		orderModel.UserID,
+		orderModel.TotalPrice,
+		orderModel.OrderedAt,
+		orderModel.Status,
+	)
+	orderDetailEntities := r.reconstructOrderDetails(orderModel.OrderDetails)
+	orderEntity.AddOrderDetails(orderDetailEntities)
 
-	return order.ReconstructOrderWithDetails(o, ods), nil
+	return orderEntity, nil
 }
 
 func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) error {
@@ -116,4 +117,15 @@ func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) err
 	}
 
 	return nil
+}
+
+func (r *OrderRepository) reconstructOrderDetails(orderDetails []models.OrderDetail) orderdetail.OrderDetails {
+	orderDetailEntities := make(orderdetail.OrderDetails, 0, len(orderDetails))
+	for _, od := range orderDetails {
+		orderDetailEntities = append(
+			orderDetailEntities,
+			orderdetail.Reconstruct(od.ID, od.OrderID, od.BookID, od.Quantity, od.Price),
+		)
+	}
+	return orderDetailEntities
 }
