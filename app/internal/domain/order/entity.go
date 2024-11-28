@@ -38,11 +38,8 @@ func New(userID uuid.UUID) (*Order, error) {
 }
 
 // DBからデータを取得した際にEntityに変換するための関数
-func Reconstruct(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt time.Time, status string) (*Order, error) {
-	orderStatus, err := values.ReconstructOrderStatus(status)
-	if err != nil {
-		return nil, err
-	}
+func Reconstruct(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt time.Time, status string) *Order {
+	orderStatus := values.ReconstructOrderStatus(status)
 
 	return &Order{
 		id:         id,
@@ -50,7 +47,7 @@ func Reconstruct(id uuid.UUID, userID uuid.UUID, totalPrice float64, orderedAt t
 		totalPrice: totalPrice,
 		orderedAt:  orderedAt,
 		status:     orderStatus,
-	}, nil
+	}
 }
 
 func (o *Order) ID() uuid.UUID {
@@ -87,4 +84,24 @@ func (o *Order) SetStatus(newStatus values.OrderStatusValue) error {
 	}
 
 	return nil
+}
+
+type OrderWithDetails struct {
+	order        Order
+	orderDetails orderdetail.OrderDetails
+}
+
+func ReconstructOrderWithDetails(order *Order, orderDetails orderdetail.OrderDetails) *OrderWithDetails {
+	return &OrderWithDetails{
+		order:        *order,
+		orderDetails: orderDetails,
+	}
+}
+
+func (owd *OrderWithDetails) Order() *Order {
+	return &owd.order
+}
+
+func (owd *OrderWithDetails) OrderDetails() orderdetail.OrderDetails {
+	return owd.orderDetails
 }

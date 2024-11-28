@@ -23,13 +23,22 @@ func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 		return err
 	}
 
+	bookIDToQuantity := ods.ToQuantityMapForOrder()
+	bookIDs := ods.BookIDs()
+
+	// update book stock
+	books, err := ou.bookRepository.FindByIDs(ctx, bookIDs)
+	if err != nil {
+		return err
+	}
+
+	if err := books.AdjustStocks(bookIDToQuantity); err != nil {
+		return err
+	}
+
 	// manage transaction
 	return ou.txManager.WithTransaction(ctx, func(ctx echo.Context) error {
-
-		bookIDToQuantity := ods.ToQuantityMapForOrder()
-
-		// update book stock
-		if err := ou.bookService.UpdateStock(ctx, bookIDToQuantity); err != nil {
+		if err := ou.bookRepository.BulkUpdate(ctx, books); err != nil {
 			return err
 		}
 

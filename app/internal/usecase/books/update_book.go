@@ -22,7 +22,7 @@ func (bu *BookUseCase) UpdateBook(ctx echo.Context, dto *UpdateInput) error {
 		)
 	}
 
-	if err := b.Update(dto.Title, dto.Author, dto.Price); err != nil {
+	if err := b.SetAll(dto.Title, dto.Author, dto.Price); err != nil {
 		return err
 	}
 

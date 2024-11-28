@@ -92,7 +92,7 @@ func ordersRouter(version *echo.Group, logger logging.Logger) {
 	orderDetailRepo := repository.NewOrderDetailRepository()
 	bookRepo := repository.NewBookRepository()
 	txManager := repository.NewTransactionManager()
-	useCase := ordersUseCase.NewUseCase(orderRepo, orderDetailRepo, bookRepo, txManager, logger)
+	useCase := ordersUseCase.NewUseCase(orderRepo, bookRepo, orderDetailRepo, txManager, logger)
 	handler := orderHandler.NewHandler(useCase, logger)
 
 	// routes

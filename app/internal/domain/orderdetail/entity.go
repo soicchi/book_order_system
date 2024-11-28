@@ -107,3 +107,12 @@ func (ods OrderDetails) TotalPrice() float64 {
 
 	return totalPrice
 }
+
+func (ods OrderDetails) BookIDs() []uuid.UUID {
+	bookIDs := make([]uuid.UUID, 0, len(ods))
+	for _, od := range ods {
+		bookIDs = append(bookIDs, od.BookID())
+	}
+
+	return bookIDs
+}

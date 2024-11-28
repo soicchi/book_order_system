@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/soicchi/book_order_system/internal/domain/order"
+	"github.com/soicchi/book_order_system/internal/domain/orderdetail"
 	ers "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
@@ -64,7 +65,35 @@ func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order
 		)
 	}
 
-	return order.Reconstruct(o.ID, o.UserID, o.TotalPrice, o.OrderedAt, o.Status)
+	return order.Reconstruct(o.ID, o.UserID, o.TotalPrice, o.OrderedAt, o.Status), nil
+}
+
+func (r *OrderRepository) FindByIDWithOrderDetails(
+	ctx echo.Context,
+	id uuid.UUID,
+) (*order.OrderWithDetails, error) {
+	db := database.GetDB(ctx)
+
+	var orderModel models.Order
+	err := db.Where("id = ?", id).Preload("OrderDetails").First(&orderModel).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, ers.New(
+			fmt.Errorf("failed to find order: %w", err),
+			ers.UnexpectedError,
+		)
+	}
+
+	o := order.Reconstruct(orderModel.ID, orderModel.UserID, orderModel.TotalPrice, orderModel.OrderedAt, orderModel.Status)
+	ods := make(orderdetail.OrderDetails, 0, len(orderModel.OrderDetails))
+	for _, od := range orderModel.OrderDetails {
+		ods = append(ods, orderdetail.Reconstruct(od.ID, od.OrderID, od.BookID, od.Quantity, od.Price))
+	}
+
+	return order.ReconstructOrderWithDetails(o, ods), nil
 }
 
 func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) error {

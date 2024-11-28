@@ -94,7 +94,7 @@ func (b *Book) UpdatedAt() time.Time {
 	return b.updatedAt
 }
 
-func (b *Book) UpdateStock(quantity int) error {
+func (b *Book) SetStock(quantity int) error {
 	b.stock += quantity
 
 	if b.stock < 0 {
@@ -111,7 +111,7 @@ func (b *Book) UpdateStock(quantity int) error {
 	return nil
 }
 
-func (b *Book) Update(title, author string, price float64) error {
+func (b *Book) SetAll(title, author string, price float64) error {
 	if price < 0 {
 		return errors.New(
 			fmt.Errorf("price must be greater than or equal to 0. got: %f", price),
@@ -137,4 +137,17 @@ func (bs Books) IDToBook() map[uuid.UUID]*Book {
 		idToBook[b.id] = b
 	}
 	return idToBook
+}
+
+func (bs Books) AdjustStocks(adjustments map[uuid.UUID]int) error {
+	idToBook := bs.IDToBook()
+
+	for id, adjustment := range adjustments {
+		book := idToBook[id]
+		if err := book.SetStock(adjustment); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

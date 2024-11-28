@@ -11,10 +11,13 @@ import (
 )
 
 func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
-	o, err := ou.orderRepository.FindByID(ctx, orderID)
+	owd, err := ou.orderRepository.FindByIDWithOrderDetails(ctx, orderID)
 	if err != nil {
 		return err
 	}
+
+	o := owd.Order()
+	ods := owd.OrderDetails()
 
 	if o == nil {
 		return errors.New(
@@ -29,12 +32,7 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 		return err
 	}
 
-	ods, err := ou.orderDetailRepository.FindByOrderID(ctx, orderID)
-	if err != nil {
-		return err
-	}
-
-	if ods == nil {
+	if len(ods) == 0 {
 		return errors.New(
 			fmt.Errorf("order details not found"),
 			errors.NotFoundError,
@@ -42,20 +40,26 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 		)
 	}
 
+	bookIDToQuantity := ods.ToQuantityMapForCancel()
+	bookIDs := ods.BookIDs()
+
+	books, err := ou.bookRepository.FindByIDs(ctx, bookIDs)
+	if err != nil {
+		return err
+	}
+
+	if err := books.AdjustStocks(bookIDToQuantity); err != nil {
+		return err
+	}
+
 	// manage transaction
 	return ou.txManager.WithTransaction(ctx, func(ctx echo.Context) error {
-		// update status to canceled in order repository
+		// update status to canceled
 		if err := ou.orderRepository.UpdateStatus(ctx, o); err != nil {
 			return err
 		}
 
-		bookIDToQuantity := ods.ToQuantityMapForCancel()
-
 		// update book stock
-		if err := ou.bookService.UpdateStock(ctx, bookIDToQuantity); err != nil {
-			return err
-		}
-
-		return nil
+		return ou.bookRepository.BulkUpdate(ctx, books)
 	})
 }
