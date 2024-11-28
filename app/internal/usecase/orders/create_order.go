@@ -33,12 +33,8 @@ func (ou *OrderUseCase) CreateOrder(ctx echo.Context, dto *CreateInput) error {
 			return err
 		}
 
-		// set order details
-		o.AddOrderDetails(ods)
-
-		if err := o.CalculateTotalPrice(); err != nil {
-			return err
-		}
+		totalPrice := ods.TotalPrice()
+		o.SetTotalPrice(totalPrice)
 
 		if err := ou.orderRepository.Create(ctx, o); err != nil {
 			return err

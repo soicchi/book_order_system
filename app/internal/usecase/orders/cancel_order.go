@@ -25,7 +25,7 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, orderID uuid.UUID) error {
 	}
 
 	// update status to canceled in order entity
-	if err := o.UpdateStatus(values.Cancelled); err != nil {
+	if err := o.SetStatus(values.Cancelled); err != nil {
 		return err
 	}
 

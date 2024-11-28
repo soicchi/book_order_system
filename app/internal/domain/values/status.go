@@ -77,7 +77,7 @@ func (os OrderStatus) Value() OrderStatusValue {
 	return os.value
 }
 
-func (os OrderStatus) Update(value OrderStatusValue) error {
+func (os OrderStatus) Set(value OrderStatusValue) error {
 	if err := value.validate(); err != nil {
 		return err
 	}

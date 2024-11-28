@@ -98,3 +98,12 @@ func (ods OrderDetails) ToQuantityMapForCancel() map[uuid.UUID]int {
 
 	return bookIDToQuantity
 }
+
+func (ods OrderDetails) TotalPrice() float64 {
+	var totalPrice float64
+	for _, od := range ods {
+		totalPrice += od.Price()
+	}
+
+	return totalPrice
+}

@@ -1,12 +1,10 @@
 package order
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/soicchi/book_order_system/internal/domain/orderdetail"
 	"github.com/soicchi/book_order_system/internal/domain/values"
-	"github.com/soicchi/book_order_system/internal/errors"
 
 	"github.com/google/uuid"
 )
@@ -79,32 +77,12 @@ func (o *Order) OrderDetails() orderdetail.OrderDetails {
 	return o.orderDetails
 }
 
-func (o *Order) AddOrderDetails(orderDetails orderdetail.OrderDetails) {
-	o.orderDetails = append(o.orderDetails, orderDetails...)
-}
-
-func (o *Order) CalculateTotalPrice() error {
-	var totalPrice float64
-	for _, od := range o.orderDetails {
-		totalPrice += od.Price()
-	}
-
-	if totalPrice < 0 {
-		return errors.New(
-			fmt.Errorf("total price must be greater than or equal to 0. got: %f", totalPrice),
-			errors.ValidationError,
-			errors.WithField("TotalPrice"),
-			errors.WithIssue(errors.LessThanZero),
-		)
-	}
-
+func (o *Order) SetTotalPrice(totalPrice float64) {
 	o.totalPrice = totalPrice
-
-	return nil
 }
 
-func (o *Order) UpdateStatus(newStatus values.OrderStatusValue) error {
-	if err := o.status.Update(newStatus); err != nil {
+func (o *Order) SetStatus(newStatus values.OrderStatusValue) error {
+	if err := o.status.Set(newStatus); err != nil {
 		return err
 	}
 
