@@ -71,30 +71,6 @@ func (r *OrderRepository) FindByID(ctx echo.Context, orderID uuid.UUID) (*order.
 	), nil
 }
 
-func (r *OrderRepository) Update(ctx echo.Context, order *order.Order, bookID uuid.UUID) error {
-	db := database.GetDB(ctx)
-	orderDetailModels := r.toOrderDetailModels(order.OrderDetails(), order.ID(), bookID)
-	orderModel := r.toOrderModel(order, orderDetailModels)
-
-	result := db.Save(&orderModel)
-	if result.Error != nil {
-		return ers.New(
-			fmt.Errorf("failed to update order status: %w", result.Error),
-			ers.UnexpectedError,
-		)
-	}
-
-	if result.RowsAffected == 0 {
-		return ers.New(
-			fmt.Errorf("order not found: %w", result.Error),
-			ers.NotFoundError,
-			ers.WithField("Order"),
-		)
-	}
-
-	return nil
-}
-
 func (r *OrderRepository) toOrderModel(order *order.Order, orderDetailModels []models.OrderDetail) models.Order {
 	return models.Order{
 		ID:           order.ID(),
