@@ -29,3 +29,29 @@ func NewCreateDetailInput(bookID uuid.UUID, quantity int, price float64) *Create
 		Price:    price,
 	}
 }
+
+type CancelInput struct {
+	OrderID uuid.UUID
+	UserID  uuid.UUID
+	Details []*CancelDetailInput
+}
+
+type CancelDetailInput struct {
+	BookID   uuid.UUID
+	Quantity int
+}
+
+func NewCancelDetail(bookID uuid.UUID, quantity int) *CancelDetailInput {
+	return &CancelDetailInput{
+		BookID:   bookID,
+		Quantity: quantity,
+	}
+}
+
+func NewCancelInput(orderID uuid.UUID, userID uuid.UUID, details []*CancelDetailInput) *CancelInput {
+	return &CancelInput{
+		OrderID: orderID,
+		UserID:  userID,
+		Details: details,
+	}
+}

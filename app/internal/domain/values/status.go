@@ -10,7 +10,6 @@ type OrderStatusValue int
 
 const (
 	Ordered OrderStatusValue = iota + 1
-	Complete
 	Cancelled
 )
 
@@ -18,26 +17,10 @@ func (os OrderStatusValue) String() string {
 	switch os {
 	case Ordered:
 		return "ordered"
-	case Complete:
-		return "complete"
 	case Cancelled:
 		return "cancelled"
 	default:
 		return ""
-	}
-}
-
-func (os OrderStatusValue) validate() error {
-	switch os {
-	case Ordered, Complete, Cancelled:
-		return nil
-	default:
-		return errors.New(
-			fmt.Errorf("invalid order status: %d", os),
-			errors.ValidationError,
-			errors.WithField("Status"),
-			errors.WithIssue(errors.Invalid),
-		)
 	}
 }
 
@@ -46,7 +29,7 @@ type OrderStatus struct {
 }
 
 func NewOrderStatus(value OrderStatusValue) (OrderStatus, error) {
-	if err := value.validate(); err != nil {
+	if err := validate(value); err != nil {
 		return OrderStatus{}, err
 	}
 
@@ -55,17 +38,13 @@ func NewOrderStatus(value OrderStatusValue) (OrderStatus, error) {
 	}, nil
 }
 
-func ReconstructOrderStatus(value string) (OrderStatus, error) {
+func validate(value OrderStatusValue) error {
 	switch value {
-	case "ordered":
-		return NewOrderStatus(Ordered)
-	case "complete":
-		return NewOrderStatus(Complete)
-	case "cancelled":
-		return NewOrderStatus(Cancelled)
+	case Ordered, Cancelled:
+		return nil
 	default:
-		return OrderStatus{}, errors.New(
-			fmt.Errorf("invalid order status: %s", value),
+		return errors.New(
+			fmt.Errorf("invalid order status: %d", value),
 			errors.ValidationError,
 			errors.WithField("Status"),
 			errors.WithIssue(errors.Invalid),
@@ -73,12 +52,23 @@ func ReconstructOrderStatus(value string) (OrderStatus, error) {
 	}
 }
 
+func ReconstructOrderStatus(value string) OrderStatus {
+	switch value {
+	case "ordered":
+		return OrderStatus{value: Ordered}
+	case "cancelled":
+		return OrderStatus{value: Cancelled}
+	default:
+		return OrderStatus{}
+	}
+}
+
 func (os OrderStatus) Value() OrderStatusValue {
 	return os.value
 }
 
-func (os OrderStatus) Update(value OrderStatusValue) error {
-	if err := value.validate(); err != nil {
+func (os OrderStatus) Set(value OrderStatusValue) error {
+	if err := validate(value); err != nil {
 		return err
 	}
 

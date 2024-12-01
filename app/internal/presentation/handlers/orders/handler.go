@@ -9,13 +9,12 @@ import (
 	"github.com/soicchi/book_order_system/internal/presentation/validator"
 	"github.com/soicchi/book_order_system/internal/usecase/orders"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type UseCase interface {
 	CreateOrder(ctx echo.Context, dto *orders.CreateInput) error
-	CancelOrder(ctx echo.Context, orderID uuid.UUID) error
+	CancelOrder(ctx echo.Context, dto *orders.CancelInput) error
 }
 
 type OrderHandler struct {
@@ -61,7 +60,14 @@ func (h *OrderHandler) CancelOrder(ctx echo.Context) error {
 		return errors.ReturnJSON(ctx, err)
 	}
 
-	if err := h.useCase.CancelOrder(ctx, req.OrderID); err != nil {
+	detailDTO := make([]*orders.CancelDetailInput, 0, len(req.Details))
+	for _, d := range req.Details {
+		detailDTO = append(detailDTO, orders.NewCancelDetail(d.BookID, d.Quantity))
+	}
+
+	dto := orders.NewCancelInput(req.OrderID, req.UserID, detailDTO)
+
+	if err := h.useCase.CancelOrder(ctx, dto); err != nil {
 		h.logger.Error("failed to cancel order", slog.Any("error", err.Error()))
 		return errors.ReturnJSON(ctx, err)
 	}

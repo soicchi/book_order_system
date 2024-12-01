@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/soicchi/book_order_system/internal/domain/order"
+	"github.com/soicchi/book_order_system/internal/domain/orderdetail"
 	ers "github.com/soicchi/book_order_system/internal/errors"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
 	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
@@ -20,15 +21,12 @@ func NewOrderRepository() *OrderRepository {
 	return &OrderRepository{}
 }
 
-func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
+func (r *OrderRepository) Create(ctx echo.Context, order *order.Order, bookID uuid.UUID) error {
 	db := database.GetDB(ctx)
+	orderDetailModels := r.toOrderDetailModels(order.OrderDetails(), order.ID(), bookID)
+	orderModel := r.toOrderModel(order, orderDetailModels)
 
-	err := db.Create(&models.Order{
-		ID:         order.ID(),
-		UserID:     order.UserID(),
-		TotalPrice: order.TotalPrice(),
-		OrderedAt:  order.OrderedAt(),
-	}).Error
+	err := db.Create(&orderModel).Error
 
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
@@ -48,11 +46,11 @@ func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
 	return nil
 }
 
-func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order, error) {
+func (r *OrderRepository) FindByID(ctx echo.Context, orderID uuid.UUID) (*order.Order, error) {
 	db := database.GetDB(ctx)
 
 	var o models.Order
-	err := db.Where("id = ?", id).First(&o).Error
+	err := db.Preload("OrderDetails").Where("id = ?", orderID).First(&o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -64,27 +62,50 @@ func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order
 		)
 	}
 
-	return order.Reconstruct(o.ID, o.UserID, o.TotalPrice, o.OrderedAt, o.Status)
+	return order.Reconstruct(
+		o.ID,
+		o.TotalPrice,
+		o.OrderedAt,
+		o.Status,
+		r.reconstructOrderDetails(o.OrderDetails),
+	), nil
 }
 
-func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) error {
-	db := database.GetDB(ctx)
+func (r *OrderRepository) toOrderModel(order *order.Order, orderDetailModels []models.OrderDetail) models.Order {
+	return models.Order{
+		ID:           order.ID(),
+		TotalPrice:   order.TotalPrice(),
+		OrderedAt:    order.OrderedAt(),
+		Status:       order.Status().Value().String(),
+		OrderDetails: orderDetailModels,
+	}
+}
 
-	result := db.Model(&models.Order{}).Where("id = ?", order.ID()).Update("status", order.Status().Value().String())
-	if result.Error != nil {
-		return ers.New(
-			fmt.Errorf("failed to update order status: %w", result.Error),
-			ers.UnexpectedError,
+func (r *OrderRepository) reconstructOrderDetails(orderDetails []models.OrderDetail) []*orderdetail.OrderDetail {
+	orderDetailEntities := make([]*orderdetail.OrderDetail, 0, len(orderDetails))
+	for _, od := range orderDetails {
+		orderDetailEntities = append(
+			orderDetailEntities,
+			orderdetail.Reconstruct(od.ID, od.Quantity, od.Price),
 		)
 	}
+	return orderDetailEntities
+}
 
-	if result.RowsAffected == 0 {
-		return ers.New(
-			fmt.Errorf("order not found: %w", result.Error),
-			ers.NotFoundError,
-			ers.WithField("Order"),
-		)
+func (r *OrderRepository) toOrderDetailModels(
+	orderDetails []*orderdetail.OrderDetail,
+	orderID uuid.UUID,
+	bookID uuid.UUID,
+) []models.OrderDetail {
+	orderDetailModels := make([]models.OrderDetail, 0, len(orderDetails))
+	for _, od := range orderDetails {
+		orderDetailModels = append(orderDetailModels, models.OrderDetail{
+			ID:       od.ID(),
+			OrderID:  orderID,
+			BookID:   bookID,
+			Quantity: od.Quantity(),
+			Price:    od.Price(),
+		})
 	}
-
-	return nil
+	return orderDetailModels
 }

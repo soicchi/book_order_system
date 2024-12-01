@@ -33,9 +33,12 @@ func v1Router(base *echo.Group, logger logging.Logger) {
 	v1 := base.Group("/v1")
 
 	usersRouter(v1, logger)
-	booksRouter(v1, logger)
+	ordersRouter(v1, logger)
+	adminBooksRouter(v1, logger)
+	adminUsersRouter(v1, logger)
 }
 
+// /api/v1/users
 func usersRouter(version *echo.Group, logger logging.Logger) {
 	users := version.Group("/users")
 
@@ -46,14 +49,27 @@ func usersRouter(version *echo.Group, logger logging.Logger) {
 
 	// routes
 	users.POST("", handler.CreateUser)
-	users.GET("", handler.ListUsers)
 	users.GET("/:user_id", handler.RetrieveUser)
 	users.PUT("/:user_id", handler.UpdateUser)
 	users.DELETE("/:user_id", handler.DeleteUser)
 }
 
-func booksRouter(version *echo.Group, logger logging.Logger) {
-	books := version.Group("/books")
+// /api/v1/admin/users
+func adminUsersRouter(version *echo.Group, logger logging.Logger) {
+	adminUsers := version.Group("/admin/users")
+
+	// set up dependencies
+	userRepo := repository.NewUserRepository()
+	useCase := usersUseCase.NewUseCase(userRepo, logger)
+	handler := usersHandler.NewHandler(useCase, logger)
+
+	// routes
+	adminUsers.GET("", handler.ListUsers)
+}
+
+// /api/v1/admin/books
+func adminBooksRouter(version *echo.Group, logger logging.Logger) {
+	books := version.Group("/admin/books")
 
 	// set up dependencies
 	bookRepo := repository.NewBookRepository()
@@ -67,15 +83,15 @@ func booksRouter(version *echo.Group, logger logging.Logger) {
 	books.PUT("/:book_id", handler.UpdateBook)
 }
 
+// /api/v1/users/:user_id/orders
 func ordersRouter(version *echo.Group, logger logging.Logger) {
 	orders := version.Group("/users/:user_id/orders")
 
 	// set up dependencies
 	orderRepo := repository.NewOrderRepository()
-	orderDetailRepo := repository.NewOrderDetailRepository()
 	bookRepo := repository.NewBookRepository()
 	txManager := repository.NewTransactionManager()
-	useCase := ordersUseCase.NewUseCase(orderRepo, orderDetailRepo, bookRepo, txManager, logger)
+	useCase := ordersUseCase.NewUseCase(orderRepo, bookRepo, txManager, logger)
 	handler := orderHandler.NewHandler(useCase, logger)
 
 	// routes
