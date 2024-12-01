@@ -8,15 +8,15 @@ import (
 )
 
 type OrderUseCase struct {
-	orderRepository order.Repository
-	bookRepository  book.Repository
+	orderRepository order.OrderRepository
+	bookRepository  book.BookRepository
 	txManager       txmanager.Repository
 	logger          logging.Logger
 }
 
 func NewUseCase(
-	orderRepository order.Repository,
-	bookRepository book.Repository,
+	orderRepository order.OrderRepository,
+	bookRepository book.BookRepository,
 	txManager txmanager.Repository,
 	logger logging.Logger,
 ) *OrderUseCase {

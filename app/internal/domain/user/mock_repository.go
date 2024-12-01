@@ -10,7 +10,7 @@ type MockRepository struct {
 	mock.Mock
 }
 
-func NewRepository() Repository {
+func NewRepository() *MockRepository {
 	return &MockRepository{}
 }
 

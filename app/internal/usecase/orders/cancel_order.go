@@ -39,6 +39,7 @@ func (ou *OrderUseCase) CancelOrder(ctx echo.Context, dto *CancelInput) error {
 
 	orderDetails := order.OrderDetails()
 
+	// create a new order entity to cancel the order
 	newOrder, err := orderDomain.New(orderDetails)
 	if err != nil {
 		return err

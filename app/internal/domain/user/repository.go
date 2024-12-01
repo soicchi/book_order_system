@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Repository interface {
+type UserRepository interface {
 	Create(ctx echo.Context, user *User) error
 	FindByID(ctx echo.Context, id uuid.UUID) (*User, error)
 	FindAll(ctx echo.Context) ([]*User, error)
