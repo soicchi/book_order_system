@@ -6,11 +6,11 @@ import (
 )
 
 type BookUseCase struct {
-	bookRepository book.Repository
+	bookRepository book.BookRepository
 	logger         logging.Logger
 }
 
-func NewUseCase(bookRepository book.Repository, logger logging.Logger) *BookUseCase {
+func NewUseCase(bookRepository book.BookRepository, logger logging.Logger) *BookUseCase {
 	return &BookUseCase{
 		bookRepository: bookRepository,
 		logger:         logger,

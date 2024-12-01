@@ -6,11 +6,11 @@ import (
 )
 
 type UserUseCase struct {
-	userRepository user.Repository
+	userRepository user.UserRepository
 	logger         logging.Logger
 }
 
-func NewUseCase(userRepository user.Repository, logger logging.Logger) *UserUseCase {
+func NewUseCase(userRepository user.UserRepository, logger logging.Logger) *UserUseCase {
 	return &UserUseCase{
 		userRepository: userRepository,
 		logger:         logger,
