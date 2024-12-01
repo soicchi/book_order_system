@@ -10,7 +10,6 @@ type OrderStatusValue int
 
 const (
 	Ordered OrderStatusValue = iota + 1
-	Complete
 	Cancelled
 )
 
@@ -18,8 +17,6 @@ func (os OrderStatusValue) String() string {
 	switch os {
 	case Ordered:
 		return "ordered"
-	case Complete:
-		return "complete"
 	case Cancelled:
 		return "cancelled"
 	default:
@@ -43,7 +40,7 @@ func NewOrderStatus(value OrderStatusValue) (OrderStatus, error) {
 
 func validate(value OrderStatusValue) error {
 	switch value {
-	case Ordered, Complete, Cancelled:
+	case Ordered, Cancelled:
 		return nil
 	default:
 		return errors.New(
@@ -59,8 +56,6 @@ func ReconstructOrderStatus(value string) OrderStatus {
 	switch value {
 	case "ordered":
 		return OrderStatus{value: Ordered}
-	case "complete":
-		return OrderStatus{value: Complete}
 	case "cancelled":
 		return OrderStatus{value: Cancelled}
 	default:

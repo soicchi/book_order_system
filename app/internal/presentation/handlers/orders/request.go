@@ -17,5 +17,12 @@ type CreateDetailRequest struct {
 }
 
 type CancelRequest struct {
-	OrderID uuid.UUID `param:"order_id" validate:"required,uuid"`
+	OrderID uuid.UUID       `param:"order_id" validate:"required,uuid"`
+	UserID  uuid.UUID       `param:"user_id" validate:"required,uuid"`
+	Details []*CancelDetail `json:"details" validate:"required,dive"`
+}
+
+type CancelDetail struct {
+	BookID   uuid.UUID `json:"book_id" validate:"required,uuid"`
+	Quantity int       `json:"quantity" validate:"required"`
 }

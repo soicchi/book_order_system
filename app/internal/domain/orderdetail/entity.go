@@ -13,14 +13,12 @@ import (
 // フィールドにアクセスするためのgetterメソッドを提供する
 type OrderDetail struct {
 	id       uuid.UUID
-	orderID  uuid.UUID
-	bookID   uuid.UUID
 	quantity int
 	price    float64
 }
 
 // Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
-func New(orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) (*OrderDetail, error) {
+func New(quantity int, price float64) (*OrderDetail, error) {
 	if quantity <= 0 {
 		return nil, errors.New(
 			fmt.Errorf("quantity must be greater than 0. got: %d", quantity),
@@ -41,19 +39,15 @@ func New(orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) (*Ord
 
 	return &OrderDetail{
 		id:       uuid.New(),
-		orderID:  orderID,
-		bookID:   bookID,
 		quantity: quantity,
 		price:    price,
 	}, nil
 }
 
 // DBからデータを取得した際にEntityに変換するための関数
-func Reconstruct(id uuid.UUID, orderID uuid.UUID, bookID uuid.UUID, quantity int, price float64) *OrderDetail {
+func Reconstruct(id uuid.UUID, quantity int, price float64) *OrderDetail {
 	return &OrderDetail{
 		id:       id,
-		orderID:  orderID,
-		bookID:   bookID,
 		quantity: quantity,
 		price:    price,
 	}
@@ -63,29 +57,10 @@ func (od *OrderDetail) ID() uuid.UUID {
 	return od.id
 }
 
-func (od *OrderDetail) OrderID() uuid.UUID {
-	return od.orderID
-}
-
-func (od *OrderDetail) BookID() uuid.UUID {
-	return od.bookID
-}
-
 func (od *OrderDetail) Quantity() int {
 	return od.quantity
 }
 
 func (od *OrderDetail) Price() float64 {
 	return od.price
-}
-
-type OrderDetails []*OrderDetail
-
-func (ods OrderDetails) BookIDs() []uuid.UUID {
-	bookIDs := make([]uuid.UUID, 0, len(ods))
-	for _, od := range ods {
-		bookIDs = append(bookIDs, od.BookID())
-	}
-
-	return bookIDs
 }

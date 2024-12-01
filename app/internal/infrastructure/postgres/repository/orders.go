@@ -21,15 +21,12 @@ func NewOrderRepository() *OrderRepository {
 	return &OrderRepository{}
 }
 
-func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
+func (r *OrderRepository) Create(ctx echo.Context, order *order.Order, bookID uuid.UUID) error {
 	db := database.GetDB(ctx)
+	orderDetailModels := r.toOrderDetailModels(order.OrderDetails(), order.ID(), bookID)
+	orderModel := r.toOrderModel(order, orderDetailModels)
 
-	err := db.Create(&models.Order{
-		ID:         order.ID(),
-		UserID:     order.UserID(),
-		TotalPrice: order.TotalPrice(),
-		OrderedAt:  order.OrderedAt(),
-	}).Error
+	err := db.Create(&orderModel).Error
 
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return ers.New(
@@ -49,11 +46,11 @@ func (r *OrderRepository) Create(ctx echo.Context, order *order.Order) error {
 	return nil
 }
 
-func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order, error) {
+func (r *OrderRepository) FindByID(ctx echo.Context, orderID uuid.UUID) (*order.Order, error) {
 	db := database.GetDB(ctx)
 
 	var o models.Order
-	err := db.Where("id = ?", id).First(&o).Error
+	err := db.Preload("OrderDetails").Where("id = ?", orderID).First(&o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -65,42 +62,21 @@ func (r *OrderRepository) FindByID(ctx echo.Context, id uuid.UUID) (*order.Order
 		)
 	}
 
-	return order.Reconstruct(o.ID, o.UserID, o.TotalPrice, o.OrderedAt, o.Status), nil
+	return order.Reconstruct(
+		o.ID,
+		o.TotalPrice,
+		o.OrderedAt,
+		o.Status,
+		r.reconstructOrderDetails(o.OrderDetails),
+	), nil
 }
 
-func (r *OrderRepository) FindByIDWithOrderDetails(ctx echo.Context, id uuid.UUID) (*order.Order, error) {
+func (r *OrderRepository) Update(ctx echo.Context, order *order.Order, bookID uuid.UUID) error {
 	db := database.GetDB(ctx)
+	orderDetailModels := r.toOrderDetailModels(order.OrderDetails(), order.ID(), bookID)
+	orderModel := r.toOrderModel(order, orderDetailModels)
 
-	var orderModel models.Order
-	err := db.Where("id = ?", id).Preload("OrderDetails").First(&orderModel).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
-	}
-
-	if err != nil {
-		return nil, ers.New(
-			fmt.Errorf("failed to find order: %w", err),
-			ers.UnexpectedError,
-		)
-	}
-
-	orderEntity := order.Reconstruct(
-		orderModel.ID,
-		orderModel.UserID,
-		orderModel.TotalPrice,
-		orderModel.OrderedAt,
-		orderModel.Status,
-	)
-	orderDetailEntities := r.reconstructOrderDetails(orderModel.OrderDetails)
-	orderEntity.AddOrderDetails(orderDetailEntities)
-
-	return orderEntity, nil
-}
-
-func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) error {
-	db := database.GetDB(ctx)
-
-	result := db.Model(&models.Order{}).Where("id = ?", order.ID()).Update("status", order.Status().Value().String())
+	result := db.Save(&orderModel)
 	if result.Error != nil {
 		return ers.New(
 			fmt.Errorf("failed to update order status: %w", result.Error),
@@ -119,13 +95,41 @@ func (r *OrderRepository) UpdateStatus(ctx echo.Context, order *order.Order) err
 	return nil
 }
 
-func (r *OrderRepository) reconstructOrderDetails(orderDetails []models.OrderDetail) orderdetail.OrderDetails {
-	orderDetailEntities := make(orderdetail.OrderDetails, 0, len(orderDetails))
+func (r *OrderRepository) toOrderModel(order *order.Order, orderDetailModels []models.OrderDetail) models.Order {
+	return models.Order{
+		ID:           order.ID(),
+		TotalPrice:   order.TotalPrice(),
+		OrderedAt:    order.OrderedAt(),
+		Status:       order.Status().Value().String(),
+		OrderDetails: orderDetailModels,
+	}
+}
+
+func (r *OrderRepository) reconstructOrderDetails(orderDetails []models.OrderDetail) []*orderdetail.OrderDetail {
+	orderDetailEntities := make([]*orderdetail.OrderDetail, 0, len(orderDetails))
 	for _, od := range orderDetails {
 		orderDetailEntities = append(
 			orderDetailEntities,
-			orderdetail.Reconstruct(od.ID, od.OrderID, od.BookID, od.Quantity, od.Price),
+			orderdetail.Reconstruct(od.ID, od.Quantity, od.Price),
 		)
 	}
 	return orderDetailEntities
+}
+
+func (r *OrderRepository) toOrderDetailModels(
+	orderDetails []*orderdetail.OrderDetail,
+	orderID uuid.UUID,
+	bookID uuid.UUID,
+) []models.OrderDetail {
+	orderDetailModels := make([]models.OrderDetail, 0, len(orderDetails))
+	for _, od := range orderDetails {
+		orderDetailModels = append(orderDetailModels, models.OrderDetail{
+			ID:       od.ID(),
+			OrderID:  orderID,
+			BookID:   bookID,
+			Quantity: od.Quantity(),
+			Price:    od.Price(),
+		})
+	}
+	return orderDetailModels
 }
