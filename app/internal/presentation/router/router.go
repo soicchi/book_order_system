@@ -3,8 +3,8 @@ package router
 import (
 	"log"
 
-	"github.com/soicchi/book_order_system/internal/logging"
-	"github.com/soicchi/book_order_system/internal/presentation/middlewares"
+	"event_system/internal/logging"
+	"event_system/internal/presentation/middlewares"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
