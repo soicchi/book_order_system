@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/soicchi/book_order_system/internal/config"
+	"event_system/internal/config"
 )
 
 type Logger interface {

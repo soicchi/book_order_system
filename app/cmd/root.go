@@ -4,9 +4,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/soicchi/book_order_system/internal/config"
-	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
-	"github.com/soicchi/book_order_system/internal/logging"
+	"event_system/internal/config"
+	"event_system/internal/infrastructure/postgres/database"
+	"event_system/internal/logging"
 
 	"github.com/spf13/cobra"
 )

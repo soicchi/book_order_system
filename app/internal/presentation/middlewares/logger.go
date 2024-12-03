@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/soicchi/book_order_system/internal/logging"
+	"event_system/internal/logging"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
