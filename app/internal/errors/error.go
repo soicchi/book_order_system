@@ -30,7 +30,7 @@ func New(err error, code ErrorCode, opts ...option) *CustomError {
 		Err:   err,
 		Code:  code,
 		Field: "",
-		Issue: NoIssue,
+		Issue: Unknown,
 	}
 
 	for _, opt := range opts {
