@@ -100,11 +100,11 @@ func BeginTx(ctx echo.Context) (*gorm.DB, error) {
 func Migrate() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// Add migrations here
-		migrations.CreateUserTable,
-		migrations.CreateBookTable,
-		migrations.CreateOrderTable,
-		migrations.CreateOrderDetailTable,
-		migrations.AddColumnStatusInOrderTable,
+		migrations.AddUserTable,
+		migrations.AddVenueTable,
+		migrations.AddEventTable,
+		migrations.AddRegistrationTable,
+		migrations.AddTicketTable,
 	})
 
 	if err := m.Migrate(); err != nil {

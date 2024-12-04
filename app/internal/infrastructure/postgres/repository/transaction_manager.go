@@ -44,23 +44,3 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 
 	return nil
 }
-
-func GetDB(ctx echo.Context) *gorm.DB {
-	tx, ok := ctx.Get("tx").(*gorm.DB)
-	if ok {
-		return tx
-	}
-
-	return db
-}
-
-func BeginTx(ctx echo.Context) (*gorm.DB, error) {
-	tx := db.Begin()
-	if tx.Error != nil {
-		return nil, fmt.Errorf("failed to begin transaction: %w", tx.Error)
-	}
-
-	ctx.Set("tx", tx)
-
-	return tx, nil
-}
