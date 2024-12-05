@@ -1,6 +1,9 @@
 _docker_exec:
 	docker compose exec api ${CMD}
 
+_docker_run_test:
+	docker compose run --rm test_api ${CMD}
+
 docker_build:
 	docker compose build
 
@@ -20,7 +23,7 @@ go_vet:
 	@make _docker_exec CMD='go vet ./...'
 
 go_test:
-	@make _docker_exec CMD='go test -v -cover ./...'
+	@make _docker_run_test CMD='go test -v -cover ./...'
 
 go_get:
 	@make _docker_exec CMD='go get ${PKG}'

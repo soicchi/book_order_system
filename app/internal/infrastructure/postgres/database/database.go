@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -126,4 +127,47 @@ func (d *DBConfig) setupPool() error {
 	sqlDB.SetConnMaxLifetime(d.poolLifetime * time.Second)
 
 	return nil
+}
+
+// For testing purposes
+
+type TestDBConfig struct {
+	host     string
+	name     string
+	user     string
+	password string
+	port     string
+	sslMode  string
+}
+
+func NewTestDBConfig() *TestDBConfig {
+	return &TestDBConfig{
+		host:     os.Getenv("TEST_DB_HOST"),
+		name:     os.Getenv("TEST_DB_NAME"),
+		user:     os.Getenv("TEST_DB_USER"),
+		password: os.Getenv("TEST_DB_PASSWORD"),
+		port:     os.Getenv("TEST_DB_PORT"),
+		sslMode:  os.Getenv("DB_SSL_MODE"),
+	}
+}
+
+func (d *TestDBConfig) Connect() error {
+	dsn := d.dsn()
+	var err error
+
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		TranslateError: true,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to connect database: %w", err)
+	}
+
+	return nil
+}
+
+func (d *TestDBConfig) dsn() string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		d.host, d.user, d.password, d.name, d.port, d.sslMode,
+	)
 }
