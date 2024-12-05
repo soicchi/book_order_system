@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	id 	  uuid.UUID
-	name      string
-	email     string
-	role *role.Role
+	id    uuid.UUID
+	name  string
+	email string
+	role  *role.Role
 }
 
 func New(name, email string, role *role.Role) *User {

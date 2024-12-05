@@ -3,25 +3,25 @@ package registration
 import (
 	"time"
 
-	"event_system/internal/domain/ticket"
 	"event_system/internal/domain/status"
+	"event_system/internal/domain/ticket"
 
 	"github.com/google/uuid"
 )
 
 type Registration struct {
-	id uuid.UUID
+	id           uuid.UUID
 	registeredAt time.Time
-	status *status.Status
-	ticket *ticket.Ticket 
+	status       *status.Status
+	ticket       *ticket.Ticket
 }
 
 func New(ticket *ticket.Ticket) *Registration {
 	return &Registration{
-		id: uuid.New(),
+		id:           uuid.New(),
 		registeredAt: time.Now(),
-		status: status.New(status.Registered),
-		ticket: ticket,
+		status:       status.New(status.Registered),
+		ticket:       ticket,
 	}
 }
 
@@ -32,10 +32,10 @@ func Reconstruct(
 	ticket *ticket.Ticket,
 ) *Registration {
 	return &Registration{
-		id: id,
+		id:           id,
 		registeredAt: registeredAt,
-		status: status,
-		ticket: ticket,
+		status:       status,
+		ticket:       ticket,
 	}
 }
 

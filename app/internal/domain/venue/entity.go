@@ -5,26 +5,26 @@ import (
 )
 
 type Venue struct {
-	id          uuid.UUID
-	name        string
-	address string
+	id       uuid.UUID
+	name     string
+	address  string
 	capacity int
 }
 
 func New(name, address string, capacity int) *Venue {
 	return &Venue{
-		id:      uuid.New(),
-		name:    name,
-		address: address,
+		id:       uuid.New(),
+		name:     name,
+		address:  address,
 		capacity: capacity,
 	}
 }
 
 func Reconstruct(id uuid.UUID, name, address string, capacity int) *Venue {
 	return &Venue{
-		id:      id,
-		name:    name,
-		address: address,
+		id:       id,
+		name:     name,
+		address:  address,
 		capacity: capacity,
 	}
 }

@@ -5,21 +5,19 @@ import (
 	"time"
 
 	"event_system/internal/domain/user"
-	"event_system/internal/domain/venue"
 	"event_system/internal/errors"
 
 	"github.com/google/uuid"
 )
 
 type Event struct {
-	id uuid.UUID
-	title string
+	id          uuid.UUID
+	title       string
 	description string
-	startTime time.Time
-	endTime time.Time
-	createdAt time.Time
-	updatedAt time.Time
-	venue *venue.Venue
+	startTime   time.Time
+	endTime     time.Time
+	createdAt   time.Time
+	updatedAt   time.Time
 }
 
 func New(
@@ -27,7 +25,6 @@ func New(
 	description string,
 	startTime time.Time,
 	endTime time.Time,
-	venue *venue.Venue,
 ) (*Event, error) {
 	if startTime.After(endTime) || startTime.Before(time.Now()) {
 		return nil, errors.New(
@@ -57,7 +54,6 @@ func New(
 		endTime:     endTime,
 		createdAt:   time.Now(),
 		updatedAt:   time.Now(),
-		venue:       venue,
 	}, nil
 }
 
@@ -70,7 +66,6 @@ func Reconstruct(
 	createdAt time.Time,
 	updatedAt time.Time,
 	createdBy *user.User,
-	venue *venue.Venue,
 ) *Event {
 	return &Event{
 		id:          id,
@@ -80,7 +75,6 @@ func Reconstruct(
 		endTime:     endTime,
 		createdAt:   createdAt,
 		updatedAt:   updatedAt,
-		venue:       venue,
 	}
 }
 
@@ -106,12 +100,8 @@ func (e *Event) EndTime() time.Time {
 
 func (e *Event) CreatedAt() time.Time {
 	return e.createdAt
-}	
+}
 
 func (e *Event) UpdatedAt() time.Time {
 	return e.updatedAt
-}
-
-func (e *Event) Venue() *venue.Venue {
-	return e.venue
 }
