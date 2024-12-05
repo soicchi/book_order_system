@@ -12,11 +12,11 @@ import (
 type Registration struct {
 	id           uuid.UUID
 	registeredAt time.Time
-	status       *status.Status
-	ticket       *ticket.Ticket
+	status       status.Status
+	ticket       ticket.Ticket
 }
 
-func New(ticket *ticket.Ticket) *Registration {
+func New(ticket ticket.Ticket) *Registration {
 	return &Registration{
 		id:           uuid.New(),
 		registeredAt: time.Now(),
@@ -28,8 +28,8 @@ func New(ticket *ticket.Ticket) *Registration {
 func Reconstruct(
 	id uuid.UUID,
 	registeredAt time.Time,
-	status *status.Status,
-	ticket *ticket.Ticket,
+	status status.Status,
+	ticket ticket.Ticket,
 ) *Registration {
 	return &Registration{
 		id:           id,
@@ -47,10 +47,10 @@ func (r *Registration) RegisteredAt() time.Time {
 	return r.registeredAt
 }
 
-func (r *Registration) Status() *status.Status {
+func (r *Registration) Status() status.Status {
 	return r.status
 }
 
-func (r *Registration) Ticket() *ticket.Ticket {
+func (r *Registration) Ticket() ticket.Ticket {
 	return r.ticket
 }

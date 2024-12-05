@@ -33,14 +33,14 @@ type Status struct {
 	status StatusValue
 }
 
-func New(status StatusValue) *Status {
-	return &Status{status: status}
+func New(status StatusValue) Status {
+	return Status{status: status}
 }
 
-func Reconstruct(status StatusValue) *Status {
-	return &Status{status: status}
+func Reconstruct(status StatusValue) Status {
+	return Status{status: status}
 }
 
-func (s *Status) Status() StatusValue {
+func (s Status) Value() StatusValue {
 	return s.status
 }

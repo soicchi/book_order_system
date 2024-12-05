@@ -13,7 +13,7 @@ type Ticket struct {
 	qrCode       string
 	issuedAt     time.Time
 	usedAt       time.Time
-	ticketStatus *ticketstatus.TicketStatus
+	ticketStatus ticketstatus.TicketStatus
 }
 
 func New(qrCode string) *Ticket {
@@ -31,7 +31,7 @@ func Reconstruct(
 	qrCode string,
 	issuedAt time.Time,
 	usedAt time.Time,
-	ticketStatus *ticketstatus.TicketStatus,
+	ticketStatus ticketstatus.TicketStatus,
 ) *Ticket {
 	return &Ticket{
 		id:           id,
@@ -58,6 +58,6 @@ func (t *Ticket) UsedAt() time.Time {
 	return t.usedAt
 }
 
-func (t *Ticket) TicketStatus() *ticketstatus.TicketStatus {
+func (t *Ticket) TicketStatus() ticketstatus.TicketStatus {
 	return t.ticketStatus
 }

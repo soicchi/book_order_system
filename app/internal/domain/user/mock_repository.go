@@ -1,8 +1,6 @@
 package user
 
 import (
-	"event_system/internal/domain/role"
-
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
@@ -30,8 +28,8 @@ func (m *MockUserRepository) FetchByID(ctx echo.Context, userID uuid.UUID) (*Use
 	return args.Get(0).(*User), args.Error(1)
 }
 
-func (m *MockUserRepository) FetchByRole(ctx echo.Context, role *role.Role) ([]*User, error) {
-	args := m.Called(ctx, role)
+func (m *MockUserRepository) FetchAll(ctx echo.Context) ([]*User, error) {
+	args := m.Called(ctx)
 	return args.Get(0).([]*User), args.Error(1)
 }
 

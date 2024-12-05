@@ -38,14 +38,14 @@ type TicketStatus struct {
 	status TicketStatusValue
 }
 
-func New(status TicketStatusValue) *TicketStatus {
-	return &TicketStatus{status: status}
+func New(status TicketStatusValue) TicketStatus {
+	return TicketStatus{status: status}
 }
 
-func Reconstruct(status TicketStatusValue) *TicketStatus {
-	return &TicketStatus{status: status}
+func Reconstruct(status TicketStatusValue) TicketStatus {
+	return TicketStatus{status: status}
 }
 
-func (t *TicketStatus) Status() TicketStatusValue {
+func (t TicketStatus) Value() TicketStatusValue {
 	return t.status
 }

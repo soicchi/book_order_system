@@ -33,14 +33,14 @@ type Role struct {
 	role RoleValue
 }
 
-func New(role RoleValue) *Role {
-	return &Role{role: role}
+func New(role RoleValue) Role {
+	return Role{role: role}
 }
 
-func Reconstruct(role RoleValue) *Role {
-	return &Role{role: role}
+func Reconstruct(role RoleValue) Role {
+	return Role{role: role}
 }
 
-func (r *Role) Role() RoleValue {
+func (r Role) Value() RoleValue {
 	return r.role
 }
