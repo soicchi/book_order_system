@@ -110,28 +110,33 @@ func (r *UserRepository) FetchAll(ctx echo.Context) ([]*user.User, error) {
 func (r *UserRepository) Update(ctx echo.Context, user *user.User) error {
 	db := database.GetDB(ctx)
 
-	userModel := models.User{
-		ID:        user.ID(),
+	var userModel models.User
+	result := db.Model(&userModel).Where("id = ?", user.ID()).Updates(models.User{
 		Name:      user.Name(),
 		Email:     user.Email(),
 		Role:      user.Role().Value().String(),
-		CreatedAt: user.CreatedAt(),
 		UpdatedAt: user.UpdatedAt(),
-	}
-
-	err := db.Save(&userModel).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	})
+	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
 		return errs.New(
-			fmt.Errorf("user not found: %w", err),
-			errs.NotFoundError,
-			errs.WithField("User"),
+			fmt.Errorf("user with email already exists: %w", result.Error),
+			errs.AlreadyExistError,
+			errs.WithField("Email"),
 		)
 	}
 
-	if err != nil {
+	if result.Error != nil {
 		return errs.New(
-			fmt.Errorf("failed to update user: %w", err),
+			fmt.Errorf("failed to update user: %w", result.Error),
 			errs.UnexpectedError,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return errs.New(
+			fmt.Errorf("user not found"),
+			errs.NotFoundError,
+			errs.WithField("User"),
 		)
 	}
 

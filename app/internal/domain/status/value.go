@@ -10,11 +10,11 @@ const (
 func (s StatusValue) String() string {
 	switch s {
 	case Registered:
-		return "Registered"
+		return "registered"
 	case Canceled:
-		return "Canceled"
+		return "canceled"
 	default:
-		return "Unknown"
+		return "unknown"
 	}
 }
 

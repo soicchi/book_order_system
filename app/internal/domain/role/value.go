@@ -10,11 +10,11 @@ const (
 func (r RoleValue) String() string {
 	switch r {
 	case Organizer:
-		return "Organizer"
+		return "organizer"
 	case Attendee:
-		return "Attendee"
+		return "attendee"
 	default:
-		return "Unknown"
+		return "unknown"
 	}
 }
 

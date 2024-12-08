@@ -11,13 +11,13 @@ const (
 func (t TicketStatusValue) String() string {
 	switch t {
 	case Active:
-		return "Active"
+		return "active"
 	case Used:
-		return "Used"
+		return "used"
 	case Canceled:
-		return "Canceled"
+		return "canceled"
 	default:
-		return "Unknown"
+		return "unknown"
 	}
 }
 

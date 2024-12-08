@@ -2,11 +2,12 @@ package database
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"strconv"
 	"time"
 
 	"event_system/internal/config"
+	"event_system/internal/infrastructure/postgres/database/fixtures"
 	"event_system/internal/infrastructure/postgres/database/migrations"
 
 	"github.com/go-gormigrate/gormigrate/v2"
@@ -131,28 +132,7 @@ func (d *DBConfig) setupPool() error {
 
 // For testing purposes
 
-type TestDBConfig struct {
-	host     string
-	name     string
-	user     string
-	password string
-	port     string
-	sslMode  string
-}
-
-func NewTestDBConfig() *TestDBConfig {
-	return &TestDBConfig{
-		host:     os.Getenv("TEST_DB_HOST"),
-		name:     os.Getenv("TEST_DB_NAME"),
-		user:     os.Getenv("TEST_DB_USER"),
-		password: os.Getenv("TEST_DB_PASSWORD"),
-		port:     os.Getenv("TEST_DB_PORT"),
-		sslMode:  os.Getenv("DB_SSL_MODE"),
-	}
-}
-
-func (d *TestDBConfig) Connect() error {
-	dsn := d.dsn()
+func SetupTestDB(dsn string) error {
 	var err error
 
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
@@ -165,9 +145,29 @@ func (d *TestDBConfig) Connect() error {
 	return nil
 }
 
-func (d *TestDBConfig) dsn() string {
-	return fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
-		d.host, d.user, d.password, d.name, d.port, d.sslMode,
-	)
+func CreateTestData() error {
+	if err := fixtures.CreateUsers(db); err != nil {
+		return fmt.Errorf("failed to create users: %w", err)
+	}
+
+	return nil
+}
+
+func TestTransaction(ctx echo.Context, fn func(ctx echo.Context) error) error {
+	tx, err := BeginTx(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	defer func() {
+		if err := tx.Rollback().Error; err != nil {
+			log.Fatalf("failed to rollback transaction: %v", err)
+		}
+	}()
+
+	if err := fn(ctx); err != nil {
+		return fmt.Errorf("failed to execute transaction: %w", err)
+	}
+
+	return tx.Commit().Error
 }
