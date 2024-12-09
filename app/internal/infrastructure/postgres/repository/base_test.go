@@ -12,7 +12,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	dbHost := "test_db"
+	dbHost := os.Getenv("TEST_DB_HOST")
 	dbUser := os.Getenv("TEST_DB_USER")
 	dbPassword := os.Getenv("TEST_DB_PASSWORD")
 	dbName := os.Getenv("TEST_DB_NAME")
