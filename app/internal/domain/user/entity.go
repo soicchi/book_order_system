@@ -3,49 +3,37 @@ package user
 import (
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/domain/values"
+	"event_system/internal/domain/role"
 
 	"github.com/google/uuid"
 )
 
-// Userはユーザー情報を表すEntity
-// 外部の層から直接変更されないようにするためにフィールドはprivateにする
-// フィールドにアクセスするためのgetterメソッドを提供する
 type User struct {
 	id        uuid.UUID
-	username  string
+	name      string
 	email     string
-	password  values.Password
+	role      role.Role
 	createdAt time.Time
 	updatedAt time.Time
 }
 
-// Entityに関するビジネスルールに基づくバリデーションは初期化時のNew関数で行う
-func New(username string, email string, password string) (*User, error) {
-	passwordHash, err := values.NewPassword(password)
-	if err != nil {
-		return nil, err
-	}
-
+func New(name, email string, role role.Role) *User {
 	return &User{
 		id:        uuid.New(),
-		username:  username,
+		name:      name,
 		email:     email,
-		password:  passwordHash,
+		role:      role,
 		createdAt: time.Now(),
 		updatedAt: time.Now(),
-	}, nil
+	}
 }
 
-// DBからデータを取得した際にEntityに変換するための関数
-func Reconstruct(id uuid.UUID, username, email, password string, createdAt, updatedAt time.Time) *User {
-	passwordHash := values.ReconstructPassword(password)
-
+func Reconstruct(id uuid.UUID, name, email string, role role.Role, createdAt, updatedAt time.Time) *User {
 	return &User{
 		id:        id,
-		username:  username,
+		name:      name,
 		email:     email,
-		password:  passwordHash,
+		role:      role,
 		createdAt: createdAt,
 		updatedAt: updatedAt,
 	}
@@ -55,16 +43,16 @@ func (u *User) ID() uuid.UUID {
 	return u.id
 }
 
-func (u *User) Username() string {
-	return u.username
+func (u *User) Name() string {
+	return u.name
 }
 
 func (u *User) Email() string {
 	return u.email
 }
 
-func (u *User) Password() values.Password {
-	return u.password
+func (u *User) Role() role.Role {
+	return u.role
 }
 
 func (u *User) CreatedAt() time.Time {
@@ -75,16 +63,6 @@ func (u *User) UpdatedAt() time.Time {
 	return u.updatedAt
 }
 
-func (u *User) Update(username, email, password string) error {
-	passwordHash, err := values.NewPassword(password)
-	if err != nil {
-		return err
-	}
-
-	u.username = username
-	u.email = email
-	u.password = passwordHash
-	u.updatedAt = time.Now()
-
-	return nil
+func (u *User) IsOrganizer() bool {
+	return u.role.Value() == role.Organizer
 }

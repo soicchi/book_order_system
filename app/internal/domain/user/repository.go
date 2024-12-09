@@ -7,8 +7,7 @@ import (
 
 type UserRepository interface {
 	Create(ctx echo.Context, user *User) error
-	FindByID(ctx echo.Context, id uuid.UUID) (*User, error)
-	FindAll(ctx echo.Context) ([]*User, error)
+	FetchByID(ctx echo.Context, userID uuid.UUID) (*User, error)
+	FetchAll(ctx echo.Context) ([]*User, error)
 	Update(ctx echo.Context, user *User) error
-	Delete(ctx echo.Context, id uuid.UUID) error
 }

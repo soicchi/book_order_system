@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/soicchi/book_order_system/internal/domain/user"
-	ers "github.com/soicchi/book_order_system/internal/errors"
-	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
-	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/models"
+	"event_system/internal/domain/role"
+	"event_system/internal/domain/user"
+	errs "event_system/internal/errors"
+	"event_system/internal/infrastructure/postgres/database"
+	"event_system/internal/infrastructure/postgres/models"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -23,131 +24,119 @@ func NewUserRepository() *UserRepository {
 func (r *UserRepository) Create(ctx echo.Context, user *user.User) error {
 	db := database.GetDB(ctx)
 
-	err := db.Create(&models.User{
+	userModel := models.User{
 		ID:        user.ID(),
-		Username:  user.Username(),
+		Name:      user.Name(),
 		Email:     user.Email(),
-		Password:  user.Password().Value(),
+		Role:      user.Role().Value().String(),
 		CreatedAt: user.CreatedAt(),
 		UpdatedAt: user.UpdatedAt(),
-	}).Error
+	}
+
+	err := db.Create(&userModel).Error
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return ers.New(
-			fmt.Errorf("user with email %s already exists", user.Email()),
-			ers.AlreadyExistError,
-			ers.WithField("User"),
+		return errs.New(
+			fmt.Errorf("user with email already exists: %w", err),
+			errs.AlreadyExistError,
+			errs.WithField("Email"),
 		)
 	}
 
 	if err != nil {
-		return ers.New(
+		return errs.New(
 			fmt.Errorf("failed to create user: %w", err),
-			ers.UnexpectedError,
+			errs.UnexpectedError,
 		)
 	}
 
 	return nil
 }
 
-func (r *UserRepository) FindByID(ctx echo.Context, id uuid.UUID) (*user.User, error) {
+func (r *UserRepository) FetchByID(ctx echo.Context, userID uuid.UUID) (*user.User, error) {
 	db := database.GetDB(ctx)
 
-	var u models.User
-	err := db.Where("id = ?", id).First(&u).Error
+	var userModel models.User
+	err := db.Where("id = ?", userID).First(&userModel).Error
+	// Return nil if user not found because of making use case more flexible
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
 
 	if err != nil {
-		return nil, ers.New(
-			fmt.Errorf("failed to find user: %w", err),
-			ers.UnexpectedError,
+		return nil, errs.New(
+			fmt.Errorf("failed to fetch user: %w", err),
+			errs.UnexpectedError,
 		)
 	}
 
+	// Reconstruct user entity
 	return user.Reconstruct(
-		u.ID,
-		u.Username,
-		u.Email,
-		u.Password,
-		u.CreatedAt,
-		u.UpdatedAt,
+		userModel.ID,
+		userModel.Name,
+		userModel.Email,
+		role.Reconstruct(role.FromString(userModel.Role)),
+		userModel.CreatedAt,
+		userModel.UpdatedAt,
 	), nil
 }
 
-func (r *UserRepository) FindAll(ctx echo.Context) ([]*user.User, error) {
+func (r *UserRepository) FetchAll(ctx echo.Context) ([]*user.User, error) {
 	db := database.GetDB(ctx)
 
-	var users []*models.User
-	err := db.Find(&users).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return []*user.User{}, nil
-	}
-
-	if err != nil {
-		return nil, ers.New(
-			fmt.Errorf("failed to find users: %w", err),
-			ers.UnexpectedError,
+	var userModels []models.User
+	if err := db.Find(&userModels).Error; err != nil {
+		return nil, errs.New(
+			fmt.Errorf("failed to fetch users: %w", err),
+			errs.UnexpectedError,
 		)
 	}
 
-	result := make([]*user.User, 0, len(users))
-	for _, u := range users {
-		result = append(result, user.Reconstruct(
-			u.ID,
-			u.Username,
-			u.Email,
-			u.Password,
-			u.CreatedAt,
-			u.UpdatedAt,
+	// Reconstruct users entity
+	users := make([]*user.User, 0, len(userModels))
+	for _, userModel := range userModels {
+		users = append(users, user.Reconstruct(
+			userModel.ID,
+			userModel.Name,
+			userModel.Email,
+			role.Reconstruct(role.FromString(userModel.Role)),
+			userModel.CreatedAt,
+			userModel.UpdatedAt,
 		))
 	}
 
-	return result, nil
+	return users, nil
 }
 
 func (r *UserRepository) Update(ctx echo.Context, user *user.User) error {
 	db := database.GetDB(ctx)
 
-	err := db.Model(&models.User{}).Where("id = ?", user.ID()).Updates(&models.User{
-		Username: user.Username(),
-		Email:    user.Email(),
-		Password: user.Password().Value(),
-	}).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return ers.New(
-			fmt.Errorf("user with id %s not found", user.ID()),
-			ers.NotFoundError,
-			ers.WithField("User"),
+	var userModel models.User
+	result := db.Model(&userModel).Where("id = ?", user.ID()).Updates(models.User{
+		Name:      user.Name(),
+		Email:     user.Email(),
+		Role:      user.Role().Value().String(),
+		UpdatedAt: user.UpdatedAt(),
+	})
+	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+		return errs.New(
+			fmt.Errorf("user with email already exists: %w", result.Error),
+			errs.AlreadyExistError,
+			errs.WithField("Email"),
 		)
 	}
 
-	if err != nil {
-		return ers.New(
-			fmt.Errorf("failed to update user: %w", err),
-			ers.UnexpectedError,
+	if result.Error != nil {
+		return errs.New(
+			fmt.Errorf("failed to update user: %w", result.Error),
+			errs.UnexpectedError,
 		)
 	}
 
-	return nil
-}
-
-func (r *UserRepository) Delete(ctx echo.Context, id uuid.UUID) error {
-	db := database.GetDB(ctx)
-
-	err := db.Where("id = ?", id).Delete(&models.User{}).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return ers.New(
-			fmt.Errorf("user with id %s not found", id),
-			ers.NotFoundError,
-			ers.WithField("User"),
-		)
-	}
-
-	if err != nil {
-		return ers.New(
-			fmt.Errorf("failed to delete user: %w", err),
-			ers.UnexpectedError,
+	if result.RowsAffected == 0 {
+		return errs.New(
+			fmt.Errorf("user not found"),
+			errs.NotFoundError,
+			errs.WithField("UserID"),
 		)
 	}
 

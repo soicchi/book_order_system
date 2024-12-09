@@ -6,21 +6,21 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockRepository struct {
+type MockUserRepository struct {
 	mock.Mock
 }
 
-func NewRepository() *MockRepository {
-	return &MockRepository{}
+func NewMockUserRepository() *MockUserRepository {
+	return &MockUserRepository{}
 }
 
-func (m *MockRepository) Create(ctx echo.Context, user *User) error {
+func (m *MockUserRepository) Create(ctx echo.Context, user *User) error {
 	args := m.Called(ctx, user)
 	return args.Error(0)
 }
 
-func (m *MockRepository) FindByID(ctx echo.Context, id uuid.UUID) (*User, error) {
-	args := m.Called(ctx, id)
+func (m *MockUserRepository) FetchByID(ctx echo.Context, userID uuid.UUID) (*User, error) {
+	args := m.Called(ctx, userID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -28,17 +28,12 @@ func (m *MockRepository) FindByID(ctx echo.Context, id uuid.UUID) (*User, error)
 	return args.Get(0).(*User), args.Error(1)
 }
 
-func (m *MockRepository) FindAll(ctx echo.Context) ([]*User, error) {
+func (m *MockUserRepository) FetchAll(ctx echo.Context) ([]*User, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]*User), args.Error(1)
 }
 
-func (m *MockRepository) Update(ctx echo.Context, user *User) error {
+func (m *MockUserRepository) Update(ctx echo.Context, user *User) error {
 	args := m.Called(ctx, user)
-	return args.Error(0)
-}
-
-func (m *MockRepository) Delete(ctx echo.Context, id uuid.UUID) error {
-	args := m.Called(ctx, id)
 	return args.Error(0)
 }

@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
-	"github.com/soicchi/book_order_system/internal/errors"
-	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
+	"event_system/internal/errors"
+	"event_system/internal/infrastructure/postgres/database"
 
 	"github.com/labstack/echo/v4"
 )
@@ -32,7 +32,7 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 			)
 		}
 
-		return nil
+		return err
 	}
 
 	if err := tx.Commit().Error; err != nil {

@@ -3,7 +3,7 @@ package validator
 import (
 	"fmt"
 
-	ers "github.com/soicchi/book_order_system/internal/errors"
+	ers "event_system/internal/errors"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"

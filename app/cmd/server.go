@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database"
-	"github.com/soicchi/book_order_system/internal/presentation/router"
-	"github.com/soicchi/book_order_system/internal/presentation/validator"
+	"event_system/internal/infrastructure/postgres/database"
+	"event_system/internal/presentation/router"
+	"event_system/internal/presentation/validator"
 
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cobra"

@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/soicchi/book_order_system/internal/config"
-	"github.com/soicchi/book_order_system/internal/infrastructure/postgres/database/migrations"
+	"event_system/internal/config"
+	"event_system/internal/infrastructure/postgres/database/fixtures"
+	"event_system/internal/infrastructure/postgres/database/migrations"
 
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/labstack/echo/v4"
@@ -100,11 +101,11 @@ func BeginTx(ctx echo.Context) (*gorm.DB, error) {
 func Migrate() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// Add migrations here
-		migrations.CreateUserTable,
-		migrations.CreateBookTable,
-		migrations.CreateOrderTable,
-		migrations.CreateOrderDetailTable,
-		migrations.AddColumnStatusInOrderTable,
+		migrations.AddUserTable,
+		migrations.AddVenueTable,
+		migrations.AddEventTable,
+		migrations.AddRegistrationTable,
+		migrations.AddTicketTable,
 	})
 
 	if err := m.Migrate(); err != nil {
@@ -124,6 +125,33 @@ func (d *DBConfig) setupPool() error {
 	sqlDB.SetMaxIdleConns(d.maxConnPool)
 	// Set the recycle time of the pool connections
 	sqlDB.SetConnMaxLifetime(d.poolLifetime * time.Second)
+
+	return nil
+}
+
+// For testing purposes
+
+func SetupTestDB(dsn string) error {
+	var err error
+
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		TranslateError: true,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to connect database: %w", err)
+	}
+
+	return nil
+}
+
+func CreateTestData() error {
+	if err := fixtures.CreateUsers(db); err != nil {
+		return fmt.Errorf("failed to create users: %w", err)
+	}
+
+	if err := fixtures.CreateVenues(db); err != nil {
+		return fmt.Errorf("failed to create venues: %w", err)
+	}
 
 	return nil
 }

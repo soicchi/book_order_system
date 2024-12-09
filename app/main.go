@@ -1,6 +1,6 @@
 package main
 
-import "github.com/soicchi/book_order_system/cmd"
+import "event_system/cmd"
 
 // cobraを利用しているため、main関数でcmd.Execute()を呼び出す。
 // これにより、コマンドライン引数を解析し、実行するコマンドを決定する。

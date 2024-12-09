@@ -1,7 +1,7 @@
-# book_order_system
+# event_system
 
 ## Overview
 
-This repository is for implementation of book order system on online.
+This repository is for implementation of event system on online.
 
 This is just practice.
