@@ -2,9 +2,11 @@ package repository
 
 import (
 	"testing"
+	"time"
 
 	"event_system/internal/domain/venue"
 	"event_system/internal/infrastructure/postgres/database"
+	"event_system/internal/infrastructure/postgres/database/fixtures"
 	"event_system/internal/infrastructure/postgres/models"
 
 	"github.com/labstack/echo/v4"
@@ -25,6 +27,18 @@ func TestCreateVenue(t *testing.T) {
 				100,
 			),
 			wantErr: false,
+		},
+		{
+			name: "Create venue with duplicated ID",
+			venue: venue.Reconstruct(
+				fixtures.TestVenues["venue1"].ID,
+				"test_venue",
+				"test_address",
+				100,
+				time.Now(),
+				time.Now(),
+			),
+			wantErr: true,
 		},
 	}
 

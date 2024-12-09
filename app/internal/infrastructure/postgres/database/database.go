@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -155,23 +154,4 @@ func CreateTestData() error {
 	}
 
 	return nil
-}
-
-func TestTransaction(ctx echo.Context, fn func(ctx echo.Context) error) error {
-	tx, err := BeginTx(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
-	}
-
-	defer func() {
-		if err := tx.Rollback().Error; err != nil {
-			log.Fatalf("failed to rollback transaction: %v", err)
-		}
-	}()
-
-	if err := fn(ctx); err != nil {
-		return fmt.Errorf("failed to execute transaction: %w", err)
-	}
-
-	return tx.Commit().Error
 }

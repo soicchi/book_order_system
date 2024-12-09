@@ -32,7 +32,7 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 			)
 		}
 
-		return nil
+		return err
 	}
 
 	if err := tx.Commit().Error; err != nil {

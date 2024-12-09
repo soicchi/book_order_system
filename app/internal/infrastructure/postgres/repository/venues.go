@@ -35,7 +35,7 @@ func (r *VenueRepository) Create(ctx echo.Context, venue *venue.Venue) error {
 	err := db.Create(venueModel).Error
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return errs.New(
-			fmt.Errorf("venue with name already exists: %w", err),
+			fmt.Errorf("venue id already exists: %w", err),
 			errs.AlreadyExistError,
 			errs.WithField("ID"),
 		)
