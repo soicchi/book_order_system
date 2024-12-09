@@ -84,11 +84,7 @@ func (r *VenueRepository) FetchByID(ctx echo.Context, venueID uuid.UUID) (*venue
 	var venueModel models.Venue
 	err := db.Where("id = ?", venueID).First(&venueModel).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errs.New(
-			fmt.Errorf("venue not found: %w", err),
-			errs.NotFoundError,
-			errs.WithField("ID"),
-		)
+		return nil, nil
 	}
 
 	if err != nil {

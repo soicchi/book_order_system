@@ -14,10 +14,10 @@ import (
 
 func TestWithTransaction(t *testing.T) {
 	tests := []struct {
-		name string
-		user *user.User
+		name        string
+		user        *user.User
 		anotherUser *user.User
-		wantErr bool
+		wantErr     bool
 	}{
 		{
 			name: "Create user and venue successfully",
@@ -91,7 +91,7 @@ func TestWithTransaction(t *testing.T) {
 				if err = db.Find(&afterUserModels).Error; err != nil {
 					t.Fatalf("failed to fetch users: %v", err)
 				}
-				
+
 				var afterVenueModels []models.Venue
 				if err = db.Find(&afterVenueModels).Error; err != nil {
 					t.Fatalf("failed to fetch venues: %v", err)
