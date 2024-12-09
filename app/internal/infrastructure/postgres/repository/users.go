@@ -136,7 +136,7 @@ func (r *UserRepository) Update(ctx echo.Context, user *user.User) error {
 		return errs.New(
 			fmt.Errorf("user not found"),
 			errs.NotFoundError,
-			errs.WithField("User"),
+			errs.WithField("UserID"),
 		)
 	}
 

@@ -47,23 +47,24 @@ func TestCreateUser(t *testing.T) {
 			ctx := e.NewContext(nil, nil)
 			db := database.GetDB(ctx)
 
-			// トランザクションを開始
+			// Fetch users before test
+			var beforeUserModels []models.User
+			if err := db.Find(&beforeUserModels).Error; err != nil {
+				t.Fatalf("failed to fetch users: %v", err)
+			}
+
+			// Start transaction
 			tx, err := database.BeginTx(ctx)
 			if err != nil {
 				t.Fatalf("Failed to begin transaction: %v", tx.Error)
 			}
 
-			// テスト終了時にロールバック
+			// Rollback transaction at the end of the test
 			defer func() {
 				if err := tx.Rollback().Error; err != nil {
 					t.Fatalf("Failed to rollback transaction: %v", err)
 				}
 			}()
-
-			var beforeUserModels []models.User
-			if err := db.Find(&beforeUserModels).Error; err != nil {
-				t.Fatalf("failed to fetch users: %v", err)
-			}
 
 			r := NewUserRepository()
 
@@ -96,7 +97,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestFetchByID(t *testing.T) {
+func TestFetchUserByID(t *testing.T) {
 	tests := []struct {
 		name    string
 		id      uuid.UUID
@@ -140,7 +141,7 @@ func TestFetchByID(t *testing.T) {
 	}
 }
 
-func TestFetchAll(t *testing.T) {
+func TestFetchAllUsers(t *testing.T) {
 	tests := []struct {
 		name    string
 		wantErr bool
@@ -172,7 +173,7 @@ func TestFetchAll(t *testing.T) {
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	tests := []struct {
 		name    string
 		user    *user.User

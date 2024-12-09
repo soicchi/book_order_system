@@ -150,6 +150,10 @@ func CreateTestData() error {
 		return fmt.Errorf("failed to create users: %w", err)
 	}
 
+	if err := fixtures.CreateVenues(db); err != nil {
+		return fmt.Errorf("failed to create venues: %w", err)
+	}
+
 	return nil
 }
 
