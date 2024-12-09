@@ -62,3 +62,7 @@ func (u *User) CreatedAt() time.Time {
 func (u *User) UpdatedAt() time.Time {
 	return u.updatedAt
 }
+
+func (u *User) IsOrganizer() bool {
+	return u.role.Value() == role.Organizer
+}

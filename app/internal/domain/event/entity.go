@@ -14,30 +14,34 @@ type Event struct {
 	id          uuid.UUID
 	title       string
 	description string
-	startTime   time.Time
-	endTime     time.Time
+	startDate   time.Time
+	endDate     time.Time
 	createdAt   time.Time
 	updatedAt   time.Time
+	createdBy   uuid.UUID
+	venueID     uuid.UUID
 }
 
-func New(
+func new(
 	title string,
 	description string,
-	startTime time.Time,
-	endTime time.Time,
+	startDate time.Time,
+	endDate time.Time,
+	userID uuid.UUID,
+	venueID uuid.UUID,
 ) (*Event, error) {
-	if startTime.After(endTime) || startTime.Before(time.Now()) {
+	if startDate.After(endDate) || startDate.Before(time.Now()) {
 		return nil, errors.New(
-			fmt.Errorf("invalid event start time: %s", startTime),
+			fmt.Errorf("invalid event start time: %s", startDate),
 			errors.ValidationError,
 			errors.WithField("StartTime"),
 			errors.WithIssue(errors.InvalidTimeRange),
 		)
 	}
 
-	if endTime.Before(startTime) || endTime.Before(time.Now()) || endTime.Equal(startTime) {
+	if endDate.Before(startDate) || endDate.Before(time.Now()) || endDate.Equal(startDate) {
 		return nil, errors.New(
-			fmt.Errorf("invalid event end time: %s", endTime),
+			fmt.Errorf("invalid event end time: %s", endDate),
 			errors.ValidationError,
 			errors.WithField("EndTime"),
 			errors.WithIssue(errors.InvalidTimeRange),
@@ -50,10 +54,12 @@ func New(
 		id:          uuid.New(),
 		title:       title,
 		description: description,
-		startTime:   startTime,
-		endTime:     endTime,
+		startDate:   startDate,
+		endDate:     endDate,
 		createdAt:   time.Now(),
 		updatedAt:   time.Now(),
+		createdBy:   userID,
+		venueID:     venueID,
 	}, nil
 }
 
@@ -61,8 +67,8 @@ func Reconstruct(
 	id uuid.UUID,
 	title string,
 	description string,
-	startTime time.Time,
-	endTime time.Time,
+	startDate time.Time,
+	endDate time.Time,
 	createdAt time.Time,
 	updatedAt time.Time,
 	createdBy *user.User,
@@ -71,8 +77,8 @@ func Reconstruct(
 		id:          id,
 		title:       title,
 		description: description,
-		startTime:   startTime,
-		endTime:     endTime,
+		startDate:   startDate,
+		endDate:     endDate,
 		createdAt:   createdAt,
 		updatedAt:   updatedAt,
 	}
@@ -90,12 +96,12 @@ func (e *Event) Description() string {
 	return e.description
 }
 
-func (e *Event) StartTime() time.Time {
-	return e.startTime
+func (e *Event) StartDate() time.Time {
+	return e.startDate
 }
 
-func (e *Event) EndTime() time.Time {
-	return e.endTime
+func (e *Event) EndDate() time.Time {
+	return e.endDate
 }
 
 func (e *Event) CreatedAt() time.Time {
@@ -104,4 +110,12 @@ func (e *Event) CreatedAt() time.Time {
 
 func (e *Event) UpdatedAt() time.Time {
 	return e.updatedAt
+}
+
+func (e *Event) CreatedBy() uuid.UUID {
+	return e.createdBy
+}
+
+func (e *Event) VenueID() uuid.UUID {
+	return e.venueID
 }
