@@ -54,7 +54,7 @@ func (ef *EventFactory) NewEvent(
 		)
 	}
 
-	events, err := ef.eventRepository.FetchByEventID(ctx, venueID)
+	events, err := ef.eventRepository.FetchByVenueID(ctx, venueID)
 	if err != nil {
 		return nil, err
 	}
