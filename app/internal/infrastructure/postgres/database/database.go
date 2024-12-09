@@ -145,12 +145,16 @@ func SetupTestDB(dsn string) error {
 }
 
 func CreateTestData() error {
-	if err := fixtures.CreateUsers(db); err != nil {
+	if err := fixtures.CreateTestUsers(db); err != nil {
 		return fmt.Errorf("failed to create users: %w", err)
 	}
 
-	if err := fixtures.CreateVenues(db); err != nil {
+	if err := fixtures.CreateTestVenues(db); err != nil {
 		return fmt.Errorf("failed to create venues: %w", err)
+	}
+
+	if err := fixtures.CreateTestEvents(db); err != nil {
+		return fmt.Errorf("failed to create test events")
 	}
 
 	return nil
