@@ -33,16 +33,7 @@ func (er *EventRepository) Create(ctx echo.Context, event *event.Event) error {
 		VenueID:     event.VenueID(),
 	}
 
-	err := db.Create(&eventModel).Error
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return errs.New(
-			fmt.Errorf("event already exists: %s", event.ID()),
-			errs.AlreadyExistError,
-			errs.WithField("EventID"),
-		)
-	}
-
-	if err != nil {
+	if err := db.Create(&eventModel).Error; err != nil {
 		return errs.New(
 			fmt.Errorf("failed to create event: %s", event.ID()),
 			errs.UnexpectedError,
