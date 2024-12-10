@@ -159,3 +159,37 @@ func TestFetchEventByID(t *testing.T) {
 		})
 	}
 }
+
+func TestFetchAllEvents(t *testing.T) {
+	tests := []struct {
+		name    string
+		wantErr bool
+	}{
+		{
+			name:    "Fetch all events successfully",
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			ctx := e.NewContext(nil, nil)
+
+			r := NewEventRepository()
+
+			events, repoErr := r.FetchAll(ctx)
+
+			if tt.wantErr {
+				assert.Nil(t, events)
+				assert.NotNil(t, repoErr)
+				return
+			}
+
+			assert.NotNil(t, events)
+			assert.Nil(t, repoErr)
+
+			assert.Equal(t, len(fixtures.TestEvents), len(events))
+		})
+	}
+}
