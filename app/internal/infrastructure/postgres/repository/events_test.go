@@ -100,10 +100,62 @@ func TestCreateEvent(t *testing.T) {
 			assert.Equal(t, tt.event.ID(), eventModel.ID)
 			assert.Equal(t, tt.event.Title(), eventModel.Title)
 			assert.Equal(t, tt.event.Description(), eventModel.Description)
-			assert.Equal(t, tt.event.StartDate(), eventModel.StartDate)
-			assert.Equal(t, tt.event.EndDate(), eventModel.EndDate)
+			assert.Equal(t, tt.event.StartDate().Unix(), eventModel.StartDate.Unix())
+			assert.Equal(t, tt.event.EndDate().Unix(), eventModel.EndDate.Unix())
 			assert.Equal(t, tt.event.CreatedBy(), eventModel.CreatedBy)
 			assert.Equal(t, tt.event.VenueID(), eventModel.VenueID)
+		})
+	}
+}
+
+func TestFetchEventByID(t *testing.T) {
+	tests := []struct {
+		name    string
+		eventID uuid.UUID
+		wantErr bool
+	}{
+		{
+			name:    "Fetch event by ID successfully",
+			eventID: fixtures.TestEvents["event1"].ID,
+			wantErr: false,
+		},
+		{
+			name:    "Fetch event by non-existent ID",
+			eventID: uuid.New(),
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			ctx := e.NewContext(nil, nil)
+
+			r := NewEventRepository()
+
+			event, repoErr := r.FetchByID(ctx, tt.eventID)
+
+			if tt.wantErr {
+				assert.Nil(t, event)
+				assert.NotNil(t, repoErr)
+				return
+			}
+
+			// The event is not found
+			if event == nil {
+				return
+			}
+
+			assert.NotNil(t, event)
+			assert.Nil(t, repoErr)
+
+			assert.Equal(t, tt.eventID, event.ID())
+			assert.Equal(t, fixtures.TestEvents["event1"].Title, event.Title())
+			assert.Equal(t, fixtures.TestEvents["event1"].Description, event.Description())
+			assert.Equal(t, fixtures.TestEvents["event1"].StartDate.Unix(), event.StartDate().Unix())
+			assert.Equal(t, fixtures.TestEvents["event1"].EndDate.Unix(), event.EndDate().Unix())
+			assert.Equal(t, fixtures.TestEvents["event1"].CreatedBy, event.CreatedBy())
+			assert.Equal(t, fixtures.TestEvents["event1"].VenueID, event.VenueID())
 		})
 	}
 }
