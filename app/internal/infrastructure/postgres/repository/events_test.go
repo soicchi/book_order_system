@@ -216,3 +216,98 @@ func TestFetchEventByVenueID(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateEvent(t *testing.T) {
+	tests := []struct {
+		name    string
+		event   *event.Event
+		wantErr bool
+	}{
+		{
+			name: "update event",
+			event: event.Reconstruct(
+				fixtures.TestEvents["event1"].ID,
+				"event1_title_updated",
+				"event1_description_updated",
+				time.Date(2024, time.November, 12, 10, 0, 0, 0, time.UTC),
+				time.Date(2024, time.November, 12, 10, 23, 59, 59, time.UTC),
+				fixtures.TestEvents["event1"].CreatedAt,
+				time.Now(),
+				fixtures.TestEvents["event1"].CreatedBy,
+				fixtures.TestEvents["event1"].VenueID,
+			),
+			wantErr: false,
+		},
+		{
+			name: "failed to update event with non-existent ID",
+			event: event.Reconstruct(
+				uuid.New(),
+				"event1_title_updated",
+				"event1_description_updated",
+				time.Date(2024, time.December, 12, 10, 0, 0, 0, time.UTC),
+				time.Date(2024, time.December, 12, 9, 59, 59, 59, time.UTC),
+				fixtures.TestEvents["event1"].CreatedAt,
+				time.Now(),
+				fixtures.TestEvents["event1"].CreatedBy,
+				fixtures.TestEvents["event1"].VenueID,
+			),
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			ctx := e.NewContext(nil, nil)
+			db := database.GetDB(ctx)
+
+			// Start transaction
+			tx, err := database.BeginTx(ctx)
+			if err != nil {
+				t.Fatalf("Failed to begin transaction: %v", tx.Error)
+			}
+
+			defer func() {
+				if err := tx.Rollback().Error; err != nil {
+					t.Fatalf("Failed to rollback transaction: %v", err)
+				}
+			}()
+
+			r := NewEventRepository()
+
+			repoErr := r.Update(ctx, tt.event)
+
+			if tt.wantErr {
+				assert.NotNil(t, repoErr)
+
+				var eventModel models.Event
+				if err := db.First(&eventModel, "id = ?", tt.event.ID()).Error; err != nil {
+					// The event is not found
+					return
+				}
+
+				assert.NotEqual(t, tt.event.Title(), eventModel.Title)
+				assert.NotEqual(t, tt.event.Description(), eventModel.Description)
+				assert.NotEqual(t, tt.event.StartDate().Unix(), eventModel.StartDate.Unix())
+				assert.NotEqual(t, tt.event.EndDate().Unix(), eventModel.EndDate.Unix())
+				assert.NotEqual(t, tt.event.UpdatedAt().Unix(), eventModel.UpdatedAt.Unix())
+				return
+			}
+
+			assert.Nil(t, repoErr)
+
+			var eventModel models.Event
+			if err := tx.First(&eventModel, "id = ?", tt.event.ID()).Error; err != nil {
+				t.Fatalf("Failed to fetch event: %v", err)
+			}
+
+			assert.Equal(t, tt.event.ID(), eventModel.ID)
+			assert.Equal(t, tt.event.Title(), eventModel.Title)
+			assert.Equal(t, tt.event.Description(), eventModel.Description)
+			assert.Equal(t, tt.event.StartDate().Unix(), eventModel.StartDate.Unix())
+			assert.Equal(t, tt.event.EndDate().Unix(), eventModel.EndDate.Unix())
+			assert.Equal(t, tt.event.CreatedBy(), eventModel.CreatedBy)
+			assert.Equal(t, tt.event.VenueID(), eventModel.VenueID)
+		})
+	}
+}

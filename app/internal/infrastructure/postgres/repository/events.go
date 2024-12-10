@@ -145,5 +145,30 @@ func (er *EventRepository) FetchByVenueID(ctx echo.Context, venueID uuid.UUID) (
 }
 
 func (er *EventRepository) Update(ctx echo.Context, event *event.Event) error {
+	db := database.GetDB(ctx)
+
+	var eventModel models.Event
+	result := db.Model(&eventModel).Where("id = ?", event.ID()).Updates(models.Event{
+		Title:       event.Title(),
+		Description: event.Description(),
+		StartDate:   event.StartDate(),
+		EndDate:     event.EndDate(),
+		UpdatedAt:   event.UpdatedAt(),
+	})
+	if result.Error != nil {
+		return errs.New(
+			fmt.Errorf("failed to update event: %s", event.ID()),
+			errs.UnexpectedError,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return errs.New(
+			fmt.Errorf("event not found: %s", event.ID()),
+			errs.NotFoundError,
+			errs.WithField("EventID"),
+		)
+	}
+
 	return nil
 }
