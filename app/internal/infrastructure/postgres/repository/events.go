@@ -111,7 +111,37 @@ func (er *EventRepository) FetchAll(ctx echo.Context) ([]*event.Event, error) {
 }
 
 func (er *EventRepository) FetchByVenueID(ctx echo.Context, venueID uuid.UUID) ([]*event.Event, error) {
-	return nil, nil
+	db := database.GetDB(ctx)
+
+	var eventModels []models.Event
+	err := db.Where("venue_id = ?", venueID).Find(&eventModels).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, errs.New(
+			fmt.Errorf("failed to fetch events by venue: %s", venueID),
+			errs.UnexpectedError,
+		)
+	}
+
+	events := make([]*event.Event, 0, len(eventModels))
+	for _, eventModel := range eventModels {
+		events = append(events, event.Reconstruct(
+			eventModel.ID,
+			eventModel.Title,
+			eventModel.Description,
+			eventModel.StartDate,
+			eventModel.EndDate,
+			eventModel.CreatedAt,
+			eventModel.UpdatedAt,
+			eventModel.CreatedBy,
+			eventModel.VenueID,
+		))
+	}
+
+	return events, nil
 }
 
 func (er *EventRepository) Update(ctx echo.Context, event *event.Event) error {

@@ -112,17 +112,14 @@ func TestFetchEventByID(t *testing.T) {
 	tests := []struct {
 		name    string
 		eventID uuid.UUID
-		wantErr bool
 	}{
 		{
 			name:    "Fetch event by ID successfully",
 			eventID: fixtures.TestEvents["event1"].ID,
-			wantErr: false,
 		},
 		{
 			name:    "Fetch event by non-existent ID",
 			eventID: uuid.New(),
-			wantErr: false,
 		},
 	}
 
@@ -135,14 +132,9 @@ func TestFetchEventByID(t *testing.T) {
 
 			event, repoErr := r.FetchByID(ctx, tt.eventID)
 
-			if tt.wantErr {
-				assert.Nil(t, event)
-				assert.NotNil(t, repoErr)
-				return
-			}
-
 			// The event is not found
 			if event == nil {
+				assert.Nil(t, repoErr)
 				return
 			}
 
@@ -162,12 +154,10 @@ func TestFetchEventByID(t *testing.T) {
 
 func TestFetchAllEvents(t *testing.T) {
 	tests := []struct {
-		name    string
-		wantErr bool
+		name string
 	}{
 		{
-			name:    "Fetch all events successfully",
-			wantErr: false,
+			name: "Fetch all events successfully",
 		},
 	}
 
@@ -180,16 +170,49 @@ func TestFetchAllEvents(t *testing.T) {
 
 			events, repoErr := r.FetchAll(ctx)
 
-			if tt.wantErr {
-				assert.Nil(t, events)
-				assert.NotNil(t, repoErr)
+			assert.NotNil(t, events)
+			assert.Nil(t, repoErr)
+
+			assert.Equal(t, len(fixtures.TestEvents), len(events))
+		})
+	}
+}
+
+func TestFetchEventByVenueID(t *testing.T) {
+	tests := []struct {
+		name    string
+		venueID uuid.UUID
+	}{
+		{
+			name:    "Fetch event by venue ID successfully",
+			venueID: fixtures.TestVenues["venue1"].ID,
+		},
+		{
+			name:    "Fetch event by non-existent venue ID",
+			venueID: uuid.New(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			ctx := e.NewContext(nil, nil)
+
+			r := NewEventRepository()
+
+			events, repoErr := r.FetchByVenueID(ctx, tt.venueID)
+
+			if len(events) == 0 {
+				assert.Nil(t, repoErr)
 				return
 			}
 
 			assert.NotNil(t, events)
 			assert.Nil(t, repoErr)
 
-			assert.Equal(t, len(fixtures.TestEvents), len(events))
+			for _, event := range events {
+				assert.Equal(t, tt.venueID, event.VenueID())
+			}
 		})
 	}
 }
