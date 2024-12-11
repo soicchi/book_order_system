@@ -24,6 +24,16 @@ func (tm *TransactionManager) WithTransaction(ctx echo.Context, fn func(echo.Con
 		)
 	}
 
+	defer func() {
+		// If panic occurred, rollback transaction and return error
+		if r := recover(); r != nil {
+			if err := tx.Rollback().Error; err != nil {
+				fmt.Println("failed to rollback transaction: %w", err)
+			}
+			panic(r)
+		}
+	}()
+
 	if err := fn(ctx); err != nil {
 		if err := tx.Rollback().Error; err != nil {
 			return errors.New(
