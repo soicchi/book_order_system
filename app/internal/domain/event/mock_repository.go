@@ -33,8 +33,8 @@ func (m *MockEventRepository) FetchAll(ctx echo.Context) ([]*Event, error) {
 	return args.Get(0).([]*Event), args.Error(1)
 }
 
-func (m *MockEventRepository) FetchByEventID(ctx echo.Context, eventID uuid.UUID) ([]*Event, error) {
-	args := m.Called(ctx, eventID)
+func (m *MockEventRepository) FetchByVenueID(ctx echo.Context, venueID uuid.UUID) ([]*Event, error) {
+	args := m.Called(ctx, venueID)
 	return args.Get(0).([]*Event), args.Error(1)
 }
 

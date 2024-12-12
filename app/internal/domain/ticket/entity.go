@@ -9,20 +9,22 @@ import (
 )
 
 type Ticket struct {
-	id           uuid.UUID
-	qrCode       string
-	issuedAt     time.Time
-	usedAt       time.Time
-	ticketStatus ticketstatus.TicketStatus
+	id             uuid.UUID
+	qrCode         string
+	issuedAt       time.Time
+	usedAt         time.Time
+	ticketStatus   ticketstatus.TicketStatus
+	registrationID uuid.UUID
 }
 
-func New(qrCode string) *Ticket {
+func New(qrCode string, registrationID uuid.UUID) *Ticket {
 	return &Ticket{
-		id:           uuid.New(),
-		qrCode:       qrCode,
-		issuedAt:     time.Now(),
-		usedAt:       time.Time{},
-		ticketStatus: ticketstatus.New(ticketstatus.Active),
+		id:             uuid.New(),
+		qrCode:         qrCode,
+		issuedAt:       time.Now(),
+		usedAt:         time.Time{},
+		ticketStatus:   ticketstatus.New(ticketstatus.Active),
+		registrationID: registrationID,
 	}
 }
 
@@ -32,13 +34,15 @@ func Reconstruct(
 	issuedAt time.Time,
 	usedAt time.Time,
 	ticketStatus ticketstatus.TicketStatus,
+	registrationID uuid.UUID,
 ) *Ticket {
 	return &Ticket{
-		id:           id,
-		qrCode:       qrCode,
-		issuedAt:     issuedAt,
-		usedAt:       usedAt,
-		ticketStatus: ticketStatus,
+		id:             id,
+		qrCode:         qrCode,
+		issuedAt:       issuedAt,
+		usedAt:         usedAt,
+		ticketStatus:   ticketStatus,
+		registrationID: registrationID,
 	}
 }
 
@@ -60,4 +64,8 @@ func (t *Ticket) UsedAt() time.Time {
 
 func (t *Ticket) TicketStatus() ticketstatus.TicketStatus {
 	return t.ticketStatus
+}
+
+func (t *Ticket) RegistrationID() uuid.UUID {
+	return t.registrationID
 }

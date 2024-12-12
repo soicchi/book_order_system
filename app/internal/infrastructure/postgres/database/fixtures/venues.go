@@ -12,23 +12,23 @@ import (
 var TestVenues = map[string]models.Venue{
 	"venue1": {
 		ID:        uuid.New(),
-		Name:      "test_venue_1",
-		Address:   "test_address_1",
+		Name:      "venue1_name",
+		Address:   "venue1_address",
 		Capacity:  100,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	},
 	"venue2": {
 		ID:        uuid.New(),
-		Name:      "test_venue_2",
-		Address:   "test_address_2",
+		Name:      "venue2_name",
+		Address:   "venue2_address",
 		Capacity:  200,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	},
 }
 
-func CreateVenues(db *gorm.DB) error {
+func CreateTestVenues(db *gorm.DB) error {
 	venues := make([]models.Venue, 0, len(TestVenues))
 	for _, venue := range TestVenues {
 		venues = append(venues, venue)

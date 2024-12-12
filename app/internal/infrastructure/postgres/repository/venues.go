@@ -32,16 +32,7 @@ func (r *VenueRepository) Create(ctx echo.Context, venue *venue.Venue) error {
 		UpdatedAt: venue.UpdatedAt(),
 	}
 
-	err := db.Create(venueModel).Error
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return errs.New(
-			fmt.Errorf("venue id already exists: %w", err),
-			errs.AlreadyExistError,
-			errs.WithField("ID"),
-		)
-	}
-
-	if err != nil {
+	if err := db.Create(venueModel).Error; err != nil {
 		return errs.New(
 			fmt.Errorf("failed to create venue: %w", err),
 			errs.UnexpectedError,

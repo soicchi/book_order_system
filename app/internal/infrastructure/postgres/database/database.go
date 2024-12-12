@@ -13,6 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type DBConfig struct {
@@ -136,6 +137,7 @@ func SetupTestDB(dsn string) error {
 
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		TranslateError: true,
+		Logger:         logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to connect database: %w", err)
@@ -145,12 +147,24 @@ func SetupTestDB(dsn string) error {
 }
 
 func CreateTestData() error {
-	if err := fixtures.CreateUsers(db); err != nil {
+	if err := fixtures.CreateTestUsers(db); err != nil {
 		return fmt.Errorf("failed to create users: %w", err)
 	}
 
-	if err := fixtures.CreateVenues(db); err != nil {
+	if err := fixtures.CreateTestVenues(db); err != nil {
 		return fmt.Errorf("failed to create venues: %w", err)
+	}
+
+	if err := fixtures.CreateTestEvents(db); err != nil {
+		return fmt.Errorf("failed to create test events")
+	}
+
+	if err := fixtures.CreateTestRegistrations(db); err != nil {
+		return fmt.Errorf("failed to create test registrations")
+	}
+
+	if err := fixtures.CreateTestTickets(db); err != nil {
+		return fmt.Errorf("failed to create test tickets")
 	}
 
 	return nil

@@ -12,23 +12,23 @@ import (
 var TestUsers = map[string]models.User{
 	"attendee1": {
 		ID:        uuid.New(),
-		Name:      "test_user_1",
-		Email:     "test1@test.com",
+		Name:      "attendee1_user",
+		Email:     "attendee1@test.com",
 		Role:      "attendee",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	},
 	"organizer1": {
 		ID:        uuid.New(),
-		Name:      "test_user_2",
-		Email:     "test2@test.com",
+		Name:      "organizer1_user",
+		Email:     "organizer1@test.com",
 		Role:      "organizer",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	},
 }
 
-func CreateUsers(db *gorm.DB) error {
+func CreateTestUsers(db *gorm.DB) error {
 	users := make([]models.User, 0, len(TestUsers))
 	for _, user := range TestUsers {
 		users = append(users, user)

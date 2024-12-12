@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"event_system/internal/domain/user"
 	"event_system/internal/errors"
 
 	"github.com/google/uuid"
@@ -71,7 +70,8 @@ func Reconstruct(
 	endDate time.Time,
 	createdAt time.Time,
 	updatedAt time.Time,
-	createdBy *user.User,
+	createdBy uuid.UUID,
+	venueID uuid.UUID,
 ) *Event {
 	return &Event{
 		id:          id,
@@ -81,6 +81,8 @@ func Reconstruct(
 		endDate:     endDate,
 		createdAt:   createdAt,
 		updatedAt:   updatedAt,
+		createdBy:   createdBy,
+		venueID:     venueID,
 	}
 }
 

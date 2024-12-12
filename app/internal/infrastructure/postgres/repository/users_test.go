@@ -93,6 +93,8 @@ func TestCreateUser(t *testing.T) {
 			assert.Equal(t, tt.user.Name(), userModel.Name)
 			assert.Equal(t, tt.user.Email(), userModel.Email)
 			assert.Equal(t, tt.user.Role().Value().String(), userModel.Role)
+			assert.Equal(t, tt.user.CreatedAt().Unix(), userModel.CreatedAt.Unix())
+			assert.Equal(t, tt.user.UpdatedAt().Unix(), userModel.UpdatedAt.Unix())
 		})
 	}
 }
@@ -266,6 +268,8 @@ func TestUpdateUser(t *testing.T) {
 			assert.Equal(t, tt.user.Name(), userModel.Name)
 			assert.Equal(t, tt.user.Email(), userModel.Email)
 			assert.Equal(t, tt.user.Role().Value().String(), userModel.Role)
+			assert.Equal(t, tt.user.CreatedAt().Unix(), userModel.CreatedAt.Unix())
+			assert.Equal(t, tt.user.UpdatedAt().Unix(), userModel.UpdatedAt.Unix())
 		})
 	}
 }

@@ -23,11 +23,11 @@ func (t TicketStatusValue) String() string {
 
 func FromString(s string) TicketStatusValue {
 	switch s {
-	case "Active":
+	case "active":
 		return Active
-	case "Used":
+	case "used":
 		return Used
-	case "Canceled":
+	case "canceled":
 		return Canceled
 	default:
 		return 0

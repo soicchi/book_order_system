@@ -14,7 +14,7 @@ var AddTicketTable = &gormigrate.Migration{
 			CREATE TABLE IF NOT EXISTS tickets (
 				id UUID PRIMARY KEY,
 				registration_id UUID NOT NULL,
-				qr_code VARCHAR(255) NOT NULL,
+				qr_code VARCHAR(255) NOT NULL UNIQUE,
 				status VARCHAR(255) NOT NULL,
 				issued_at TIMESTAMP NOT NULL,
 				used_at TIMESTAMP
