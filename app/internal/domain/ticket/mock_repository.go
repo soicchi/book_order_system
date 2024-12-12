@@ -1,7 +1,6 @@
 package ticket
 
 import (
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 )
@@ -19,8 +18,8 @@ func (r *MockRepository) Create(ctx echo.Context, ticket *Ticket) error {
 	return args.Error(0)
 }
 
-func (r *MockRepository) FetchByRegistrationID(ctx echo.Context, registrationID uuid.UUID) (*Ticket, error) {
-	args := r.Called(ctx, registrationID)
+func (r *MockRepository) FetchByQRCode(ctx echo.Context, qrCode string) (*Ticket, error) {
+	args := r.Called(ctx, qrCode)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
