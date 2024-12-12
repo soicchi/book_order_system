@@ -23,7 +23,7 @@ func NewEventFactory(eventRepository EventRepository, userRepository user.UserRe
 	}
 }
 
-func (ef *EventFactory) NewEvent(
+func (ef *EventFactory) New(
 	ctx echo.Context,
 	title string,
 	description string,
@@ -51,6 +51,8 @@ func (ef *EventFactory) NewEvent(
 		return nil, errors.New(
 			fmt.Errorf("user is not an organizer: %s", userID),
 			errors.AuthorizationError,
+			errors.WithField(userID.String()),
+			errors.WithIssue(errors.NotOrganizer),
 		)
 	}
 
