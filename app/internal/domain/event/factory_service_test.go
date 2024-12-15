@@ -107,7 +107,7 @@ func TestEventFactoryNew(t *testing.T) {
 			description: "test_description",
 			startDate:   time.Now().AddDate(0, 0, 3),
 			endDate:     time.Now().AddDate(0, 0, 4),
-			userID: 	testOrganizer.ID(),
+			userID:      testOrganizer.ID(),
 			venueID:     uuid.New(),
 			wantErr:     true,
 		},
@@ -160,7 +160,7 @@ func TestEventFactoryNew(t *testing.T) {
 
 			eventFactory := tt.mockFunc()
 
-			event, err := eventFactory.New(
+			event, err := eventFactory.NewEvent(
 				ctx,
 				tt.title,
 				tt.description,

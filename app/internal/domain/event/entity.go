@@ -29,6 +29,7 @@ func new(
 	userID uuid.UUID,
 	venueID uuid.UUID,
 ) (*Event, error) {
+	// check start data
 	if startDate.After(endDate) || startDate.Before(time.Now()) {
 		return nil, errors.New(
 			fmt.Errorf("invalid event start time: %s", startDate),
@@ -38,6 +39,7 @@ func new(
 		)
 	}
 
+	// check end date
 	if endDate.Before(startDate) || endDate.Before(time.Now()) || endDate.Equal(startDate) {
 		return nil, errors.New(
 			fmt.Errorf("invalid event end time: %s", endDate),
@@ -46,8 +48,6 @@ func new(
 			errors.WithIssue(errors.InvalidTimeRange),
 		)
 	}
-
-	// Validate createdBy
 
 	return &Event{
 		id:          uuid.New(),
