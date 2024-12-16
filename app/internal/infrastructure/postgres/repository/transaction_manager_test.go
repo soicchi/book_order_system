@@ -84,7 +84,7 @@ func TestWithTransaction(t *testing.T) {
 			})
 
 			if tt.wantErr {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 
 				// Check if the transaction is rolled back
 				var afterUserModels []models.User
@@ -101,7 +101,7 @@ func TestWithTransaction(t *testing.T) {
 				return
 			}
 
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 
 			// Check if the transaction is committed
 			var userModel models.User

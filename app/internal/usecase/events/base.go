@@ -6,12 +6,18 @@ import (
 
 type EventUseCase struct {
 	eventFactory    event.EventFactoryService
+	eventUpdater    event.EventUpdaterService
 	eventRepository event.EventRepository
 }
 
-func NewEventUseCase(eventFactory event.EventFactoryService, eventRepository event.EventRepository) *EventUseCase {
+func NewEventUseCase(
+	eventFactory event.EventFactoryService,
+	eventUpdater event.EventUpdaterService,
+	eventRepository event.EventRepository,
+) *EventUseCase {
 	return &EventUseCase{
 		eventFactory:    eventFactory,
+		eventUpdater:    eventUpdater,
 		eventRepository: eventRepository,
 	}
 }

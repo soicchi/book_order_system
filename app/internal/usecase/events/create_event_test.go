@@ -24,6 +24,7 @@ func TestCreateEvent(t *testing.T) {
 			dto:  NewCreateInput("title", "description", time.Now(), time.Now(), uuid.New(), uuid.New()),
 			mockFunc: func() *EventUseCase {
 				var mockEventFactory event.MockEventFactory
+				var mockEventUpdater event.MockEventUpdater
 				var mockEventRepository event.MockEventRepository
 				mockEventFactory.On(
 					"NewEvent",
@@ -37,7 +38,7 @@ func TestCreateEvent(t *testing.T) {
 				).Return(&event.Event{}, nil)
 				mockEventRepository.On("Create", mock.Anything, mock.Anything).Return(nil)
 
-				return NewEventUseCase(&mockEventFactory, &mockEventRepository)
+				return NewEventUseCase(&mockEventFactory, &mockEventUpdater, &mockEventRepository)
 			},
 			wantErr: false,
 		},
@@ -46,6 +47,7 @@ func TestCreateEvent(t *testing.T) {
 			dto:  NewCreateInput("title", "description", time.Now(), time.Now(), uuid.New(), uuid.New()),
 			mockFunc: func() *EventUseCase {
 				var mockEventFactory event.MockEventFactory
+				var mockEventUpdater event.MockEventUpdater
 				var mockEventRepository event.MockEventRepository
 				mockEventFactory.On(
 					"NewEvent",
@@ -58,7 +60,7 @@ func TestCreateEvent(t *testing.T) {
 					mock.Anything,
 				).Return(nil, assert.AnError)
 
-				return NewEventUseCase(&mockEventFactory, &mockEventRepository)
+				return NewEventUseCase(&mockEventFactory, &mockEventUpdater, &mockEventRepository)
 			},
 			wantErr: true,
 		},

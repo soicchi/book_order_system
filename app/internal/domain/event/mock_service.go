@@ -32,3 +32,29 @@ func (m *MockEventFactory) NewEvent(
 
 	return args.Get(0).(*Event), args.Error(1)
 }
+
+type MockEventUpdater struct {
+	mock.Mock
+}
+
+func NewMockEventUpdater() *MockEventUpdater {
+	return &MockEventUpdater{}
+}
+
+func (m *MockEventUpdater) UpdateEvent(
+	ctx echo.Context,
+	eventID uuid.UUID,
+	title string,
+	description string,
+	startDate time.Time,
+	endDate time.Time,
+	createdBy uuid.UUID,
+	venueID uuid.UUID,
+) (*Event, error) {
+	args := m.Called(ctx, eventID, title, description, startDate, endDate, createdBy, venueID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*Event), args.Error(1)
+}

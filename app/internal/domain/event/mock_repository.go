@@ -35,6 +35,10 @@ func (m *MockEventRepository) FetchAll(ctx echo.Context) ([]*Event, error) {
 
 func (m *MockEventRepository) FetchByVenueID(ctx echo.Context, venueID uuid.UUID) ([]*Event, error) {
 	args := m.Called(ctx, venueID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
 	return args.Get(0).([]*Event), args.Error(1)
 }
 
