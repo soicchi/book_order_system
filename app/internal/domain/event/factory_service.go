@@ -11,6 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type EventFactoryService interface {
+	NewEvent(ctx echo.Context, title string, description string, startDate time.Time, endDate time.Time, userID uuid.UUID, venueID uuid.UUID) (*Event, error)
+}
+
 type EventFactory struct {
 	eventRepository EventRepository
 	userRepository  user.UserRepository
@@ -51,6 +55,8 @@ func (ef *EventFactory) NewEvent(
 		return nil, errors.New(
 			fmt.Errorf("user is not an organizer: %s", userID),
 			errors.AuthorizationError,
+			errors.WithField("UserID"),
+			errors.WithIssue(errors.NotOrganizer),
 		)
 	}
 

@@ -11,6 +11,9 @@ const (
 	LessThanZero
 	Empty
 	InvalidTimeRange
+	NotOrganizer
+	NotCreator
+	ExceedCapacity
 )
 
 func (e ErrorIssue) String() string {
@@ -27,6 +30,12 @@ func (e ErrorIssue) String() string {
 		return "Empty"
 	case InvalidTimeRange:
 		return "InvalidTimeRange"
+	case NotOrganizer:
+		return "NotOrganizer"
+	case NotCreator:
+		return "NotCreator"
+	case ExceedCapacity:
+		return "ExceedCapacity"
 	case Unknown:
 		return "Unknown"
 	default:

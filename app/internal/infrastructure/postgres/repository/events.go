@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"event_system/internal/domain/event"
 	errs "event_system/internal/errors"
@@ -105,7 +106,7 @@ func (er *EventRepository) FetchByVenueID(ctx echo.Context, venueID uuid.UUID) (
 	db := database.GetDB(ctx)
 
 	var eventModels []models.Event
-	err := db.Where("venue_id = ?", venueID).Find(&eventModels).Error
+	err := db.Where("venue_id = ? and end_date > ?", venueID, time.Now()).Find(&eventModels).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}

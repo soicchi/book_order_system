@@ -79,7 +79,7 @@ func TestCreateEvent(t *testing.T) {
 			repoErr := r.Create(ctx, tt.event)
 
 			if tt.wantErr {
-				assert.NotNil(t, repoErr)
+				assert.Error(t, repoErr)
 
 				var afterEventModels []models.Event
 				if err := db.Find(&afterEventModels).Error; err != nil {
@@ -90,7 +90,7 @@ func TestCreateEvent(t *testing.T) {
 				return
 			}
 
-			assert.Nil(t, repoErr)
+			assert.NoError(t, repoErr)
 
 			var eventModel models.Event
 			if err := tx.First(&eventModel, "id = ?", tt.event.ID()).Error; err != nil {
@@ -203,12 +203,12 @@ func TestFetchEventByVenueID(t *testing.T) {
 			events, repoErr := r.FetchByVenueID(ctx, tt.venueID)
 
 			if len(events) == 0 {
-				assert.Nil(t, repoErr)
+				assert.NoError(t, repoErr)
 				return
 			}
 
 			assert.NotNil(t, events)
-			assert.Nil(t, repoErr)
+			assert.NoError(t, repoErr)
 
 			for _, event := range events {
 				assert.Equal(t, tt.venueID, event.VenueID())

@@ -29,6 +29,7 @@ func new(
 	userID uuid.UUID,
 	venueID uuid.UUID,
 ) (*Event, error) {
+	// check start data
 	if startDate.After(endDate) || startDate.Before(time.Now()) {
 		return nil, errors.New(
 			fmt.Errorf("invalid event start time: %s", startDate),
@@ -38,6 +39,7 @@ func new(
 		)
 	}
 
+	// check end date
 	if endDate.Before(startDate) || endDate.Before(time.Now()) || endDate.Equal(startDate) {
 		return nil, errors.New(
 			fmt.Errorf("invalid event end time: %s", endDate),
@@ -46,8 +48,6 @@ func new(
 			errors.WithIssue(errors.InvalidTimeRange),
 		)
 	}
-
-	// Validate createdBy
 
 	return &Event{
 		id:          uuid.New(),
@@ -120,4 +120,65 @@ func (e *Event) CreatedBy() uuid.UUID {
 
 func (e *Event) VenueID() uuid.UUID {
 	return e.venueID
+}
+
+func (e *Event) SetTitle(title string) {
+	e.title = title
+}
+
+func (e *Event) SetDescription(description string) {
+	e.description = description
+}
+
+func (e *Event) SetUpdatedAt() {
+	e.updatedAt = time.Now()
+}
+
+func (e *Event) validTimeRange(startDate, endDate time.Time) bool {
+	return startDate.Before(e.startDate) && endDate.Before(e.startDate) ||
+		startDate.After(e.endDate) && endDate.After(e.endDate)
+}
+
+func (e *Event) SetTimeRange(startDate, endDate time.Time, events []*Event) error {
+	if startDate.After(endDate) || startDate.Before(time.Now()) {
+		return errors.New(
+			fmt.Errorf("invalid event start time: %s", startDate),
+			errors.ValidationError,
+			errors.WithField("StartDate"),
+			errors.WithIssue(errors.InvalidTimeRange),
+		)
+	}
+
+	for _, event := range events {
+		if event.ID() == e.id {
+			continue
+		}
+
+		if !event.validTimeRange(startDate, endDate) {
+			return errors.New(
+				fmt.Errorf("event time range conflict: registered: %s", event.Title()),
+				errors.ValidationError,
+				errors.WithField("StartDateOrEndDate"),
+				errors.WithIssue(errors.InvalidTimeRange),
+			)
+		}
+	}
+
+	e.startDate = startDate
+	e.endDate = endDate
+
+	return nil
+}
+
+func (e *Event) ValidateHost(userID uuid.UUID) error {
+	if e.createdBy != userID {
+		return errors.New(
+			fmt.Errorf("user is not the creator of the event: %s", userID),
+			errors.AuthorizationError,
+			errors.WithField("UserID"),
+			errors.WithIssue(errors.NotCreator),
+		)
+	}
+
+	return nil
 }
