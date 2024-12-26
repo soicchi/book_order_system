@@ -3,21 +3,26 @@
 ```mermaid
 classDiagram
 
-namespace EventAggregation {
-  class Event {
-    UUID id
-    string title
-    string description
-    Venue venue
-    datetime start_time
-    datetime end_time
-  }
-
-  class Venue {
+namespace VenueAggregation {
+	class Venue {
     UUID id
     string name
     string address
     int capacity
+    datetime created_at
+    datetime updated_at
+  }
+}
+
+namespace EventAggregation {
+	class Event {
+    UUID id
+    string title
+    string description
+    datetime start_time
+    datetime end_time
+    UUID created_by
+    UUID venue_id
   }
 }
 
@@ -27,6 +32,8 @@ namespace UserAggregation {
     string name
     string email
     Role role
+    datetime created_at
+    datetime updated_at
   }
   
   class Role {
@@ -42,14 +49,8 @@ namespace RegistrationAggregation {
     Status status
     datetime registered_at
     Ticket ticket
-  }
-
-  class Ticket {
-    UUID id
-    string qr_code
-    TicketStatus status
-    datetime issued_at
-    datetime used_at
+    UUID user_id
+    UUID event_id
   }
 
   class Status {
@@ -57,7 +58,17 @@ namespace RegistrationAggregation {
     Registered
     Canceled
   }
+}
 
+namespace TicketAggregation {
+	class Ticket {
+    UUID id
+    string qr_code
+    TicketStatus status
+    datetime issued_at
+    datetime used_at
+  }
+  
   class TicketStatus {
     <<enumeration>>
     Active
@@ -67,14 +78,15 @@ namespace RegistrationAggregation {
 }
 
 %% Relationships
-Event --* Venue : Event作成時にVenueも存在しないといけない
-Event --> Registration : capacityを超えた登録はできない
-Event --> User : Organizerロールを持つUserがEventを作成できる
-Registration --> User
+Event --> Venue : 同じ期間のEventは複数登録できない
+Event --> User : Organizerロールを持つUserがEventを作成できる<br>作成者以外はEventの更新ができない
+Registration --> Event : capacityを超えた登録はできない
+Registration --> User : 同じイベントの登録はできない<br>Organizerは登録できない
 Registration --> Ticket : 登録時にTicketも存在しないといけない<br>登録がキャンセルされた時Ticketもキャンセルする必要がある
-User --> Role
-Registration --> Status
-Ticket --> TicketStatus
+User --* Role
+Registration --* Status
+Ticket --* TicketStatus
+
 ```
 
 # 集約とは何か
